@@ -18,10 +18,6 @@
     "angle": true,
     "drive": false
   },
-  "conversionFactor": {
-    "angle": 16.8,
-    "drive": 0.047286787200699704
-  },
   "encoder": {
     "type": "thrifty",
     "id": 1,
