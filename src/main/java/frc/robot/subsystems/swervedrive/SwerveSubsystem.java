@@ -26,6 +26,8 @@ import frc.robot.Constants.AutonConstants;
 import frc.robot.LimelightHelpers;
 import java.io.File;
 import java.util.function.DoubleSupplier;
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
 import java.util.Optional;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
@@ -82,7 +84,7 @@ public class SwerveSubsystem extends SubsystemBase
       throw new RuntimeException(e);
     }
     swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via angle.
-
+    swerveDrive.setCosineCompensator(SwerveDriveTelemetry.isSimulation); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
     setupPathPlanner();
   }
 
@@ -128,6 +130,26 @@ public class SwerveSubsystem extends SubsystemBase
         },
         this // Reference to this subsystem to set requirements
                                   );
+  }
+
+  /**
+   * Aim the robot at the target returned by PhotonVision.
+   *
+   * @param camera {@link PhotonCamera} to communicate with.
+   * @return A {@link Command} which will run the alignment.
+   */
+  public Command aimAtTarget(PhotonCamera camera)
+  {
+    return run(() -> {
+      PhotonPipelineResult result = camera.getLatestResult();
+      if (result.hasTargets())
+      {
+        drive(getTargetSpeeds(0,
+                              0,
+                              Rotation2d.fromDegrees(result.getBestTarget()
+                                                           .getYaw()))); // Not sure if this will work, more math may be required.
+      }
+    });
   }
 
   /**
@@ -223,24 +245,27 @@ public class SwerveSubsystem extends SubsystemBase
    * Command to characterize the robot drive motors using SysId
    * @return SysId Drive Command
    */
-  public Command sysIdDriveMotorCommand() {
+  public Command sysIdDriveMotorCommand() 
+  {
     return SwerveDriveTest.generateSysIdCommand(
-          SwerveDriveTest.setDriveSysIdRoutine(
-              new Config(),
-              this, swerveDrive, 12),
-          3.0, 5.0, 3.0);
+      SwerveDriveTest.setDriveSysIdRoutine(
+        new Config(),
+        this, swerveDrive, 12),
+    3.0, 5.0, 3.0);
 }
 
-/**
- * Command to characterize the robot angle motors using SysId
- * @return SysId Angle Command
- */
-public Command sysIdAngleMotorCommand() {
+  /**
+   * Command to characterize the robot angle motors using SysId
+   *
+   * @return SysId Angle Command
+   */
+  public Command sysIdAngleMotorCommand()
+  {
     return SwerveDriveTest.generateSysIdCommand(
-          SwerveDriveTest.setAngleSysIdRoutine(
-              new Config(),
-              this, swerveDrive),
-          3.0, 5.0, 3.0);
+      SwerveDriveTest.setAngleSysIdRoutine(
+        new Config(),
+        this, swerveDrive),
+    3.0, 5.0, 3.0);
 }
 
   /**
@@ -416,7 +441,7 @@ public Command sysIdAngleMotorCommand() {
    * @param yInput   Y joystick input for the robot to move in the Y direction.
    * @param headingX X joystick which controls the angle of the robot.
    * @param headingY Y joystick which controls the angle of the robot.
-   * @return {@link ChassisSpeeds} which can be sent to th Swerve Drive.
+   * @return {@link ChassisSpeeds} which can be sent to the Swerve Drive.
    */
   public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, double headingX, double headingY)
   {
@@ -437,7 +462,7 @@ public Command sysIdAngleMotorCommand() {
    * @param xInput X joystick input for the robot to move in the X direction.
    * @param yInput Y joystick input for the robot to move in the Y direction.
    * @param angle  The angle in as a {@link Rotation2d}.
-   * @return {@link ChassisSpeeds} which can be sent to th Swerve Drive.
+   * @return {@link ChassisSpeeds} which can be sent to the Swerve Drive.
    */
   public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, Rotation2d angle)
   {
