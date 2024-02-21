@@ -324,18 +324,6 @@ public class SwerveSubsystem extends SubsystemBase
   @Override
   public void periodic()
   {
-    Optional<Alliance> optionalAlliance = DriverStation.getAlliance();
-    Alliance alliance = optionalAlliance.get();
-    Double latency = Timer.getFPGATimestamp() - (LimelightHelpers.getLatency_Pipeline("")/1000) - (LimelightHelpers.getLatency_Capture("")/1000);
-    Pose2d botPose;
-
-    if (alliance == Alliance.Blue) {
-      botPose = LimelightHelpers.getBotPose2d_wpiBlue("");
-    } else {
-      botPose = LimelightHelpers.getBotPose2d_wpiRed("");
-    }
-
-//    swerveDrive.addVisionMeasurement(botPose, latency);
   }
 
   @Override
