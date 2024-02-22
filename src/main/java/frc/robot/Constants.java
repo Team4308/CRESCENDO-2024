@@ -14,6 +14,11 @@ public final class Constants {
       public static int kStick2 = 1;
     }
   }
+
+  public static class Shooter {
+    public static int rightMultiplier = 1;
+    public static int leftMultipler = 1;
+  }
   
   public static class Generic {
     public static int kTimeoutMs = 1000;
