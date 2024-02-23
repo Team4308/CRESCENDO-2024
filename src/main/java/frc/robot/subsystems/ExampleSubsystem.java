@@ -13,7 +13,7 @@ public class ExampleSubsystem extends SubsystemBase {
 
   /**
    * Example command factory method.
-   *
+   * 
    * @return a command
    */
   public Command exampleMethodCommand() {
