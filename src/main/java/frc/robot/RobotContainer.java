@@ -66,9 +66,8 @@ public class RobotContainer {
     m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
   }
 
-
   public double getRotateShooterControl(){
-    return stick.getRightTrigger();
+    return stick.getRightY();
   }
 
   /**
