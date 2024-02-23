@@ -1,13 +1,11 @@
 package frc.robot.subsystems;
 
-import java.util.*;
-
-import com.ctre.phoenix.motorcontrol.FollowerType;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
-
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import ca.team4308.absolutelib.wrapper.LogSubsystem;
 import edu.wpi.first.util.sendable.Sendable;
@@ -15,29 +13,33 @@ import frc.robot.Constants;
 
 
 public class ShooterSubsystem extends LogSubsystem {
-    public final TalonFX motor1;
-    public final TalonFX motor2;
+    public final TalonFX rightMaster;
+    public final TalonFX leftSlave;
+
+    private final DutyCycleOut motorOut;
+
+    private final TalonFXConfiguration rightMasterConfiguration;
+    private final TalonFXConfiguration leftSlaveConfiguration;
 
     public ShooterSubsystem() {
         // Create Motor Controller Objects
-        motor1 = new TalonFX(Constants.Mapping.ShooterMotor.kMotor1);
-        motor2 = new TalonFX(Constants.Mapping.ShooterMotor.kMotor2);
+        rightMaster = new TalonFX(Constants.Mapping.ShooterMotor.kMotor1);
+        leftSlave = new TalonFX(Constants.Mapping.ShooterMotor.kMotor2);
 
-        motor1.setInverted(TalonFXInvertType.Clockwise);
-        motor2.follow(motor1);
-        motor2.setInverted(TalonFXInvertType.FollowMaster);
+        motorOut = new DutyCycleOut(0);
 
-        Collection<TalonFX> motors = new ArrayList<TalonFX>(); 
-        motors.add(motor1);
-        motors.add(motor2);
-        for (TalonFX motor : motors) {
-            motor.configFactoryDefault(Constants.Generic.kTimeoutMs);
-            motor.configNeutralDeadband(0.05, Constants.Generic.kTimeoutMs);
-            motor.changeMotionControlFramePeriod(5);
-            motor.setNeutralMode(NeutralMode.Coast);
-            motor.configVoltageCompSaturation(12.5, Constants.Generic.kTimeoutMs);
-            motor.enableVoltageCompensation(true);
-        }
+        rightMasterConfiguration = new TalonFXConfiguration();
+        leftSlaveConfiguration = new TalonFXConfiguration();
+
+        rightMasterConfiguration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        rightMasterConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        leftSlaveConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        leftSlaveConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+
+        rightMaster.getConfigurator().apply(rightMasterConfiguration);
+        leftSlave.getConfigurator().apply(leftSlaveConfiguration);
+       
+        leftSlave.setControl(new Follower(rightMaster.getDeviceID(), false));
 
         // Reset
         stopControllers();
@@ -47,21 +49,24 @@ public class ShooterSubsystem extends LogSubsystem {
     /**
      * Misc Stuff
      */
-    public void setMotorOutput(TalonFXControlMode mode, double percent) {
-        motor1.set(mode, percent);
+    public void setMotorOutput(double percent) {
+        motorOut.Output = percent;
+        rightMaster.setControl(motorOut);
+        //rightMaster.set(1);
     }
 
     public void selectProfileSlot(int slot) {
-        motor1.selectProfileSlot(slot, 0);
+        //motorOut.selectProfileSlot(slot, 0);
     }
 
     public void stopControllers() {
-        motor1.set(TalonFXControlMode.PercentOutput, 0.0);
+        motorOut.Output = 0;
+        rightMaster.setControl(motorOut);
     }
 
     // Sensor Reset
     public void resetSensors() {
-        motor1.setSelectedSensorPosition(0);
+        //motorOut.setSelectedSensorPosition(0);
     }
 
     @Override

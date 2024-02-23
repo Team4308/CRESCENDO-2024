@@ -2,7 +2,6 @@ package frc.robot.commands;
 
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
-import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 
 import java.util.function.Supplier;
 
@@ -26,7 +25,7 @@ public class ShooterCommand extends Command {
   @Override
   public void execute() {
     double control = this.control.get();
-    m_subsystem.setMotorOutput(TalonFXControlMode.PercentOutput, control);
+    m_subsystem.setMotorOutput(control);
   }
 
   @Override
