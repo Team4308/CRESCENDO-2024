@@ -13,7 +13,7 @@ import frc.robot.subsystems.RotateShooterSystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
+import ca.team4308.absolutelib.control.XBoxWrapper;
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -21,10 +21,15 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
+  // Subsystems
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final RotateShooterSystem m_rotateShooterSystem;
+
+  // Commands
   private final RotateShooterCommand rotateShooterCommand;
+
+  // Controllers
+  public final XBoxWrapper stick = new XBoxWrapper(0);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -63,7 +68,7 @@ public class RobotContainer {
 
 
   public double getRotateShooterControl(){
-    return 0.0;
+    return stick.getRightTrigger();
   }
 
   /**
