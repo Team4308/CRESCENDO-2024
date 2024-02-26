@@ -28,9 +28,6 @@ import frc.robot.commands.IntakeCommand;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.IntakeSystem;
 import java.io.File;
-import java.util.ArrayList;
-
-import ca.team4308.absolutelib.wrapper.LogSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
