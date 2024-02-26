@@ -8,10 +8,13 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import java.io.File;
 import java.io.IOException;
+
+import ca.team4308.absolutelib.wrapper.LogSubsystem;
 import swervelib.parser.SwerveParser;
 
 /**
@@ -53,6 +56,9 @@ public class Robot extends TimedRobot
 
     // Create a timer to disable motor brake a few seconds after disable.  This will let the robot stop
     // immediately when disabled, but then also let it be pushed more 
+    for (LogSubsystem subsystem : m_robotContainer.subsystems) {
+      Shuffleboard.getTab("Log").add(subsystem.log());
+    }
     disabledTimer = new Timer();
   }
 
