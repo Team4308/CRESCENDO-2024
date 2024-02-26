@@ -15,9 +15,14 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.LEDCommand;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
+import frc.robot.subsystems.LEDSystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
+import java.util.ArrayList;
+
+import ca.team4308.absolutelib.wrapper.LogSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -28,8 +33,14 @@ public class RobotContainer
 {
 
   // The robot's subsystems and commands are defined here...
-  private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
-                                                                         "swerve"));
+   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
+                                                                         "swerve")); 
+
+  public final ArrayList<LogSubsystem> subsystems = new ArrayList<LogSubsystem>();
+  private final LEDSystem m_ledSystem;
+
+  private final LEDCommand ledCommand;
+  
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final CommandXboxController driverXbox = new CommandXboxController(0);
@@ -40,8 +51,20 @@ public class RobotContainer
   public RobotContainer()
   {
     // Configure the trigger bindings
+
+
+    m_ledSystem = new LEDSystem();
+    subsystems.add(m_ledSystem);
+
+    
+    ledCommand = new LEDCommand(m_ledSystem, () -> getLEDCommand());
+    m_ledSystem.setDefaultCommand(ledCommand);
+    
     configureBindings();
 
+
+
+    
     AbsoluteDriveAdv closedAbsoluteDriveAdv = new AbsoluteDriveAdv(drivebase,
                                                                    () -> -MathUtil.applyDeadband(driverXbox.getLeftY(),
                                                                                                 OperatorConstants.LEFT_Y_DEADBAND),
@@ -94,13 +117,13 @@ public class RobotContainer
   private void configureBindings()
   {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-
+ 
     driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
     driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
     driverXbox.b().whileTrue(
         Commands.deferredProxy(() -> drivebase.driveToPose(
                                    new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
-                              ));
+                              )); 
     // driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
   }
 
@@ -111,17 +134,21 @@ public class RobotContainer
    */
   public Command getAutonomousCommand()
   {
-    // An example command will be run in autonomous
+    // An example command will be run in autonomous/* 
     return drivebase.getAutonomousCommand("New Auto");
+  }
+
+  public Double getLEDCommand(){
+    return -0.99;
   }
 
   public void setDriveMode()
   {
-    //drivebase.setDefaultCommand();
+    // drivebase.setDefaultCommand();
   }
 
   public void setMotorBrake(boolean brake)
   {
-    drivebase.setMotorBrake(brake);
+    drivebase.setMotorBrake(brake); 
   }
 }
