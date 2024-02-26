@@ -4,12 +4,18 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+ 
+import ca.team4308.absolutelib.control.XBoxWrapper;
+import ca.team4308.absolutelib.wrapper.LogSubsystem;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -18,7 +24,9 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.LEDCommand;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.subsystems.LEDSystem;
+import frc.robot.commands.IntakeCommand;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import frc.robot.subsystems.IntakeSystem;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -31,25 +39,42 @@ import ca.team4308.absolutelib.wrapper.LogSubsystem;
  */
 public class RobotContainer
 {
-
   // The robot's subsystems and commands are defined here...
-   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
+  private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                          "swerve")); 
 
   public final ArrayList<LogSubsystem> subsystems = new ArrayList<LogSubsystem>();
+  
+  //Subsystems
+  private final IntakeSystem m_intakeSystem;
   private final LEDSystem m_ledSystem;
 
+  //Commands
+  private final IntakeCommand intakeCommand;
   private final LEDCommand ledCommand;
-  
 
-  // Replace with CommandPS4Controller or CommandJoystick if needed
+  // Controllers
   final CommandXboxController driverXbox = new CommandXboxController(0);
-
+  public final XBoxWrapper stick2 = new XBoxWrapper(1);
+  
+  //Auto
+  private final SendableChooser<Command> autoCommandChooser = new SendableChooser<Command>();
+  
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer()
   {
+    //Subsystem Instantiations
+    m_intakeSystem = new IntakeSystem();
+    subsystems.add(m_intakeSystem);
+    
+    //Command Instantiations
+    intakeCommand = new IntakeCommand(m_intakeSystem, () -> getIntakeControl());
+    m_intakeSystem.setDefaultCommand(intakeCommand);
+
+    SmartDashboard.putData(autoCommandChooser);
+    
     // Configure the trigger bindings
 
 
@@ -125,6 +150,7 @@ public class RobotContainer
                                    new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
                               )); 
     // driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
+    stick2.A.whileTrue(new IntakeCommand(m_intakeSystem, () -> getIntakeControl()));
   }
 
   /**
@@ -134,8 +160,9 @@ public class RobotContainer
    */
   public Command getAutonomousCommand()
   {
-    // An example command will be run in autonomous/* 
-    return drivebase.getAutonomousCommand("New Auto");
+    // An example command will be run in autonomous
+    // return drivebase.getAutonomousCommand("New Auto");
+    return autoCommandChooser.getSelected();
   }
 
   public Double getLEDCommand(){
@@ -150,5 +177,9 @@ public class RobotContainer
   public void setMotorBrake(boolean brake)
   {
     drivebase.setMotorBrake(brake); 
+  }
+    
+  public double getIntakeControl() {
+    return 0.5; // change to - or + depending on ccw/cw on the robot
   }
 }
