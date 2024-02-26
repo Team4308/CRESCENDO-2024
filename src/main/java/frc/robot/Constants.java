@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
 import com.pathplanner.lib.util.PIDConstants;
@@ -48,4 +44,22 @@ public final class Constants
     public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT    = 6;
   }
+  
+  public static class Mapping {
+        public static class Claw {
+            public static int intakeMotor = 1; // change to correct ids later
+        }
+    }
+
+    public static class Generic {
+        public static int timeoutMs = 3000;
+    }
+
+    public static class Config {
+        public static class Drive {
+            public static class Power {
+                public static double kOpenLoopRamp = 0.0;
+            }
+        }
+    }
 }
