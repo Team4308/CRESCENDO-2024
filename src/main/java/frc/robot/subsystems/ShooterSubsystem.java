@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -13,34 +12,34 @@ import frc.robot.Constants;
 
 
 public class ShooterSubsystem extends LogSubsystem {
-    public final TalonFX rightMaster;
-    public final TalonFX leftSlave;
+    public final TalonFX right;
+    public final TalonFX left;
 
-    private final DutyCycleOut motorOut;
+    private final DutyCycleOut rightMotorOut;
+    private final DutyCycleOut leftMotorOut;
 
-    private final TalonFXConfiguration rightMasterConfiguration;
-    private final TalonFXConfiguration leftSlaveConfiguration;
+    private final TalonFXConfiguration rightConfiguration;
+    private final TalonFXConfiguration leftConfiguration;
 
     public ShooterSubsystem() {
         // Create Motor Controller Objects
-        rightMaster = new TalonFX(Constants.Mapping.ShooterMotor.kMotor1);
-        leftSlave = new TalonFX(Constants.Mapping.ShooterMotor.kMotor2);
+        right = new TalonFX(Constants.Mapping.ShooterMotor.kMotor1);
+        left = new TalonFX(Constants.Mapping.ShooterMotor.kMotor2);
 
-        motorOut = new DutyCycleOut(0);
+        rightMotorOut = new DutyCycleOut(0);
+        leftMotorOut = new DutyCycleOut(0);
 
-        rightMasterConfiguration = new TalonFXConfiguration();
-        leftSlaveConfiguration = new TalonFXConfiguration();
+        rightConfiguration = new TalonFXConfiguration();
+        leftConfiguration = new TalonFXConfiguration();
 
-        rightMasterConfiguration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-        rightMasterConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        leftSlaveConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-        leftSlaveConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        rightConfiguration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        rightConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        leftConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        leftConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
-        rightMaster.getConfigurator().apply(rightMasterConfiguration);
-        leftSlave.getConfigurator().apply(leftSlaveConfiguration);
+        right.getConfigurator().apply(rightConfiguration);
+        left.getConfigurator().apply(leftConfiguration);
        
-        leftSlave.setControl(new Follower(rightMaster.getDeviceID(), false));
-
         // Reset
         stopControllers();
         resetSensors();
@@ -50,9 +49,11 @@ public class ShooterSubsystem extends LogSubsystem {
      * Misc Stuff
      */
     public void setMotorOutput(double percent) {
-        motorOut.Output = percent;
-        rightMaster.setControl(motorOut);
-        //rightMaster.set(1);
+        rightMotorOut.Output = percent * Constants.Shooter.rightMultiplier;
+        leftMotorOut.Output = percent * Constants.Shooter.leftMultipler;
+        right.setControl(rightMotorOut);
+        left.setControl(leftMotorOut);
+        //right.set(1);
     }
 
     public void selectProfileSlot(int slot) {
@@ -60,8 +61,10 @@ public class ShooterSubsystem extends LogSubsystem {
     }
 
     public void stopControllers() {
-        motorOut.Output = 0;
-        rightMaster.setControl(motorOut);
+        rightMotorOut.Output = 0;
+        leftMotorOut.Output = 0;
+        right.setControl(rightMotorOut);
+        right.setControl(leftMotorOut);
     }
 
     // Sensor Reset
