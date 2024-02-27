@@ -52,7 +52,7 @@ public class RobotContainer
 
   // Controllers
   final CommandXboxController driverXbox = new CommandXboxController(0);
-  public final XBoxWrapper stick2 = new XBoxWrapper(1);
+  public final XBoxWrapper stick = new XBoxWrapper(0);
   
   //Auto
   private final SendableChooser<Command> autoCommandChooser = new SendableChooser<Command>();
@@ -67,7 +67,7 @@ public class RobotContainer
     subsystems.add(m_intakeSystem);
     
     //Command Instantiations
-    intakeCommand = new IntakeCommand(m_intakeSystem, () -> getIntakeControl());
+    intakeCommand = new IntakeCommand(m_intakeSystem, () -> 0.0);
     m_intakeSystem.setDefaultCommand(intakeCommand);
 
     SmartDashboard.putData(autoCommandChooser);
@@ -147,7 +147,7 @@ public class RobotContainer
                                    new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
                               )); 
     // driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-    stick2.A.whileTrue(new IntakeCommand(m_intakeSystem, () -> getIntakeControl()));
+    stick.Y.whileTrue(new IntakeCommand(m_intakeSystem, () -> getIntakeControl()));
   }
 
   /**
@@ -166,6 +166,10 @@ public class RobotContainer
     return -0.99;
   }
 
+  public double getIntakeControl() {
+    return 1.0;
+  }
+
   public void setDriveMode()
   {
     // drivebase.setDefaultCommand();
@@ -174,9 +178,5 @@ public class RobotContainer
   public void setMotorBrake(boolean brake)
   {
     drivebase.setMotorBrake(brake); 
-  }
-    
-  public double getIntakeControl() {
-    return 0.5; // change to - or + depending on ccw/cw on the robot
   }
 }

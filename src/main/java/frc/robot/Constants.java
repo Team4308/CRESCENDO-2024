@@ -47,7 +47,7 @@ public final class Constants
   
   public static class Mapping {
         public static class Claw {
-            public static int intakeMotor = 1; // change to correct ids later
+            public static int intakeMotor = 9; // change to correct ids later
         }
     }
 
