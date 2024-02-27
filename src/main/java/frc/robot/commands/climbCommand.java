@@ -3,8 +3,8 @@ package frc.robot.commands;
 
 import frc.robot.subsystems.climbSubsystem;
 
-import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-import com.ctre.pheonix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 
 
@@ -37,7 +37,7 @@ public class climbCommand extends Command {
   @Override
   public void execute() {
     double control = this.control.get();
-    m_subsystem.setMotorOutput(TalonFXControlMode.PercentOutput, control);
+    m_subsystem.setMotorOutput(TalonSRXControlMode.PercentOutput, control);
 
   }
 
