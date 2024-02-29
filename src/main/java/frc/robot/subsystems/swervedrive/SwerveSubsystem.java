@@ -142,11 +142,11 @@ public class SwerveSubsystem extends SubsystemBase
   public Command aimAtTarget()
   {
     return run(() -> {
-      if (LimelightHelpers.getFiducialID("") != 0)
+      if (LimelightHelpers.getFiducialID("") != -1.0)
       {
         drive(getTargetSpeeds(0,
                               0,
-                              Rotation2d.fromDegrees(LimelightHelpers.getTX("")))); // Not sure if this will work, more math may be required.
+                              Rotation2d.fromDegrees(-LimelightHelpers.getTX("")))); // Not sure if this will work, more math may be required.
       }
     });
   }
