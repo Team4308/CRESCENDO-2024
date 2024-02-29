@@ -8,6 +8,10 @@ import frc.robot.pixy2api.Pixy2;
 import frc.robot.pixy2api.Pixy2CCC;
 import frc.robot.pixy2api.Pixy2CCC.Block;
 import frc.robot.pixy2api.links.SPILink;
+import edu.wpi.first.util.sendable.Sendable;
+import ca.team4308.absolutelib.wrapper.LogSubsystem;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+
 
 public class PixySystem extends SubsystemBase {
   private Pixy2 pixy;
@@ -18,12 +22,14 @@ public class PixySystem extends SubsystemBase {
   public PixySystem() {
     pixy = Pixy2.createInstance(new SPILink());
     pixy.init();
+    pixy.setLamp((byte) 1, (byte) 1); // Turns the LEDs on
+		pixy.setLED(255, 255, 255); // Sets the RGB LED to full white
     targets = new ArrayList<Block>();
   }
 
   @Override
   public void periodic() {
-    targetCount = pixy.getCCC().getBlocks(false, sig, 11);
+    targetCount = pixy.getCCC().getBlocks(false, sig, 8);
     SmartDashboard.putNumber("Targets found", targetCount);
     targets = pixy.getCCC().getBlockCache();
     findClosestTarget();
@@ -47,7 +53,7 @@ public class PixySystem extends SubsystemBase {
     directionSize[1]=closestTarget.getWidth();
     SmartDashboard.putNumber("Largest x location", directionSize[0]);
     SmartDashboard.putNumber("Largest width", directionSize[1]);
-    return directionSize;
+    return directionSize; 
   }
 
 }
