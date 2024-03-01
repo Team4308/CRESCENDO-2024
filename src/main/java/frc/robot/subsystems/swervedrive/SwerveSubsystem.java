@@ -146,7 +146,7 @@ public class SwerveSubsystem extends SubsystemBase
       {
         drive(getTargetSpeeds(0,
                               0,
-                              Rotation2d.fromDegrees(-LimelightHelpers.getTX("")))); // Not sure if this will work, more math may be required.
+                              Rotation2d.fromDegrees(LimelightHelpers.getTX("") * -1.1))); // Not sure if this will work, more math may be required.
       }
     });
   }
