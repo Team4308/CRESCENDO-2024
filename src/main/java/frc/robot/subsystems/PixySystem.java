@@ -28,8 +28,8 @@ public class PixySystem extends SubsystemBase {
   @Override
   public void periodic() {
     getClosestTarget();
-    SmartDashboard.putNumber("Target Width", getTargetWidth(getClosestTarget()));
-    SmartDashboard.putNumber("Target X", getTargetX(getClosestTarget()));
+    getTargetWidth(getClosestTarget());
+    getTargetX(getClosestTarget());
     // This method will be called once per scheduler run
   }
 
@@ -38,10 +38,10 @@ public class PixySystem extends SubsystemBase {
 		// does not wait for new data if none is available,
 		// and limits the number of returned blocks to 25, for a slight increase in efficiency
 		int targetCount = pixy.getCCC().getBlocks(false, sig, 10);
-    SmartDashboard.putNumber("Targets", targetCount);
 		if (targetCount <= 0) {
 			return null; // If blocks were not found, stop processing
 		}
+    SmartDashboard.putNumber("Targets", targetCount);
 		ArrayList<Block> targets = pixy.getCCC().getBlockCache(); // Gets a list of all blocks found by the Pixy2
 		Block closestTarget = null;
 		for (Block target : targets) { // Loops through all blocks and finds the widest one
@@ -60,6 +60,7 @@ public class PixySystem extends SubsystemBase {
       return 0; 
     }
     int targetWidth = target.getWidth();
+    SmartDashboard.putNumber("Target Width", targetWidth);
     return targetWidth;
   }
 
@@ -68,7 +69,17 @@ public class PixySystem extends SubsystemBase {
       return 1000; //set outside range to know the target is not in view
     }
     int targetX = target.getX();
+    SmartDashboard.putNumber("Target X", targetX);
     return targetX;
+  }
+
+  public int getTargetY(Block target) {
+    if (target == null) {
+      return 1000; //set outside range to know the target is not in view
+    }
+    int targetY = target.getY();
+    SmartDashboard.putNumber("Target Y", targetY);
+    return targetY;
   }
 
 }
