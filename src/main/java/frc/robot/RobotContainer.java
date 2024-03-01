@@ -39,7 +39,6 @@ public class RobotContainer
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                          "swerve")); 
-
   public final ArrayList<LogSubsystem> subsystems = new ArrayList<LogSubsystem>();
   
   //Subsystems
