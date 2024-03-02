@@ -36,9 +36,13 @@ public class RotateShooterCommand extends Command {
         //14.25925757 is max revolutions(43 degree)
         //2200/12 gear ratio  
 
+        /*
         double m = (Constants.Shooter.motorStartRevolutions-Constants.Shooter.motorEndRevolutions)/(Constants.Shooter.shooterStartDegree-Constants.Shooter.shooterEndDegree);
         double b = Constants.Shooter.motorStartRevolutions-(Constants.Shooter.shooterStartDegree*m);
         double outputDegree = m*wantedDegree+b;
+        */
+        
+        double outputDegree = DoubleUtils.mapRangeNew(wantedDegree, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree, Constants.Shooter.motorStartRevolutions, Constants.Shooter.motorEndRevolutions);
 
         double encoderDegree = m_subsystem.getMotorPosition();
 
