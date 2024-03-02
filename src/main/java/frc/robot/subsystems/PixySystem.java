@@ -58,7 +58,7 @@ public class PixySystem extends LogSubsystem {
     if (target == null) {
       return 0; 
     }
-    int targetWidth = target.getWidth();
+    double targetWidth = target.getWidth();
     SmartDashboard.putNumber("Target Width", targetWidth);
     return targetWidth;
   }
@@ -67,7 +67,7 @@ public class PixySystem extends LogSubsystem {
     if (target == null) {
       return 0; // do nothing if target not in view (not sure if this will work)
     }
-    int targetX = target.getX();
+    double targetX = target.getX();
     targetX -= 157.5; // range from -157.5 to 157.5
     SmartDashboard.putNumber("Target X", targetX);
     return targetX;
@@ -77,7 +77,7 @@ public class PixySystem extends LogSubsystem {
     if (target == null) {
       return 0; // do nothing if target not in view (not sure if this will work)
     }
-    int targetY = target.getY();
+    double targetY = target.getY();
     targetY -= 103.5; // range from -103.5 to 103.5
     SmartDashboard.putNumber("Target Y", targetY);
     return targetY;
