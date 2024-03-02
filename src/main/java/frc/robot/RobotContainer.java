@@ -27,7 +27,6 @@ import frc.robot.commands.LEDCommand;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.subsystems.LEDSystem;
 import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.AlignCommand;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.IntakeSystem;
 import frc.robot.subsystems.PixySystem;
@@ -152,8 +151,8 @@ public class RobotContainer
     driverXbox.x().whileTrue(Commands.deferredProxy(() -> drivebase.aimAtTarget()));
     // driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
     stick.Y.whileTrue(new IntakeCommand(m_intakeSystem, () -> getIntakeControl()));
-    stick.RB.onTrue(new InstantCommand(drivebase::align));
-    stick.LB.whileTrue(new AlignCommand(drivebase, () -> getAlignControl()));
+    stick.RB.onTrue(new InstantCommand(drivebase::alignToSpeaker));
+    stick.LB.onTrue(new InstantCommand(() -> drivebase.alignToNote()));
   }
 
   /**
@@ -174,10 +173,6 @@ public class RobotContainer
 
   public double getIntakeControl() {
     return 1.0;
-  }
-
-  public double getAlignControl() {
-    return pixy.getTargetX(pixy.getClosestTarget()); 
   }
 
   public void setDriveMode()

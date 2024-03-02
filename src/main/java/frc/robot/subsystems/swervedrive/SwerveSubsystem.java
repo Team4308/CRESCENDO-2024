@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants.AutonConstants;
 import frc.robot.LimelightHelpers;
+import frc.robot.subsystems.PixySystem;
 import java.io.File;
 import java.util.function.DoubleSupplier;
 import org.photonvision.PhotonCamera;
@@ -42,7 +43,8 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 public class SwerveSubsystem extends SubsystemBase
 {
-  boolean align = false;
+  boolean alignToSpeaker = false;
+  boolean alignToNote = false;
 
   /**
    * Swerve drive object.
@@ -272,8 +274,10 @@ public class SwerveSubsystem extends SubsystemBase
   {
     return run(() -> {
       Double rotation;
-      if (align && LimelightHelpers.getFiducialID("") == 1.0) {
+      if (alignToSpeaker) {
         rotation = -LimelightHelpers.getTX("") * (Math.PI / 180) * 4;
+      } else if (alignToNote) {
+        rotation = -PixySystem.getTargetX(PixySystem.getClosestTarget()) * 0.1;
       } else {
         rotation = Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumAngularVelocity();
       }
@@ -527,11 +531,19 @@ public class SwerveSubsystem extends SubsystemBase
     swerveDrive.addVisionMeasurement(new Pose2d(3, 3, Rotation2d.fromDegrees(65)), Timer.getFPGATimestamp());
   }
 
-  public void align() {
-    if (align) {
-      align = false;
+  public void alignToSpeaker() {
+    if (alignToSpeaker) {
+      alignToSpeaker = false;
     } else {
-      align = true;
+      alignToSpeaker = true;
+    }
+  }
+
+  public void alignToNote() {
+    if (alignToNote) {
+      alignToNote = false;
+    } else {
+      alignToNote = true;
     }
   }
 }
