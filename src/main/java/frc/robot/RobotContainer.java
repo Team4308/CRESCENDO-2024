@@ -29,14 +29,15 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
   }
+  
   private void configureBindings() {
     stick.A.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
   }
 
   public double getRotateShooterControl(){
     double testVale = shooterDegree + stick.getRightY();
-    if (16 <= testVale && testVale <= 44) {//could use more fine tuning
-      shooterDegree += stick.getRightY();
+    if (15 <= testVale && testVale <= 43) {//could use more fine tuning
+      shooterDegree = testVale;
     }
     return shooterDegree;
   }
