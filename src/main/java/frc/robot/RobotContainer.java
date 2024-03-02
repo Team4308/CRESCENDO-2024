@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -60,6 +61,13 @@ public class RobotContainer
   //Auto
   private final SendableChooser<Command> autoCommandChooser = new SendableChooser<Command>();
   
+
+  // led stuff
+  private Integer debounce = 0;
+  private Double prev = 0.0;
+
+
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -168,7 +176,29 @@ public class RobotContainer
   }
 
   public Double getLEDCommand(){
-    return -0.99;
+    
+    if(RobotController.isBrownedOut()){
+      prev = 0.63;
+      return 0.63; // red-orange
+    }
+    if(pixy.getClosestTarget() != null){
+      // target in range
+      debounce++;
+      if(debounce == 5) debounce = 0;
+      prev = -0.09;
+      return -0.09;
+    }
+    if(pixy.getClosestTarget() == null){
+      debounce--;
+      if(debounce <= 0) debounce = 0;
+    }
+    if(debounce == 0){
+      prev = -0.39;
+      return -0.39;
+    }  // default enabled, colour waves lava
+
+    return prev;
+    // disabled state is slow rgb
   }
 
   public double getIntakeControl() {
