@@ -7,6 +7,7 @@ import frc.robot.subsystems.RotateShooterSystem;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
 
+import ca.team4308.absolutelib.math.DoubleUtils;
 
 public class RotateShooterCommand extends Command {
 
@@ -31,18 +32,17 @@ public class RotateShooterCommand extends Command {
     @Override
     public void execute() {
         double wantedDegree = this.degree.get();
-        //0 is base postiion(16 degree)
-        //14.25925757 is max position(43 degree)
+        //0 is base position(16 degree)
+        //14.25925757 is max revolutions(43 degree)
         //2200/12 gear ratio  
-        //28 degrees 16-43
 
-        double m = 16/(43-12.27);//mapping values; not percise, could use more work
-        double b = (16*m);
-        double outputDegree = m*wantedDegree-b;
+        double m = (Constants.Shooter.motorStartRevolutions-Constants.Shooter.motorEndRevolutions)/(Constants.Shooter.shooterStartDegree-Constants.Shooter.shooterEndDegree);
+        double b = Constants.Shooter.motorStartRevolutions-(Constants.Shooter.shooterStartDegree*m);
+        double outputDegree = m*wantedDegree+b;
 
         double encoderDegree = m_subsystem.getMotorPosition();
 
-        double motorDegree = pidController.calculate(encoderDegree, outputDegree);
+        double motorDegree = DoubleUtils.clamp(pidController.calculate(encoderDegree, outputDegree), -1.0, 1.0);
         m_subsystem.setMotorOutput(motorDegree);
     }
 

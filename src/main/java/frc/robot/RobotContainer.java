@@ -4,6 +4,7 @@ import frc.robot.commands.RotateShooterCommand;
 import frc.robot.subsystems.RotateShooterSystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+
 import ca.team4308.absolutelib.control.XBoxWrapper;
 
 
@@ -35,9 +36,9 @@ public class RobotContainer {
   }
 
   public double getRotateShooterControl(){
-    double testVale = shooterDegree + stick.getRightY();
-    if (15 <= testVale && testVale <= 43) {//could use more fine tuning
-      shooterDegree = testVale;
+    double newShooterDegree = shooterDegree + stick.getRightY();
+    if (16 <= newShooterDegree && newShooterDegree <= 43) {//could use more fine tuning
+      shooterDegree = newShooterDegree;
     }
     return shooterDegree;
   }
