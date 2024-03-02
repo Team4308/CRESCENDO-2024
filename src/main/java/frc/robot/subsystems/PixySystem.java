@@ -83,7 +83,7 @@ public class PixySystem extends LogSubsystem {
     return targetY;
   }
 
-  public static int getPreviousTargetX() {
+  public static int getAverageTargetX() {
     int average = 0;
     for (int i = previousTargetX.size(); i > previousTargetX.size() - 5; i--) {
       average += previousTargetX.get(i);
