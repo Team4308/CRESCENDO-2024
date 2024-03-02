@@ -13,7 +13,7 @@ import ca.team4308.absolutelib.wrapper.LogSubsystem;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
 
-public class PixySystem extends SubsystemBase {
+public class PixySystem extends LogSubsystem {
   private Pixy2 pixy;
   private int sig = Pixy2CCC.CCC_SIG1;
 
@@ -22,14 +22,13 @@ public class PixySystem extends SubsystemBase {
     pixy.init();
     pixy.setLamp((byte) 1, (byte) 1); // Turns the LEDs on
 		pixy.setLED(255, 255, 255); // Sets the RGB LED to full white
-    pixy.getVideo();
   }
 
   @Override
   public void periodic() {
-    getClosestTarget();
-    getTargetWidth(getClosestTarget());
-    getTargetX(getClosestTarget());
+    //getClosestTarget();
+    //getTargetWidth(getClosestTarget());
+    //getTargetX(getClosestTarget());
     // This method will be called once per scheduler run
   }
 
@@ -55,7 +54,7 @@ public class PixySystem extends SubsystemBase {
 		return closestTarget;
 	}
 
-  public int getTargetWidth(Block target) {
+  public double getTargetWidth(Block target) {
     if (target == null) {
       return 0; 
     }
@@ -64,22 +63,29 @@ public class PixySystem extends SubsystemBase {
     return targetWidth;
   }
 
-  public int getTargetX(Block target) {
+  public double getTargetX(Block target) {
     if (target == null) {
-      return 1000; //set outside range to know the target is not in view
+      return 0; // do nothing if target not in view (not sure if this will work)
     }
     int targetX = target.getX();
+    targetX -= 157.5; // range from -157.5 to 157.5
     SmartDashboard.putNumber("Target X", targetX);
     return targetX;
   }
 
-  public int getTargetY(Block target) {
+  public double getTargetY(Block target) {
     if (target == null) {
-      return 1000; //set outside range to know the target is not in view
+      return 0; // do nothing if target not in view (not sure if this will work)
     }
     int targetY = target.getY();
+    targetY -= 103.5; // range from -103.5 to 103.5
     SmartDashboard.putNumber("Target Y", targetY);
     return targetY;
   }
+
+  @Override
+    public Sendable log() {
+        return this;
+    }
 
 }

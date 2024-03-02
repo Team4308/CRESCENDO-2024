@@ -62,4 +62,11 @@ public final class Constants
             }
         }
     }
+
+    public static class AngleControl { // needs to be tuned
+      public static double kP = 0.005;
+      public static double kI = 0.0;
+      public static double kD = 0.0;
+      public static double kTolerance = 0.5;
+    }
 }
