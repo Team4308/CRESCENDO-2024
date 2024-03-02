@@ -14,6 +14,7 @@ import ca.team4308.absolutelib.wrapper.LogSubsystem;
 public class PixySystem extends LogSubsystem {
   public static Pixy2 pixy;
   private static int sig = Pixy2CCC.CCC_SIG1;
+  private static ArrayList<Integer> previousTargetX = new ArrayList<Integer>();
 
   public PixySystem() {
     pixy = Pixy2.createInstance(new SPILink());
@@ -27,6 +28,7 @@ public class PixySystem extends LogSubsystem {
     getClosestTarget();
     getTargetWidth(getClosestTarget());
     getTargetX(getClosestTarget());
+    previousTargetX.add(getTargetX(getClosestTarget()));
     // This method will be called once per scheduler run
   }
 
@@ -52,7 +54,7 @@ public class PixySystem extends LogSubsystem {
 		return closestTarget;
 	}
 
-  public static double getTargetWidth(Block target) {
+  public static int getTargetWidth(Block target) {
     if (target == null) {
       return 0; 
     }
@@ -61,7 +63,7 @@ public class PixySystem extends LogSubsystem {
     return targetWidth;
   }
 
-  public static double getTargetX(Block target) {
+  public static int getTargetX(Block target) {
     if (target == null) {
       return 0; // do nothing if target not in view (not sure if this will work)
     }
@@ -71,7 +73,7 @@ public class PixySystem extends LogSubsystem {
     return targetX;
   }
 
-  public static double getTargetY(Block target) {
+  public static int getTargetY(Block target) {
     if (target == null) {
       return 0; // do nothing if target not in view (not sure if this will work)
     }
@@ -79,6 +81,14 @@ public class PixySystem extends LogSubsystem {
     targetY -= 103.5; // range from -103.5 to 103.5
     SmartDashboard.putNumber("Target Y", targetY);
     return targetY;
+  }
+
+  public static int getPreviousTargetX() {
+    int average = 0;
+    for (int i = previousTargetX.size(); i > previousTargetX.size() - 5; i--) {
+      average += previousTargetX.get(i);
+    }
+    return average / 4;
   }
 
   @Override

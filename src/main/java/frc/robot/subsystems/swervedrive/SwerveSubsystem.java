@@ -29,7 +29,6 @@ import frc.robot.subsystems.PixySystem;
 import java.io.File;
 import java.util.function.DoubleSupplier;
 import org.photonvision.PhotonCamera;
-import org.photonvision.targeting.PhotonPipelineResult;
 import java.util.Optional;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
@@ -274,10 +273,14 @@ public class SwerveSubsystem extends SubsystemBase
   {
     return run(() -> {
       Double rotation;
+      int targetX = PixySystem.getTargetX(PixySystem.getClosestTarget());
+      if (targetX > -10 && targetX < 10) {
+        targetX = 0;
+      }
       if (alignToSpeaker) {
         rotation = -LimelightHelpers.getTX("") * (Math.PI / 180) * 4;
       } else if (alignToNote) {
-        rotation = -PixySystem.getTargetX(PixySystem.getClosestTarget()) * 0.1;
+        rotation = -targetX * 0.1;
       } else {
         rotation = Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumAngularVelocity();
       }
