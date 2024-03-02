@@ -27,8 +27,10 @@ import frc.robot.commands.LEDCommand;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.subsystems.LEDSystem;
 import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.AlignCommand;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.IntakeSystem;
+import frc.robot.subsystems.PixySystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -45,13 +47,15 @@ public class RobotContainer
   //Subsystems
   private final IntakeSystem m_intakeSystem;
   private final LEDSystem m_ledSystem;
+  private final PixySystem pixy;
 
   //Commands
   private final IntakeCommand intakeCommand;
   private final LEDCommand ledCommand;
+  
 
   // Controllers
-  final CommandXboxController driverXbox = new CommandXboxController(0);
+  public final CommandXboxController driverXbox = new CommandXboxController(0);
   public final XBoxWrapper stick = new XBoxWrapper(0);
   
   //Auto
@@ -65,27 +69,26 @@ public class RobotContainer
     //Subsystem Instantiations
     m_intakeSystem = new IntakeSystem();
     subsystems.add(m_intakeSystem);
-    
-    //Command Instantiations
-    intakeCommand = new IntakeCommand(m_intakeSystem, () -> 0.0);
-    m_intakeSystem.setDefaultCommand(intakeCommand);
 
-    SmartDashboard.putData(autoCommandChooser);
-    
-    // Configure the trigger bindings
-
+    pixy = new PixySystem();
+    subsystems.add(pixy);
 
     m_ledSystem = new LEDSystem();
     subsystems.add(m_ledSystem);
 
     
+    //Command Instantiations
+    intakeCommand = new IntakeCommand(m_intakeSystem, () -> 0.0);
+    m_intakeSystem.setDefaultCommand(intakeCommand);
+    
     ledCommand = new LEDCommand(m_ledSystem, () -> getLEDCommand());
     m_ledSystem.setDefaultCommand(ledCommand);
+
+    SmartDashboard.putData(autoCommandChooser);
+    
+    // Configure the trigger bindings
     
     configureBindings();
-
-
-
     
     AbsoluteDriveAdv closedAbsoluteDriveAdv = new AbsoluteDriveAdv(drivebase,
                                                                    () -> -MathUtil.applyDeadband(driverXbox.getLeftY(),
@@ -150,6 +153,7 @@ public class RobotContainer
     // driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
     stick.Y.whileTrue(new IntakeCommand(m_intakeSystem, () -> getIntakeControl()));
     stick.RB.onTrue(new InstantCommand(drivebase::align));
+    stick.LB.whileTrue(new AlignCommand(drivebase, () -> getAlignControl()));
   }
 
   /**
@@ -170,6 +174,10 @@ public class RobotContainer
 
   public double getIntakeControl() {
     return 1.0;
+  }
+
+  public double getAlignControl() {
+    return pixy.getTargetX(pixy.getClosestTarget()); 
   }
 
   public void setDriveMode()
