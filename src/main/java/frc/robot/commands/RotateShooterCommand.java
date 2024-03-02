@@ -19,7 +19,7 @@ public class RotateShooterCommand extends Command {
         m_subsystem = subsystem;
         this.degree = degree;
 
-        pidController = new PIDController(Constants.PID.Shooter.kP, Constants.PID.Shooter.kI, Constants.PID.Shooter.kD);
+        pidController = new PIDController(Constants.PID.Shooter.kP, Constants.PID.Shooter.kI, Constants.PID.Shooter.kD);//pid not tuned
 
         addRequirements(subsystem);
     }
@@ -31,12 +31,12 @@ public class RotateShooterCommand extends Command {
     @Override
     public void execute() {
         double wantedDegree = this.degree.get();
-        //0 is base postiion(16 degrees)
+        //0 is base postiion(16 degree)
         // 14.25925757 is max position(43 degree)
-        //2200/12      ratio  
+        //2200/12 gear ratio  
         //28 degrees 16-43
 
-        double m = 16/(43-14.259);
+        double m = 16/(43-14.259);//mapping values; not percise, could use more work
         double b = (16*m);
         double outputDegree = m*wantedDegree-b;
 

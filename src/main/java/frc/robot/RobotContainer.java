@@ -1,8 +1,6 @@
 package frc.robot;
 
-import frc.robot.commands.Autos;
 import frc.robot.commands.RotateShooterCommand;
-import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.RotateShooterSystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -11,7 +9,6 @@ import ca.team4308.absolutelib.control.XBoxWrapper;
 
 public class RobotContainer {
   // Subsystems
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final RotateShooterSystem m_rotateShooterSystem;
 
   // Commands
@@ -33,12 +30,12 @@ public class RobotContainer {
     configureBindings();
   }
   private void configureBindings() {
-    stick.A.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));
+    stick.A.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
   }
 
   public double getRotateShooterControl(){
     double testVale = shooterDegree + stick.getRightY();
-    if (16 <= testVale && testVale <= 44) {
+    if (16 <= testVale && testVale <= 44) {//could use more fine tuning
       shooterDegree += stick.getRightY();
     }
     return shooterDegree;
@@ -46,6 +43,6 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
+    return null;
   }
 }
