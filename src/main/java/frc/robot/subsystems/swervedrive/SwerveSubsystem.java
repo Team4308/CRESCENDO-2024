@@ -39,12 +39,13 @@ import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
+import frc.robot.subsystems.pigeon2System;
 
 public class SwerveSubsystem extends SubsystemBase
 {
   boolean alignToSpeaker = false;
   boolean alignToNote = false;
-
+  pigeon2System m_gyroSystem = new pigeon2System(); 
   /**
    * Swerve drive object.
    */
@@ -278,7 +279,9 @@ public class SwerveSubsystem extends SubsystemBase
         targetX = 0;
       }
       if (alignToSpeaker) {
-        rotation = -LimelightHelpers.getTX("") * (Math.PI / 180) * 4;
+        double accelX = m_gyroSystem.getAccelerationX();
+        double shootingWhileMovingOffsetValue = accelX * 0.5;
+        rotation = -LimelightHelpers.getTX("") * (Math.PI / 180) * 4 + shootingWhileMovingOffsetValue;
       } else if (alignToNote) {
         rotation = -targetX * 0.1;
       } else {
@@ -534,19 +537,11 @@ public class SwerveSubsystem extends SubsystemBase
     swerveDrive.addVisionMeasurement(new Pose2d(3, 3, Rotation2d.fromDegrees(65)), Timer.getFPGATimestamp());
   }
 
-  public void alignToSpeaker() {
-    if (alignToSpeaker) {
-      alignToSpeaker = false;
-    } else {
-      alignToSpeaker = true;
-    }
+  public void alignToSpeaker(boolean value) {
+    alignToSpeaker = value;
   }
 
-  public void alignToNote() {
-    if (alignToNote) {
-      alignToNote = false;
-    } else {
-      alignToNote = true;
-    }
+  public void alignToNote(boolean value) {
+    alignToNote = value;
   }
 }

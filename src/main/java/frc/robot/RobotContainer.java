@@ -25,12 +25,15 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.LEDCommand;
+import frc.robot.commands.RotateShooterCommand;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.subsystems.LEDSystem;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.IntakeSystem;
 import frc.robot.subsystems.PixySystem;
+import frc.robot.subsystems.RotateShooterSystem;
+import frc.robot.subsystems.pigeon2System;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -48,15 +51,23 @@ public class RobotContainer
   private final IntakeSystem m_intakeSystem;
   private final LEDSystem m_ledSystem;
   private final PixySystem pixy;
+  private final RotateShooterSystem m_rotateShooterSystem;
+  private final pigeon2System m_pigeon2System;
 
   //Commands
   private final IntakeCommand intakeCommand;
   private final LEDCommand ledCommand;
-  
+  private final RotateShooterCommand rotateShooterCommand;
 
   // Controllers
   public final CommandXboxController driverXbox = new CommandXboxController(0);
   public final XBoxWrapper stick = new XBoxWrapper(0);
+  public final XBoxWrapper stick2 = new XBoxWrapper(1);
+
+  public double shooterDegree = 20.0;
+
+  //state machines
+  private boolean shooterAutonTriggered = false;
   
   //Auto
   private final SendableChooser<Command> autoCommandChooser = new SendableChooser<Command>();
@@ -65,8 +76,6 @@ public class RobotContainer
   // led stuff
   private Integer debounce = 0;
   private Double prev = 0.0;
-
-
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -83,6 +92,11 @@ public class RobotContainer
     m_ledSystem = new LEDSystem();
     subsystems.add(m_ledSystem);
 
+    m_rotateShooterSystem = new RotateShooterSystem();
+    subsystems.add(m_rotateShooterSystem);
+
+    m_pigeon2System = new pigeon2System();
+    subsystems.add(m_pigeon2System);
     
     //Command Instantiations
     intakeCommand = new IntakeCommand(m_intakeSystem, () -> 0.0);
@@ -90,6 +104,9 @@ public class RobotContainer
     
     ledCommand = new LEDCommand(m_ledSystem, () -> getLEDCommand());
     m_ledSystem.setDefaultCommand(ledCommand);
+
+    rotateShooterCommand = new RotateShooterCommand(m_rotateShooterSystem, getRotateShooterControl());
+    m_rotateShooterSystem.setDefaultCommand(rotateShooterCommand);
 
     SmartDashboard.putData(autoCommandChooser);
     
@@ -139,17 +156,8 @@ public class RobotContainer
         !RobotBase.isSimulation() ? driveFieldOrientedAnglularVelocity : driveFieldOrientedDirectAngleSim);
   }
 
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary predicate, or via the
-   * named factories in {@link edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
-   * {@link CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller PS4}
-   * controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joysticks}.
-   */
   private void configureBindings()
-  {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
- 
+  { 
     driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
     // driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
     driverXbox.b().whileTrue(
@@ -159,20 +167,43 @@ public class RobotContainer
     driverXbox.x().whileTrue(Commands.deferredProxy(() -> drivebase.aimAtTarget()));
     // driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
     stick.Y.whileTrue(new IntakeCommand(m_intakeSystem, () -> getIntakeControl()));
-    stick.RB.onTrue(new InstantCommand(drivebase::alignToSpeaker));
-    stick.LB.onTrue(new InstantCommand(() -> drivebase.alignToNote()));
+    stick.RB.onTrue(new InstantCommand(() -> drivebase.alignToSpeaker(true)));
+    stick.RB.onFalse(new InstantCommand(() -> drivebase.alignToSpeaker(false)));
+    stick.LB.onTrue(new InstantCommand(() -> drivebase.alignToNote(true)));
+    stick.LB.onFalse(new InstantCommand(() -> drivebase.alignToNote(false)));
+
+    stick2.A.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
+    stick.B.whileTrue(new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
+    stick.B.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
+    stick.B.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
+    stick2.B.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
+    stick2.B.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
+
   }
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
   public Command getAutonomousCommand()
   {
-    // An example command will be run in autonomous
-    // return drivebase.getAutonomousCommand("New Auto");
     return autoCommandChooser.getSelected();
+  }
+
+  public Command setShooterAutonTriggered(boolean value) {
+    shooterAutonTriggered = value;
+    return null;
+  }
+
+  public double getRotateShooterControl(){
+    if (shooterAutonTriggered == false) {
+      var newVal = stick.getRightY();
+      if (-0.6 <= newVal && newVal <= 0.6) {//deadband; too lazy to code properly
+        newVal = 0;
+      }
+      double newShooterDegree = shooterDegree + newVal;
+      if (16 <= newShooterDegree && newShooterDegree <= 43) {//could use more fine tuning
+        shooterDegree = newShooterDegree;
+      }
+    }
+    
+    return shooterDegree;
   }
 
   public Double getLEDCommand(){

@@ -49,6 +49,12 @@ public final class Constants
         public static class Claw {
             public static int intakeMotor = 9; // change to correct ids later
         }
+        public static class Shooter {
+        public static final int motor = 1;//read above
+      }
+      public static class Pigeon2 {
+        public static final int gyro = 1;
+      }
     }
 
     public static class Generic {
@@ -68,5 +74,33 @@ public final class Constants
       public static double kI = 0.0;
       public static double kD = 0.0;
       public static double kTolerance = 0.5;
+    }
+  
+    public static class Shooter {
+      public static final int shooterStartDegree = 16;
+      public static final int shooterEndDegree = 43;
+      public static final int motorStartRevolutions = 0;
+      public static final double motorEndRevolutions = 14.25925757;
+    }
+    
+    public static class PID {
+      public static class Shooter {
+        public static final double kP = 0.03;
+        public static final double kI = 0;
+        public static final double kD = 0;
+      }
+    }
+  
+    public static class Limelight {
+      public static class measurements {
+        public static final double limelightMountAngleDegrees = 25;
+        public static final double limelightLensHeightCM = 20;
+      }
+    }
+  
+    public static class gamePieces {
+      public static class dimensions {
+        public static final double stageHeightCM = 60.0;
+      }
     }
 }
