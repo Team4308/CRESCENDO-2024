@@ -1,32 +1,17 @@
 package frc.robot.commands;
 
-import java.util.function.Supplier;
-
-import frc.robot.Constants;
 import frc.robot.subsystems.RotateShooterSystem;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import ca.team4308.absolutelib.math.DoubleUtils;
 
 public class RotateShooterCommand extends Command {
 
     private final RotateShooterSystem m_subsystem;
-    private final Supplier<Double> degree;
+    private final Double degree;
 
-    public final PIDController pidController;
 
-    public RotateShooterCommand(RotateShooterSystem subsystem, Supplier<Double> degree) {//degree should be in between 16-43 degrees FOR NOW
+    public RotateShooterCommand(RotateShooterSystem subsystem, Double degree) {
         m_subsystem = subsystem;
         this.degree = degree;
-
-        pidController = new PIDController(Constants.PID.Shooter.kP, Constants.PID.Shooter.kI, Constants.PID.Shooter.kD);//pid not tuned
-
-        
 
         addRequirements(subsystem);
     }
@@ -37,25 +22,7 @@ public class RotateShooterCommand extends Command {
 
     @Override
     public void execute() {
-        double wantedDegree = this.degree.get();
-        //0 is base position(16 degree)
-        //14.25925757 is max revolutions(43 degree)
-        //2200/12 gear ratio  
-
-        /*
-        double m = (Constants.Shooter.motorStartRevolutions-Constants.Shooter.motorEndRevolutions)/(Constants.Shooter.shooterStartDegree-Constants.Shooter.shooterEndDegree);
-        double b = Constants.Shooter.motorStartRevolutions-(Constants.Shooter.shooterStartDegree*m);
-        double outputDegree = m*wantedDegree+b;
-        */
-
-        double outputDegree = DoubleUtils.mapRangeNew(wantedDegree, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree, Constants.Shooter.motorStartRevolutions, Constants.Shooter.motorEndRevolutions);
-
-        double encoderDegree = m_subsystem.getMotorPosition();
-
-        SmartDashboard.putNumber("Shooter Angle", DoubleUtils.mapRangeNew(encoderDegree, Constants.Shooter.motorStartRevolutions, Constants.Shooter.motorEndRevolutions, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree));
-
-        double motorDegree = DoubleUtils.clamp(pidController.calculate(encoderDegree, outputDegree), -1.0, 1.0);
-        m_subsystem.setMotorOutput(motorDegree);
+        m_subsystem.setMotorPosition(degree);
     }
 
     @Override

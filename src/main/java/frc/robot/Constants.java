@@ -25,4 +25,17 @@ public final class Constants {
       public static final double kD = 0;
     }
   }
+
+  public static class Limelight {
+    public static class measurements {
+      public static final double limelightMountAngleDegrees = 25;
+      public static final double limelightLensHeightCM = 20;
+    }
+  }
+
+  public static class gamePieces {
+    public static class dimensions {
+      public static final double stageHeightCM = 60.0;
+    }
+  }
 }
