@@ -57,6 +57,8 @@ public class RobotContainer {
     return null;
   }
 
+  public void ewyellowerrors() {}
+
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
     return null;
