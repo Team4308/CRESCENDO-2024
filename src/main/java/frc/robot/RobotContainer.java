@@ -167,18 +167,16 @@ public class RobotContainer
     driverXbox.x().whileTrue(Commands.deferredProxy(() -> drivebase.aimAtTarget()));
     // driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
     stick.Y.whileTrue(new IntakeCommand(m_intakeSystem, () -> getIntakeControl()));
-    stick.RB.onTrue(new InstantCommand(() -> drivebase.alignToSpeaker(true)));
-    stick.RB.onFalse(new InstantCommand(() -> drivebase.alignToSpeaker(false)));
     stick.LB.onTrue(new InstantCommand(() -> drivebase.alignToNote(true)));
     stick.LB.onFalse(new InstantCommand(() -> drivebase.alignToNote(false)));
-
-    stick2.A.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
-    stick.B.whileTrue(new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
-    stick.B.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
-    stick.B.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
+    
+    stick2.B.onTrue(new InstantCommand(() -> drivebase.alignToSpeaker(true)));
+    stick2.B.onFalse(new InstantCommand(() -> drivebase.alignToSpeaker(false)));
+    stick2.B.whileTrue(new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
     stick2.B.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
     stick2.B.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
 
+    stick2.A.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
   }
 
   public Command getAutonomousCommand()
