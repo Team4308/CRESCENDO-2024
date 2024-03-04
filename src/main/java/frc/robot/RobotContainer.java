@@ -46,7 +46,6 @@ public class RobotContainer
   // Subsystems
   private final IntakeSystem m_intakeSystem;
   private final LEDSystem m_ledSystem;
-  private final PixySystem pixy;
   private final RotateShooterSystem m_rotateShooterSystem;
 
   // Commands
@@ -78,9 +77,6 @@ public class RobotContainer
     //Subsystem Instantiations
     m_intakeSystem = new IntakeSystem();
     subsystems.add(m_intakeSystem);
-
-    pixy = new PixySystem();
-    subsystems.add(pixy);
 
     m_ledSystem = new LEDSystem();
     subsystems.add(m_ledSystem);
@@ -195,14 +191,14 @@ public class RobotContainer
       prev = 0.63;
       return 0.63; // red-orange
     }
-    if(pixy.getClosestTarget() != null) {
+    if(PixySystem.getClosestTarget() != null) {
       // target in range
       debounce++;
       if(debounce == 5) debounce = 0;
       prev = -0.09;
       return -0.09;
     }
-    if(pixy.getClosestTarget() == null) {
+    if(PixySystem.getClosestTarget() == null) {
       debounce--;
       if(debounce <= 0) debounce = 0;
     }
@@ -213,10 +209,6 @@ public class RobotContainer
 
     return prev;
     // disabled state is slow rgb
-  }
-
-  public double getIntakeControl() {
-    return 1.0;
   }
 
   public double getIntakeControl() {
@@ -243,5 +235,6 @@ public class RobotContainer
     drivebase.setMotorBrake(brake); 
   }
   
+  // Gets rid of the yellow errors in Robot.java
   public void ewyellowerrors() {}
 }

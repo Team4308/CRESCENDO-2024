@@ -95,5 +95,4 @@ public class PixySystem extends LogSubsystem {
     public Sendable log() {
         return this;
     }
-
 }

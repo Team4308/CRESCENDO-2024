@@ -8,15 +8,16 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.util.sendable.Sendable;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import ca.team4308.absolutelib.math.DoubleUtils;
+import ca.team4308.absolutelib.wrapper.LogSubsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class RotateShooterSystem extends SubsystemBase {
+public class RotateShooterSystem extends LogSubsystem {
     public final TalonFX motor;
     public final PIDController pidController;
 
@@ -101,5 +102,10 @@ public class RotateShooterSystem extends SubsystemBase {
 
     public void stopControllers(){
         motor.set(0);
+    }
+
+    @Override
+    public Sendable log() {
+        return this;
     }
 }

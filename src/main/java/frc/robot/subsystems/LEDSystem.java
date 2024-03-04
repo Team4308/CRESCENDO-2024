@@ -21,6 +21,4 @@ public class LEDSystem extends LogSubsystem {
     public Sendable log() {
         return this;
     }
-
-    
 }
