@@ -32,7 +32,7 @@ import frc.robot.subsystems.IntakeSystem;
 import frc.robot.subsystems.PixySystem;
 import frc.robot.subsystems.RotateShooterSystem;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.climbSubsystem;
+import frc.robot.subsystems.ClimbSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -52,7 +52,7 @@ public class RobotContainer
   private final LEDSystem m_ledSystem;
   private final RotateShooterSystem m_rotateShooterSystem;
   private final ShooterSubsystem m_shooterSubsystem;
-  private final climbSubsystem m_climbSubsystem;
+  private final ClimbSubsystem m_climbSubsystem;
 
   // Commands
   private final IntakeCommand intakeCommand;
@@ -96,7 +96,7 @@ public class RobotContainer
     m_shooterSubsystem = new ShooterSubsystem();
     subsystems.add(m_shooterSubsystem);
     
-    m_climbSubsystem = new climbSubsystem();
+    m_climbSubsystem = new ClimbSubsystem();
     subsystems.add(m_climbSubsystem);
     
     //Command Instantiations

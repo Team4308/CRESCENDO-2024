@@ -1,7 +1,7 @@
 package frc.robot.commands;
 
 
-import frc.robot.subsystems.climbSubsystem;
+import frc.robot.subsystems.ClimbSubsystem;
 
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 
@@ -11,10 +11,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 
 public class climbCommand extends Command {
-  private final climbSubsystem m_subsystem;
+  private final ClimbSubsystem m_subsystem;
   private final Supplier<Double> control;
 
-  public climbCommand(climbSubsystem subsystem, Supplier<Double> control) {
+  public climbCommand(ClimbSubsystem subsystem, Supplier<Double> control) {
     m_subsystem = subsystem;
     this.control = control;
     // Use addRequirements() here to declare subsystem dependencies.

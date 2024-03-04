@@ -2,8 +2,8 @@ package frc.robot.subsystems;
 
 import ca.team4308.absolutelib.math.DoubleUtils;
 import ca.team4308.absolutelib.wrapper.LogSubsystem;
-import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.util.sendable.Sendable;
 
 public class LEDSystem extends LogSubsystem {
 

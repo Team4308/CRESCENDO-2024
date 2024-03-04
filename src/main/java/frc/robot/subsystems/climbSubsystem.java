@@ -4,18 +4,18 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 
-import bbb.wrapper.LogSubsystem;
+import ca.team4308.absolutelib.wrapper.LogSubsystem;
 import edu.wpi.first.util.sendable.Sendable;
 import frc.robot.Constants;
 
-public class climbSubsystem extends LogSubsystem {
+public class ClimbSubsystem extends LogSubsystem {
 
     // Motor Controllers
     public final TalonSRX motor1;
     private final TalonSRX motor2;
 
     // Init
-    public climbSubsystem() {
+    public ClimbSubsystem() {
 
         // Create Motor Controller Objects
         motor1 = new TalonSRX(Constants.Mapping.climbMotors.motor1);
