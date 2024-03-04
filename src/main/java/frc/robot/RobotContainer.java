@@ -24,11 +24,13 @@ import frc.robot.commands.LEDCommand;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.RotateShooterCommand;
+import frc.robot.commands.ShooterCommand;
 import frc.robot.subsystems.LEDSystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.IntakeSystem;
 import frc.robot.subsystems.PixySystem;
 import frc.robot.subsystems.RotateShooterSystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -47,15 +49,18 @@ public class RobotContainer
   private final IntakeSystem m_intakeSystem;
   private final LEDSystem m_ledSystem;
   private final RotateShooterSystem m_rotateShooterSystem;
+  private final ShooterSubsystem m_shooterSubsystem;
 
   // Commands
   private final IntakeCommand intakeCommand;
   private final LEDCommand ledCommand;
   private final RotateShooterCommand rotateShooterCommand;
+  private final ShooterCommand ShooterCommand;
 
   // Controllers
   final CommandXboxController driverXbox = new CommandXboxController(0);
-  public final XBoxWrapper stick = new XBoxWrapper(0);
+  public final XBoxWrapper stick = new XBoxWrapper(Constants.Mapping.Controllers.kStick);
+  public final XBoxWrapper stick1 = new XBoxWrapper(Constants.Mapping.Controllers.kStick1);
   
   // Auto
   private final SendableChooser<Command> autoCommandChooser = new SendableChooser<Command>();
@@ -84,6 +89,9 @@ public class RobotContainer
     m_rotateShooterSystem = new RotateShooterSystem();
     subsystems.add(m_rotateShooterSystem);
     
+    m_shooterSubsystem = new ShooterSubsystem();
+    subsystems.add(m_shooterSubsystem);
+    
     //Command Instantiations
     intakeCommand = new IntakeCommand(m_intakeSystem, () -> 0.0);
     m_intakeSystem.setDefaultCommand(intakeCommand);
@@ -93,6 +101,9 @@ public class RobotContainer
     
     rotateShooterCommand = new RotateShooterCommand(m_rotateShooterSystem, getRotateShooterControl());
     m_rotateShooterSystem.setDefaultCommand(rotateShooterCommand);
+    
+    ShooterCommand = new ShooterCommand(m_shooterSubsystem, () -> getShooterControl());
+    m_shooterSubsystem.setDefaultCommand(ShooterCommand);
 
     SmartDashboard.putData(autoCommandChooser);
     
@@ -223,6 +234,10 @@ public class RobotContainer
       }
     } 
     return shooterDegree;
+  }
+  
+  public double getShooterControl() {
+    return stick2.getRightTrigger();
   }
 
   public void setDriveMode()
