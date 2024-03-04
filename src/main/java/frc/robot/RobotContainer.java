@@ -33,6 +33,7 @@ import frc.robot.subsystems.PixySystem;
 import frc.robot.subsystems.RotateShooterSystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
+import frc.robot.subsystems.IndexSubystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -53,6 +54,7 @@ public class RobotContainer
   private final RotateShooterSystem m_rotateShooterSystem;
   private final ShooterSubsystem m_shooterSubsystem;
   private final ClimbSubsystem m_climbSubsystem;
+  private final IndexSystem m_indexSubsystem;
 
   // Commands
   private final IntakeCommand intakeCommand;
@@ -98,6 +100,9 @@ public class RobotContainer
     
     m_climbSubsystem = new ClimbSubsystem();
     subsystems.add(m_climbSubsystem);
+    
+    m_indexSubystem = new IndexSubystem();
+    subsystems.add(m_indexSubsystem);
     
     //Command Instantiations
     intakeCommand = new IntakeCommand(m_intakeSystem, () -> 0.0);
@@ -179,8 +184,8 @@ public class RobotContainer
         Commands.deferredProxy(() -> drivebase.driveToPose(
                                    new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
                               )); 
-    driverXbox.x().whileTrue(Commands.deferredProxy(() -> drivebase.aimAtTarget()));
     // driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
+    stick.X.whileTrue(new InstantCommand(() -> m_indexSubystem.setIndexOutput(1.0)));
     stick.Y.whileTrue(new IntakeCommand(m_intakeSystem, () -> getIntakeControl()));
     stick.RB.onTrue(new InstantCommand(drivebase::alignToSpeaker));
     stick.LB.onTrue(new InstantCommand(() -> drivebase.alignToNote()));

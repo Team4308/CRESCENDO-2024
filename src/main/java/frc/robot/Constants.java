@@ -61,10 +61,13 @@ public final class Constants
       public static int motor1 = 1;
       public static int motor2 = 2;
     }
+    public static class Index {
+      public static int indexMotor = 0;
+    }
   }
 
   public static class Generic {
-    public static int timeoutMs = 3000;
+    public static int timeoutMs = 1000;
   }
 
   public static class Config {

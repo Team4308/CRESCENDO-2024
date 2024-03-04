@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import ca.team4308.absolutelib.wrapper.LogSubsystem;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -149,7 +150,6 @@ public class Robot extends TimedRobot
   @Override
   public void testInit()
   {
-    // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
     try
     {
