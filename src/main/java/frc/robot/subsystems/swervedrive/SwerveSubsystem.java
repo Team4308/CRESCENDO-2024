@@ -25,10 +25,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants.AutonConstants;
 import frc.robot.LimelightHelpers;
+import frc.robot.subsystems.PixySystem;
 import java.io.File;
 import java.util.function.DoubleSupplier;
 import org.photonvision.PhotonCamera;
-import org.photonvision.targeting.PhotonPipelineResult;
 import java.util.Optional;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
@@ -42,6 +42,8 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 public class SwerveSubsystem extends SubsystemBase
 {
+  boolean alignToSpeaker = false;
+  boolean alignToNote = false;
 
   /**
    * Swerve drive object.
@@ -74,7 +76,7 @@ public class SwerveSubsystem extends SubsystemBase
     System.out.println("}");
 
     // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary objects being created.
-    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
+    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.MACHINE;
     try
     {
       swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed);
@@ -124,7 +126,7 @@ public class SwerveSubsystem extends SubsystemBase
         ),
         () -> {
           // Boolean supplier that controls when the path will be mirrored for the red alliance
-          // This will flip the path being followed to the red side of the field.
+          // This will flip the path being followed to the red side of the fiel
           // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
           var alliance = DriverStation.getAlliance();
           return alliance.isPresent() ? alliance.get() == DriverStation.Alliance.Red : false;
@@ -142,11 +144,11 @@ public class SwerveSubsystem extends SubsystemBase
   public Command aimAtTarget()
   {
     return run(() -> {
-      if (LimelightHelpers.getFiducialID("") != 0)
+      if (LimelightHelpers.getFiducialID("") != -1.0)
       {
         drive(getTargetSpeeds(0,
                               0,
-                              Rotation2d.fromDegrees(LimelightHelpers.getTX("")))); // Not sure if this will work, more math may be required.
+                              Rotation2d.fromDegrees(LimelightHelpers.getTX("") * -1.1))); // Not sure if this will work, more math may be required.
       }
     });
   }
@@ -270,10 +272,22 @@ public class SwerveSubsystem extends SubsystemBase
   public Command driveCommand(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier angularRotationX)
   {
     return run(() -> {
+      Double rotation;
+      int targetX = PixySystem.getTargetX(PixySystem.getClosestTarget());
+      if (targetX > -10 && targetX < 10) {
+        targetX = 0;
+      }
+      if (alignToSpeaker) {
+        rotation = -LimelightHelpers.getTX("") * (Math.PI / 180) * 4;
+      } else if (alignToNote) {
+        rotation = -targetX * 0.1;
+      } else {
+        rotation = Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumAngularVelocity();
+      }
       // Make the robot move
       swerveDrive.drive(new Translation2d(Math.pow(translationX.getAsDouble(), 3) * swerveDrive.getMaximumVelocity(),
                                           Math.pow(translationY.getAsDouble(), 3) * swerveDrive.getMaximumVelocity()),
-                        Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumAngularVelocity(),
+                        rotation,
                         true,
                         false);
     });
@@ -518,5 +532,21 @@ public class SwerveSubsystem extends SubsystemBase
   public void addFakeVisionReading()
   {
     swerveDrive.addVisionMeasurement(new Pose2d(3, 3, Rotation2d.fromDegrees(65)), Timer.getFPGATimestamp());
+  }
+
+  public void alignToSpeaker() {
+    if (alignToSpeaker) {
+      alignToSpeaker = false;
+    } else {
+      alignToSpeaker = true;
+    }
+  }
+
+  public void alignToNote() {
+    if (alignToNote) {
+      alignToNote = false;
+    } else {
+      alignToNote = true;
+    }
   }
 }

@@ -15,10 +15,12 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
@@ -28,6 +30,7 @@ import frc.robot.subsystems.LEDSystem;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.IntakeSystem;
+import frc.robot.subsystems.PixySystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -39,16 +42,17 @@ public class RobotContainer
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                          "swerve")); 
-
   public final ArrayList<LogSubsystem> subsystems = new ArrayList<LogSubsystem>();
   
   //Subsystems
   private final IntakeSystem m_intakeSystem;
   private final LEDSystem m_ledSystem;
+  private final PixySystem pixy;
 
   //Commands
   private final IntakeCommand intakeCommand;
   private final LEDCommand ledCommand;
+  
 
   // Controllers
   final CommandXboxController driverXbox = new CommandXboxController(0);
@@ -57,6 +61,13 @@ public class RobotContainer
   //Auto
   private final SendableChooser<Command> autoCommandChooser = new SendableChooser<Command>();
   
+
+  // led stuff
+  private Integer debounce = 0;
+  private Double prev = 0.0;
+
+
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -65,27 +76,26 @@ public class RobotContainer
     //Subsystem Instantiations
     m_intakeSystem = new IntakeSystem();
     subsystems.add(m_intakeSystem);
-    
-    //Command Instantiations
-    intakeCommand = new IntakeCommand(m_intakeSystem, () -> 0.0);
-    m_intakeSystem.setDefaultCommand(intakeCommand);
 
-    SmartDashboard.putData(autoCommandChooser);
-    
-    // Configure the trigger bindings
-
+    pixy = new PixySystem();
+    subsystems.add(pixy);
 
     m_ledSystem = new LEDSystem();
     subsystems.add(m_ledSystem);
 
     
+    //Command Instantiations
+    intakeCommand = new IntakeCommand(m_intakeSystem, () -> 0.0);
+    m_intakeSystem.setDefaultCommand(intakeCommand);
+    
     ledCommand = new LEDCommand(m_ledSystem, () -> getLEDCommand());
     m_ledSystem.setDefaultCommand(ledCommand);
+
+    SmartDashboard.putData(autoCommandChooser);
+    
+    // Configure the trigger bindings
     
     configureBindings();
-
-
-
     
     AbsoluteDriveAdv closedAbsoluteDriveAdv = new AbsoluteDriveAdv(drivebase,
                                                                    () -> -MathUtil.applyDeadband(driverXbox.getLeftY(),
@@ -105,10 +115,10 @@ public class RobotContainer
     // left stick controls translation
     // right stick controls the desired angle NOT angular rotation
     Command driveFieldOrientedDirectAngle = drivebase.driveCommand(
-        () -> -MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-        () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-        () -> -driverXbox.getRightX(),
-        () -> -driverXbox.getRightY());
+        () -> MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+        () -> MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+        () -> driverXbox.getRightX(),
+        () -> driverXbox.getRightY());
 
     // Applies deadbands and inverts controls because joysticks
     // are back-right positive while robot
@@ -116,17 +126,17 @@ public class RobotContainer
     // left stick controls translation
     // right stick controls the angular velocity of the robot
     Command driveFieldOrientedAnglularVelocity = drivebase.driveCommand(
-        () -> -MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-        () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-        () -> -driverXbox.getRightX());
+        () -> MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+        () -> MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+        () -> driverXbox.getRightX());
 
     Command driveFieldOrientedDirectAngleSim = drivebase.simDriveCommand(
-        () -> -MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-        () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-        () -> -driverXbox.getRawAxis(2));
+        () -> MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+        () -> MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+        () -> driverXbox.getRawAxis(2));
 
     drivebase.setDefaultCommand(
-        !RobotBase.isSimulation() ? driveFieldOrientedDirectAngle : driveFieldOrientedDirectAngleSim);
+        !RobotBase.isSimulation() ? driveFieldOrientedAnglularVelocity : driveFieldOrientedDirectAngleSim);
   }
 
   /**
@@ -141,13 +151,16 @@ public class RobotContainer
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
  
     driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-    driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
+    // driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
     driverXbox.b().whileTrue(
         Commands.deferredProxy(() -> drivebase.driveToPose(
                                    new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
                               )); 
+    driverXbox.x().whileTrue(Commands.deferredProxy(() -> drivebase.aimAtTarget()));
     // driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
     stick.Y.whileTrue(new IntakeCommand(m_intakeSystem, () -> getIntakeControl()));
+    stick.RB.onTrue(new InstantCommand(drivebase::alignToSpeaker));
+    stick.LB.onTrue(new InstantCommand(() -> drivebase.alignToNote()));
   }
 
   /**
@@ -162,7 +175,33 @@ public class RobotContainer
   }
 
   public Double getLEDCommand(){
-    return -0.99;
+    
+    if(RobotController.isBrownedOut()){
+      prev = 0.63;
+      return 0.63; // red-orange
+    }
+    if(pixy.getClosestTarget() != null){
+      // target in range
+      debounce++;
+      if(debounce == 5) debounce = 0;
+      prev = -0.09;
+      return -0.09;
+    }
+    if(pixy.getClosestTarget() == null){
+      debounce--;
+      if(debounce <= 0) debounce = 0;
+    }
+    if(debounce == 0){
+      prev = -0.39;
+      return -0.39;
+    }  // default enabled, colour waves lava
+
+    return prev;
+    // disabled state is slow rgb
+  }
+
+  public double getIntakeControl() {
+    return 1.0;
   }
 
   public double getIntakeControl() {
