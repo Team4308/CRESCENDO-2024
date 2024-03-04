@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 2.0,
-      "y": 7.0
+      "x": 0.7925662517991704,
+      "y": 6.5397793017808254
     },
-    "rotation": 0
+    "rotation": 60.0
   },
   "command": {
     "type": "sequential",
@@ -14,7 +14,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "New Path"
+            "pathName": "LPreloadToLNote"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LNoteToNote1"
           }
         }
       ]

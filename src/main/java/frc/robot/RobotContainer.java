@@ -55,7 +55,7 @@ public class RobotContainer
   
 
   // Controllers
-  public final CommandXboxController driverXbox = new CommandXboxController(0);
+  final CommandXboxController driverXbox = new CommandXboxController(0);
   public final XBoxWrapper stick = new XBoxWrapper(0);
   
   //Auto
@@ -171,8 +171,7 @@ public class RobotContainer
   public Command getAutonomousCommand()
   {
     // An example command will be run in autonomous
-    // return drivebase.getAutonomousCommand("New Auto");
-    return autoCommandChooser.getSelected();
+    return drivebase.getAutonomousCommand("TestAuto");
   }
 
   public Double getLEDCommand(){
@@ -199,6 +198,10 @@ public class RobotContainer
 
     return prev;
     // disabled state is slow rgb
+  }
+
+  public double getIntakeControl() {
+    return 1.0;
   }
 
   public double getIntakeControl() {
