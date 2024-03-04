@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import java.io.File;
 import java.io.IOException;
 
-import ca.team4308.absolutelib.wrapper.LogSubsystem;
 import swervelib.parser.SwerveParser;
 
 /**

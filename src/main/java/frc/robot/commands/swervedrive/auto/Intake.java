@@ -1,6 +1,5 @@
 package frc.robot.commands.swervedrive.auto;
 
-import java.util.function.Supplier;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.IntakeSystem;

@@ -10,11 +10,11 @@ import java.util.function.Supplier;
 import edu.wpi.first.wpilibj2.command.Command;
 
 
-public class climbCommand extends Command {
+public class ClimbCommand extends Command {
   private final ClimbSubsystem m_subsystem;
   private final Supplier<Double> control;
 
-  public climbCommand(ClimbSubsystem subsystem, Supplier<Double> control) {
+  public ClimbCommand(ClimbSubsystem subsystem, Supplier<Double> control) {
     m_subsystem = subsystem;
     this.control = control;
     // Use addRequirements() here to declare subsystem dependencies.

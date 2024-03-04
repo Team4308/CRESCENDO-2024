@@ -25,7 +25,7 @@ import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.RotateShooterCommand;
 import frc.robot.commands.ShooterCommand;
-import frc.robot.commands.climbCommand;
+import frc.robot.commands.ClimbCommand;
 import frc.robot.subsystems.LEDSystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.IntakeSystem;
@@ -33,7 +33,7 @@ import frc.robot.subsystems.PixySystem;
 import frc.robot.subsystems.RotateShooterSystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
-import frc.robot.subsystems.IndexSubystem;
+import frc.robot.subsystems.IndexSystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -54,14 +54,14 @@ public class RobotContainer
   private final RotateShooterSystem m_rotateShooterSystem;
   private final ShooterSubsystem m_shooterSubsystem;
   private final ClimbSubsystem m_climbSubsystem;
-  private final IndexSystem m_indexSubsystem;
+  private final IndexSystem m_indexSystem;
 
   // Commands
   private final IntakeCommand intakeCommand;
   private final LEDCommand ledCommand;
   private final RotateShooterCommand rotateShooterCommand;
   private final ShooterCommand ShooterCommand;
-  private final climbCommand climbCommand;
+  private final ClimbCommand climbCommand;
 
   // Controllers
   final CommandXboxController driverXbox = new CommandXboxController(0);
@@ -101,8 +101,8 @@ public class RobotContainer
     m_climbSubsystem = new ClimbSubsystem();
     subsystems.add(m_climbSubsystem);
     
-    m_indexSubystem = new IndexSubystem();
-    subsystems.add(m_indexSubsystem);
+    m_indexSystem = new IndexSystem();
+    subsystems.add(m_indexSystem);
     
     //Command Instantiations
     intakeCommand = new IntakeCommand(m_intakeSystem, () -> 0.0);
@@ -117,7 +117,7 @@ public class RobotContainer
     ShooterCommand = new ShooterCommand(m_shooterSubsystem, () -> getShooterControl());
     m_shooterSubsystem.setDefaultCommand(ShooterCommand);
     
-    climbCommand = new climbCommand(m_climbSubsystem, () -> climbControl());
+    climbCommand = new ClimbCommand(m_climbSubsystem, () -> climbControl());
     m_climbSubsystem.setDefaultCommand(climbCommand);
 
     SmartDashboard.putData(autoCommandChooser);
@@ -185,7 +185,7 @@ public class RobotContainer
                                    new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
                               )); 
     // driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-    stick.X.whileTrue(new InstantCommand(() -> m_indexSubystem.setIndexOutput(1.0)));
+    stick.X.whileTrue(new InstantCommand(() -> m_indexSystem.setIndexOutput(1.0)));
     stick.Y.whileTrue(new IntakeCommand(m_intakeSystem, () -> getIntakeControl()));
     stick.RB.onTrue(new InstantCommand(drivebase::alignToSpeaker));
     stick.LB.onTrue(new InstantCommand(() -> drivebase.alignToNote()));
