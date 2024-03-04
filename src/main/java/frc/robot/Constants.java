@@ -99,8 +99,12 @@ public final class Constants
     }
   
     public static class gamePieces {
-      public static class dimensions {
-        public static final double stageHeightCM = 60.0;
+      public static class speaker {
+        public static final double speakerAprilTagHeightCM = 60.0;
+        public static final double speakerOpeningHeightCM = 60.0;
+      }
+      public static class amp {
+        public static final double angleToshoot = 37.0;
       }
     }
 }

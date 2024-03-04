@@ -15,9 +15,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import ca.team4308.absolutelib.math.DoubleUtils;
 import ca.team4308.absolutelib.wrapper.LogSubsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.pigeon2System;
 
 public class RotateShooterSystem extends LogSubsystem {
     public final TalonFX motor;
@@ -68,6 +66,7 @@ public class RotateShooterSystem extends LogSubsystem {
     }
 
     public void autoAlignShooter() {
+
         NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
         NetworkTableEntry ty = table.getEntry("ty");
         double targetOffsetAngle_Vertical = ty.getDouble(0.0);
@@ -79,7 +78,8 @@ public class RotateShooterSystem extends LogSubsystem {
         double limelightLensHeightCM = Constants.Limelight.measurements.limelightLensHeightCM;
 
         // distance from the target to the floor
-        double goalHeightCM = Constants.gamePieces.dimensions.stageHeightCM;
+        double goalHeightCM = Constants.gamePieces.speaker.speakerAprilTagHeightCM;
+        double speakerOpeningHeightCM = Constants.gamePieces.speaker.speakerOpeningHeightCM;
 
         double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
         double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
@@ -90,7 +90,7 @@ public class RotateShooterSystem extends LogSubsystem {
         double accelY = m_gyroSystem.getAccelerationY();
         double offset = accelY * 0.5;
 
-        double shooterAngle = Math.atan(goalHeightCM/distanceFromLimelightToGoalCM) + offset;
+        double shooterAngle = Math.atan(speakerOpeningHeightCM/distanceFromLimelightToGoalCM) + offset;
 
         setMotorPosition(shooterAngle);
     }

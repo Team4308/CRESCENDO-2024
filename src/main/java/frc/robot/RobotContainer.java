@@ -34,6 +34,7 @@ import frc.robot.subsystems.IntakeSystem;
 import frc.robot.subsystems.PixySystem;
 import frc.robot.subsystems.RotateShooterSystem;
 import frc.robot.subsystems.pigeon2System;
+import frc.robot.commands.ShootInAmpCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -58,6 +59,7 @@ public class RobotContainer
   private final IntakeCommand intakeCommand;
   private final LEDCommand ledCommand;
   private final RotateShooterCommand rotateShooterCommand;
+  private final ShootInAmpCommand shootInAmpCommand;
 
   // Controllers
   public final CommandXboxController driverXbox = new CommandXboxController(0);
@@ -107,6 +109,8 @@ public class RobotContainer
 
     rotateShooterCommand = new RotateShooterCommand(m_rotateShooterSystem, getRotateShooterControl());
     m_rotateShooterSystem.setDefaultCommand(rotateShooterCommand);
+
+    shootInAmpCommand = new ShootInAmpCommand(m_rotateShooterSystem);
 
     SmartDashboard.putData(autoCommandChooser);
     
@@ -171,12 +175,16 @@ public class RobotContainer
     stick.LB.onFalse(new InstantCommand(() -> drivebase.alignToNote(false)));
     
     stick2.B.onTrue(new InstantCommand(() -> drivebase.alignToSpeaker(true)));
-    stick2.B.onFalse(new InstantCommand(() -> drivebase.alignToSpeaker(false)));
-    stick2.B.whileTrue(new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
     stick2.B.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
+    stick2.B.onFalse(new InstantCommand(() -> drivebase.alignToSpeaker(false)));
     stick2.B.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
+    stick2.B.whileTrue(new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
 
     stick2.A.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
+
+    stick2.X.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
+    stick2.X.whileTrue(shootInAmpCommand);
+    stick2.X.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
   }
 
   public Command getAutonomousCommand()
