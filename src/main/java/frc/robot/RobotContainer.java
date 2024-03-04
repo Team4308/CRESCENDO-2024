@@ -25,12 +25,14 @@ import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.RotateShooterCommand;
 import frc.robot.commands.ShooterCommand;
+import frc.robot.commands.climbCommand;
 import frc.robot.subsystems.LEDSystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.IntakeSystem;
 import frc.robot.subsystems.PixySystem;
 import frc.robot.subsystems.RotateShooterSystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.climbSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -50,12 +52,14 @@ public class RobotContainer
   private final LEDSystem m_ledSystem;
   private final RotateShooterSystem m_rotateShooterSystem;
   private final ShooterSubsystem m_shooterSubsystem;
+  private final climbSubsystem m_climbSubsystem;
 
   // Commands
   private final IntakeCommand intakeCommand;
   private final LEDCommand ledCommand;
   private final RotateShooterCommand rotateShooterCommand;
   private final ShooterCommand ShooterCommand;
+  private final climbCommand climbCommand;
 
   // Controllers
   final CommandXboxController driverXbox = new CommandXboxController(0);
@@ -92,6 +96,9 @@ public class RobotContainer
     m_shooterSubsystem = new ShooterSubsystem();
     subsystems.add(m_shooterSubsystem);
     
+    m_climbSubsystem = new climbSubsystem();
+    subsystems.add(m_climbSubsystem);
+    
     //Command Instantiations
     intakeCommand = new IntakeCommand(m_intakeSystem, () -> 0.0);
     m_intakeSystem.setDefaultCommand(intakeCommand);
@@ -104,6 +111,9 @@ public class RobotContainer
     
     ShooterCommand = new ShooterCommand(m_shooterSubsystem, () -> getShooterControl());
     m_shooterSubsystem.setDefaultCommand(ShooterCommand);
+    
+    climbCommand = new climbCommand(m_climbSubsystem, () -> climbControl());
+    m_climbSubsystem.setDefaultCommand(climbCommand);
 
     SmartDashboard.putData(autoCommandChooser);
     
@@ -238,6 +248,10 @@ public class RobotContainer
   
   public double getShooterControl() {
     return stick.getRightTrigger();
+  }
+    
+  public double climbControl(){
+    return stick.getLeftTrigger();
   }
 
   public void setDriveMode()
