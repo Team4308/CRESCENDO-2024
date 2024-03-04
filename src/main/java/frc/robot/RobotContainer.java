@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
 import java.io.File;
@@ -26,11 +22,13 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.LEDCommand;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
-import frc.robot.subsystems.LEDSystem;
 import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.RotateShooterCommand;
+import frc.robot.subsystems.LEDSystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.IntakeSystem;
 import frc.robot.subsystems.PixySystem;
+import frc.robot.subsystems.RotateShooterSystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -42,31 +40,35 @@ public class RobotContainer
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                          "swerve")); 
+                                                                         
   public final ArrayList<LogSubsystem> subsystems = new ArrayList<LogSubsystem>();
   
-  //Subsystems
+  // Subsystems
   private final IntakeSystem m_intakeSystem;
   private final LEDSystem m_ledSystem;
   private final PixySystem pixy;
+  private final RotateShooterSystem m_rotateShooterSystem;
 
-  //Commands
+  // Commands
   private final IntakeCommand intakeCommand;
   private final LEDCommand ledCommand;
-  
+  private final RotateShooterCommand rotateShooterCommand;
 
   // Controllers
   final CommandXboxController driverXbox = new CommandXboxController(0);
   public final XBoxWrapper stick = new XBoxWrapper(0);
   
-  //Auto
+  // Auto
   private final SendableChooser<Command> autoCommandChooser = new SendableChooser<Command>();
-  
 
-  // led stuff
+  // LED
   private Integer debounce = 0;
   private Double prev = 0.0;
-
-
+  
+  public double shooterDegree = 20.0;
+  
+  // State Machines
+  private boolean shooterAutonTriggered = false;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -82,7 +84,9 @@ public class RobotContainer
 
     m_ledSystem = new LEDSystem();
     subsystems.add(m_ledSystem);
-
+    
+    m_rotateShooterSystem = new RotateShooterSystem();
+    subsystems.add(m_rotateShooterSystem);
     
     //Command Instantiations
     intakeCommand = new IntakeCommand(m_intakeSystem, () -> 0.0);
@@ -90,11 +94,13 @@ public class RobotContainer
     
     ledCommand = new LEDCommand(m_ledSystem, () -> getLEDCommand());
     m_ledSystem.setDefaultCommand(ledCommand);
+    
+    rotateShooterCommand = new RotateShooterCommand(m_rotateShooterSystem, getRotateShooterControl());
+    m_rotateShooterSystem.setDefaultCommand(rotateShooterCommand);
 
     SmartDashboard.putData(autoCommandChooser);
     
     // Configure the trigger bindings
-    
     configureBindings();
     
     AbsoluteDriveAdv closedAbsoluteDriveAdv = new AbsoluteDriveAdv(drivebase,
@@ -161,6 +167,10 @@ public class RobotContainer
     stick.Y.whileTrue(new IntakeCommand(m_intakeSystem, () -> getIntakeControl()));
     stick.RB.onTrue(new InstantCommand(drivebase::alignToSpeaker));
     stick.LB.onTrue(new InstantCommand(() -> drivebase.alignToNote()));
+    stick.Start.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
+    stick.Back.whileTrue(new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
+    stick.Back.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
+    stick.Back.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
   }
 
   /**
@@ -173,25 +183,30 @@ public class RobotContainer
     // An example command will be run in autonomous
     return drivebase.getAutonomousCommand("TestAuto");
   }
-
-  public Double getLEDCommand(){
     
-    if(RobotController.isBrownedOut()){
+  public Command setShooterAutonTriggered(boolean value) {
+    shooterAutonTriggered = value;
+    return null;
+  }
+
+  public Double getLEDCommand() {
+    
+    if(RobotController.isBrownedOut()) {
       prev = 0.63;
       return 0.63; // red-orange
     }
-    if(pixy.getClosestTarget() != null){
+    if(pixy.getClosestTarget() != null) {
       // target in range
       debounce++;
       if(debounce == 5) debounce = 0;
       prev = -0.09;
       return -0.09;
     }
-    if(pixy.getClosestTarget() == null){
+    if(pixy.getClosestTarget() == null) {
       debounce--;
       if(debounce <= 0) debounce = 0;
     }
-    if(debounce == 0){
+    if(debounce == 0) {
       prev = -0.39;
       return -0.39;
     }  // default enabled, colour waves lava
@@ -207,6 +222,16 @@ public class RobotContainer
   public double getIntakeControl() {
     return 1.0;
   }
+    
+  public double getRotateShooterControl() {
+    if (shooterAutonTriggered == false) {
+      double newShooterDegree = shooterDegree + stick.getRightY();
+      if (16 <= newShooterDegree && newShooterDegree <= 43) {//could use more fine tuning
+        shooterDegree = newShooterDegree;
+      }
+    } 
+    return shooterDegree;
+  }
 
   public void setDriveMode()
   {
@@ -217,4 +242,6 @@ public class RobotContainer
   {
     drivebase.setMotorBrake(brake); 
   }
+  
+  public void ewyellowerrors() {}
 }
