@@ -81,13 +81,6 @@ public final class Constants
       }
     }
   }
-  
-  public static class AngleControl { // needs to be tuned
-    public static double kP = 0.005;
-    public static double kI = 0.0;
-    public static double kD = 0.0;
-    public static double kTolerance = 0.5;
-  }
     
   public static class Shooter {
     public static int rightMultiplier = 1;
@@ -96,10 +89,8 @@ public final class Constants
     public static final int shooterEndDegree = 43;
     public static final int motorStartRevolutions = 0;
     public static final double motorEndRevolutions = 14.25925757;
-  }
-    
-  public static class PID {
-    public static class Shooter {
+
+    public static final class AngleControl {
       public static final double kP = 0.03;
       public static final double kI = 0;
       public static final double kD = 0;
@@ -107,14 +98,14 @@ public final class Constants
   }
   
   public static class Limelight {
-    public static class measurements {
+    public static class Measurements {
       public static final double limelightMountAngleDegrees = 25;
       public static final double limelightLensHeightCM = 20;
     }
   }
   
-  public static class gamePieces {
-    public static class dimensions {
+  public static class GamePieces {
+    public static class Dimensions {
       public static final double stageHeightCM = 60.0;
     }
   }

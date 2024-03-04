@@ -25,7 +25,7 @@ public class RotateShooterSystem extends LogSubsystem {
     public RotateShooterSystem() {
         motor = new TalonFX(Constants.Mapping.Shooter.motor);
 
-        pidController = new PIDController(Constants.PID.Shooter.kP, Constants.PID.Shooter.kI, Constants.PID.Shooter.kD);//pid not tuned
+        pidController = new PIDController(Constants.Shooter.AngleControl.kP, Constants.Shooter.AngleControl.kI, Constants.Shooter.AngleControl.kD);//pid not tuned
     }
 
     public void setMotorOutput(double percent){
@@ -68,13 +68,13 @@ public class RotateShooterSystem extends LogSubsystem {
         double targetOffsetAngle_Vertical = ty.getDouble(0.0);
 
         // how many degrees back is your limelight rotated from perfectly vertical?
-        double limelightMountAngleDegrees = Constants.Limelight.measurements.limelightMountAngleDegrees; 
+        double limelightMountAngleDegrees = Constants.Limelight.Measurements.limelightMountAngleDegrees; 
 
         // distance from the center of the Limelight lens to the floor
-        double limelightLensHeightCM = Constants.Limelight.measurements.limelightLensHeightCM;
+        double limelightLensHeightCM = Constants.Limelight.Measurements.limelightLensHeightCM;
 
         // distance from the target to the floor
-        double goalHeightCM = Constants.gamePieces.dimensions.stageHeightCM;
+        double goalHeightCM = Constants.GamePieces.Dimensions.stageHeightCM;
 
         double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
         double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
