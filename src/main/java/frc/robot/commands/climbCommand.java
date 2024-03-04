@@ -4,11 +4,6 @@ package frc.robot.commands;
 import frc.robot.subsystems.climbSubsystem;
 
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-
-
-
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
 import java.util.function.Supplier;
 
