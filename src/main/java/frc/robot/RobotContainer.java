@@ -237,7 +237,7 @@ public class RobotContainer
   }
   
   public double getShooterControl() {
-    return stick2.getRightTrigger();
+    return stick.getRightTrigger();
   }
 
   public void setDriveMode()

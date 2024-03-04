@@ -16,21 +16,18 @@ import swervelib.math.Matter;
  */
 public final class Constants
 {
-
   public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
   public static final Matter CHASSIS    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
   public static final double LOOP_TIME  = 0.13; //s, 20ms + 110ms sprk max velocity lag
 
   public static final class AutonConstants
   {
-
     public static final PIDConstants TRANSLATION_PID = new PIDConstants(0.7, 0, 0);
     public static final PIDConstants ANGLE_PID   = new PIDConstants(0.4, 0, 0.01);
   }
 
   public static final class DrivebaseConstants
   {
-
     // Hold time on motor brakes when disabled
     public static final double WHEEL_LOCK_TIME = 10; // seconds
   }
@@ -52,6 +49,14 @@ public final class Constants
     public static class Shooter {
       public static final int motor = 1;
     }
+    public static class ShooterMotor {
+      public static int kMotor1 = 0;
+      public static int kMotor2 = 0;
+    }
+    public static class Controllers {
+      public static int kStick = 0;
+      public static int kStick1 = 1;
+    }
   }
 
   public static class Generic {
@@ -64,6 +69,13 @@ public final class Constants
         public static double kOpenLoopRamp = 0.0;
       }
     }
+    public static class Input {
+      public static double kInputDeadband = 0.14;
+
+      public static class Stick {
+        public static double kInputScale = 2;
+      }
+    }
   }
   
   public static class AngleControl { // needs to be tuned
@@ -74,6 +86,8 @@ public final class Constants
   }
     
   public static class Shooter {
+    public static int rightMultiplier = 1;
+    public static int leftMultipler = 1;
     public static final int shooterStartDegree = 16;
     public static final int shooterEndDegree = 43;
     public static final int motorStartRevolutions = 0;
@@ -98,36 +112,6 @@ public final class Constants
   public static class gamePieces {
     public static class dimensions {
       public static final double stageHeightCM = 60.0;
-    }
-  }
-
-  public static class Mapping {
-    public static class ShooterMotor {
-      public static int kMotor1 = 0;
-      public static int kMotor2 = 0;
-    }
-    public static class Controllers {
-      public static int kStick = 0;
-      public static int kStick1 = 1;
-    }
-  }
-
-  public static class Shooter {
-    public static int rightMultiplier = 1;
-    public static int leftMultipler = 1;
-  }
-  
-  public static class Generic {
-    public static int kTimeoutMs = 1000;
-  }
-
-  public static class Config {
-    public static class Input {
-      public static double kInputDeadband = 0.14;
-
-      public static class Stick {
-        public static double kInputScale = 2;
-      }
     }
   }
 }
