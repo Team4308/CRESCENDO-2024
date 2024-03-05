@@ -262,6 +262,29 @@ public class SwerveSubsystem extends SubsystemBase
     3.0, 5.0, 3.0);
 }
 
+  public double getOffsetLeftRight(double input) {
+    double Vs = 10;//shooter velocity
+    double dY = 10;//y distance from speaker
+    double dX = 10;//x distance from speaker
+    double vrX = 10;//horziontal velocity to speaker
+    double vrY = 10;//vertical velocity to speaker
+
+    
+
+    double fracTop = Math.sqrt(-1*vrY*vrY+2*vrY*dY*vrX*dY-dY*dY*vrX*vrX+dY*dY*Vs*Vs+Vs*Vs*dX*dX)-dY*Vs;
+    double fracBottom = (-1*vrX*dX+dY*vrX+Vs*dX);
+
+    double result = 0.0;
+
+    if (1==1+0) {
+      result = 2*Math.atan(fracTop/fracBottom);
+    } else {
+      result = 2*Math.atan(-1*fracTop/fracBottom);
+    }
+
+      return 0.0;
+  }
+
   /**
    * Command to drive the robot using translative values and heading as angular velocity.
    *
