@@ -220,11 +220,12 @@ public class RobotContainer
     if(PixySystem.getClosestTarget() != null) {
       // target in range
       debounce++;
-      if(debounce == 5) debounce = 0;
-      prev = -0.09;
+      if(debounce == 5) debounce = 2;
+      prev = -0.09; // strobe blue
       return -0.09;
     }
     if(PixySystem.getClosestTarget() == null) {
+      // no target
       debounce--;
       if(debounce <= 0) debounce = 0;
     }
