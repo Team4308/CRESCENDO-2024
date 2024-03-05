@@ -1,7 +1,9 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -21,6 +23,9 @@ public class ShooterSubsystem extends LogSubsystem {
     private final TalonFXConfiguration rightConfiguration;
     private final TalonFXConfiguration leftConfiguration;
 
+    final VelocityVoltage rightVelocity;
+    final VelocityVoltage leftVelocity;
+
     public ShooterSubsystem() {
         // Create Motor Controller Objects
         right = new TalonFX(Constants.Mapping.ShooterMotor.kMotor1);
@@ -28,6 +33,15 @@ public class ShooterSubsystem extends LogSubsystem {
 
         rightMotorOut = new DutyCycleOut(0);
         leftMotorOut = new DutyCycleOut(0);
+
+        rightVelocity = new VelocityVoltage(0);
+        leftVelocity = new VelocityVoltage(0);
+
+        var slot0Configs = new Slot0Configs();
+        slot0Configs.kV = Constants.Shooter.ShooterControl.kV;
+        slot0Configs.kP = Constants.Shooter.ShooterControl.kP;
+        slot0Configs.kI = Constants.Shooter.ShooterControl.kI;
+        slot0Configs.kD = Constants.Shooter.ShooterControl.kD;
 
         rightConfiguration = new TalonFXConfiguration();
         leftConfiguration = new TalonFXConfiguration();
@@ -39,7 +53,10 @@ public class ShooterSubsystem extends LogSubsystem {
 
         right.getConfigurator().apply(rightConfiguration);
         left.getConfigurator().apply(leftConfiguration);
-       
+
+        right.getConfigurator().apply(slot0Configs, 0.050);
+        left.getConfigurator().apply(slot0Configs, 0.050);
+        
         // Reset
         stopControllers();
         resetSensors();
@@ -48,12 +65,19 @@ public class ShooterSubsystem extends LogSubsystem {
     /**
      * Misc Stuff
      */
-    public void setMotorOutput(double percent) {
-        rightMotorOut.Output = percent * Constants.Shooter.rightMultiplier;
-        leftMotorOut.Output = percent * Constants.Shooter.leftMultipler;
+    public void setMotorOutput(double rpm) {
+        rightVelocity.Slot = 0;
+        leftVelocity.Slot = 0;
+        right.setControl(rightVelocity.withVelocity(rpm));
+        left.setControl(leftVelocity.withVelocity(rpm));
+
+        /*
+        rightMotorOut.Output = rpm * Constants.Shooter.rightMultiplier;
+        leftMotorOut.Output = rpm * Constants.Shooter.leftMultipler;
         right.setControl(rightMotorOut);
         left.setControl(leftMotorOut);
         //right.set(1);
+        */
     }
 
     public void selectProfileSlot(int slot) {

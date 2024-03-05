@@ -4,7 +4,9 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import ca.team4308.absolutelib.math.DoubleUtils;
 import ca.team4308.absolutelib.wrapper.LogSubsystem;
@@ -18,12 +20,18 @@ import frc.robot.Constants;
 
 public class RotateShooterSystem extends LogSubsystem {
     public final TalonFX motor;
+    private final TalonFXConfiguration motorConfiguration;
     public final PIDController pidController;
 
     public static double shooterDegree = 20.0;
 
     public RotateShooterSystem() {
         motor = new TalonFX(Constants.Mapping.Shooter.motor);
+
+        motorConfiguration = new TalonFXConfiguration();
+        motorConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+
+        motor.getConfigurator().apply(motorConfiguration);
 
         pidController = new PIDController(Constants.Shooter.AngleControl.kP, Constants.Shooter.AngleControl.kI, Constants.Shooter.AngleControl.kD);//pid not tuned
     }
