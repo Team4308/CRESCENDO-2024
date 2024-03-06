@@ -8,32 +8,45 @@ import ca.team4308.absolutelib.wrapper.MotoredSubsystem;
 import edu.wpi.first.util.sendable.Sendable;
 import frc.robot.Constants;
 
+import java.util.ArrayList;
+
 public class IndexSystem extends MotoredSubsystem {
-    public final TalonSRX motor;
+    public final TalonSRX motor1;
+    public final TalonSRX motor2;
+    private ArrayList<TalonSRX> controllersSRX = new ArrayList<TalonSRX>();
     public boolean state;
 
     public IndexSystem() {
         // Setup Controllers
-        motor = new TalonSRX(Constants.Mapping.Index.indexMotor);
+        motor1 = new TalonSRX(Constants.Mapping.Index.indexMotor);
+        motor2 = new TalonSRX(Constants.Mapping.Index.indexMotor);
 
-        motor.configFactoryDefault(Constants.Generic.timeoutMs);
-        motor.configOpenloopRamp(Constants.Config.Drive.Power.kOpenLoopRamp, Constants.Generic.timeoutMs);
-        motor.configClosedloopRamp(0.1, Constants.Generic.timeoutMs);
-        motor.setNeutralMode(NeutralMode.Brake);
-        motor.configNeutralDeadband(0.001, Constants.Generic.timeoutMs);
-        motor.changeMotionControlFramePeriod(5);
-        motor.configVoltageCompSaturation(12.5, Constants.Generic.timeoutMs);
-        motor.enableVoltageCompensation(true);
+        controllersSRX.add(motor1);
+        controllersSRX.add(motor2);
+
+
+        for (TalonSRX talon : controllersSRX) {
+            talon.configFactoryDefault(Constants.Generic.timeoutMs);
+            talon.configOpenloopRamp(Constants.Config.Drive.Power.kOpenLoopRamp, Constants.Generic.timeoutMs);
+            talon.configClosedloopRamp(0.1, Constants.Generic.timeoutMs);
+            talon.setNeutralMode(NeutralMode.Brake);
+            talon.configNeutralDeadband(0.001, Constants.Generic.timeoutMs);
+            talon.changeMotionControlFramePeriod(5);
+            talon.configVoltageCompSaturation(12.5, Constants.Generic.timeoutMs);
+            talon.enableVoltageCompensation(true);
+        }
 
         stopControllers();
     }
 
     public void setIndexOutput(double output) {
-        motor.set(TalonSRXControlMode.PercentOutput, output);
+        motor1.set(TalonSRXControlMode.PercentOutput, output);
+        motor2.set(TalonSRXControlMode.PercentOutput, output);
     }
 
     public void stopControllers() {
-        motor.set(TalonSRXControlMode.PercentOutput, 0.0);
+        motor1.set(TalonSRXControlMode.PercentOutput, 0.0);
+        motor2.set(TalonSRXControlMode.PercentOutput, 0.0);
     }
 
     @Override
