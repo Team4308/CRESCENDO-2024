@@ -23,7 +23,7 @@ public class ShooterCommand extends Command {
 
   @Override
   public void execute() {
-    double control = this.control.get();
+    double control = this.control.get();//converting to rpm
     m_subsystem.setMotorOutput(control);
   }
 

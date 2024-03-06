@@ -253,7 +253,7 @@ public class RobotContainer
   }
   
   public double getShooterControl() {
-    return stick.getRightTrigger();
+    return stick.getRightTrigger() * 1200;//converting into RPM
   }
     
   public double climbControl(){
