@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import java.util.function.Supplier;
 
 public class ShooterCommand extends Command {
-  @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final ShooterSubsystem m_subsystem;
   private final Supplier<Double> control;
 
