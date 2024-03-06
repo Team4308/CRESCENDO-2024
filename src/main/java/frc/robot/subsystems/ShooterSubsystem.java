@@ -69,7 +69,8 @@ public class ShooterSubsystem extends LogSubsystem {
 
     // Sensor Reset
     public void resetSensors() {
-        //motorOut.setSelectedSensorPosition(0);
+        right.getConfigurator().setPosition(0);
+        left.getConfigurator().setPosition(0);
     }
 
     @Override
