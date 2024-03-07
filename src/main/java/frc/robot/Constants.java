@@ -89,9 +89,9 @@ public final class Constants
     public static int rightMultiplier = 1;
     public static int leftMultipler = 1;
     public static final int shooterStartDegree = 16;
-    public static final int shooterEndDegree = 43;
+    public static final int shooterEndDegree = 66;
     public static final int motorStartRevolutions = 0;
-    public static final double motorEndRevolutions = 14.25925757;
+    public static final double motorEndRevolutions = 25.462962963;
 
     public static final class AngleControl {
       public static final double kP = 0.03;
