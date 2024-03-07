@@ -263,7 +263,7 @@ public class SwerveSubsystem extends SubsystemBase
     3.0, 5.0, 3.0);
 }
 
-  public double getOffsetLeftRight(double input) {
+  public double getOffsetLeftRight() {
     double targetOffsetAngle_Vertical =LimelightHelpers.getTY("");
     double limelightMountAngleDegrees = Constants.Limelight.measurements.limelightMountAngleDegrees; 
     double limelightLensHeightCM = Constants.Limelight.measurements.limelightLensHeightCM;
