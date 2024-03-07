@@ -282,7 +282,7 @@ public class RobotContainer
   public double getRotateShooterControl() {
     if (shooterAutonTriggered == false) {
       double newShooterDegree = shooterDegree + stick.getRightY();
-      if (16 <= newShooterDegree && newShooterDegree <= 43) {//could use more fine tuning
+      if (Constants.Shooter.shooterStartDegree <= newShooterDegree && newShooterDegree <= Constants.Shooter.shooterEndDegree) {//could use more fine tuning
         shooterDegree = newShooterDegree;
       }
     } 
