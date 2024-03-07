@@ -43,26 +43,27 @@ public final class Constants
   }
   
   public static class Mapping {
-    public static class Claw {
-      public static int intakeMotor = 9; // change to correct ids later
+    public static class Intake {
+      public static int intakeMotor = 11;
     }
     public static class Shooter {
-      public static final int motor = 1;
+      public static final int motor = 13;
+      public static final int beambrake = 0;
     }
     public static class ShooterMotor {
-      public static int kMotor1 = 0;
-      public static int kMotor2 = 0;
+      public static int kMotor1 = 14;
+      public static int kMotor2 = 15;
     }
     public static class Controllers {
       public static int kStick = 0;
       public static int kStick1 = 1;
     }
     public static class climbMotors {
-      public static int motor1 = 1;
-      public static int motor2 = 2;
+      public static int motor1 = 9;
+      public static int motor2 = 10;
     }
     public static class Index {
-      public static int indexMotor = 0;
+      public static int indexMotor = 12;
     }
   }
 

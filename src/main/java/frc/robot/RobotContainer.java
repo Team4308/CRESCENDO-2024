@@ -2,7 +2,9 @@ package frc.robot;
 
 import java.io.File;
 import java.util.ArrayList;
- 
+
+import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
+
 import ca.team4308.absolutelib.control.XBoxWrapper;
 import ca.team4308.absolutelib.wrapper.LogSubsystem;
 import edu.wpi.first.math.MathUtil;
@@ -19,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.LEDCommand;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
@@ -26,6 +29,7 @@ import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.RotateShooterCommand;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.ClimbCommand;
+import frc.robot.commands.IndexCommand;
 import frc.robot.subsystems.LEDSystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.IntakeSystem;
@@ -62,6 +66,7 @@ public class RobotContainer
   private final RotateShooterCommand rotateShooterCommand;
   private final ShooterCommand ShooterCommand;
   private final ClimbCommand climbCommand;
+  private final IndexCommand indexCommand;
 
   // Controllers
   final CommandXboxController driverXbox = new CommandXboxController(0);
@@ -75,6 +80,7 @@ public class RobotContainer
   private Integer debounce = 0;
   private Double prev = 0.0;
   
+  private DigitalInput shooterBeambrake;
   public double shooterDegree = 20.0;
   
   // State Machines
@@ -105,7 +111,7 @@ public class RobotContainer
     subsystems.add(m_indexSystem);
     
     //Command Instantiations
-    intakeCommand = new IntakeCommand(m_intakeSystem, () -> 0.0);
+    intakeCommand = new IntakeCommand(m_intakeSystem, () -> getIntakeControl());
     m_intakeSystem.setDefaultCommand(intakeCommand);
     
     ledCommand = new LEDCommand(m_ledSystem, () -> getLEDCommand());
@@ -120,7 +126,12 @@ public class RobotContainer
     climbCommand = new ClimbCommand(m_climbSubsystem, () -> climbControl());
     m_climbSubsystem.setDefaultCommand(climbCommand);
 
+    indexCommand = new IndexCommand(m_intakeSystem, () -> indexCommand());
+    m_indexSystem.setDefaultCommand(indexCommand);
+
     SmartDashboard.putData(autoCommandChooser);
+
+    shooterBeambrake = new DigitalInput(Constants.Mapping.Shooter.beambrake);
     
     // Configure the trigger bindings
     configureBindings();
@@ -185,14 +196,17 @@ public class RobotContainer
                                    new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
                               )); 
     // driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-    stick.X.whileTrue(new InstantCommand(() -> m_indexSystem.setIndexOutput(1.0)));
     stick.Y.whileTrue(new IntakeCommand(m_intakeSystem, () -> getIntakeControl()));
     stick.RB.onTrue(new InstantCommand(drivebase::alignToSpeaker));
     stick.LB.onTrue(new InstantCommand(() -> drivebase.alignToNote()));
-    stick.Start.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
-    stick.Back.whileTrue(new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
-    stick.Back.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
-    stick.Back.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
+    //stick.Start.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
+    stick1.X.whileTrue(new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
+    stick1.X.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
+    stick1.X.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
+    stick1.RB.whileTrue(new InstantCommand(() -> m_climbSubsystem.setMotorOutput(TalonSRXControlMode.PercentOutput, 1)));
+    stick1.LB.whileTrue(new InstantCommand(() -> m_climbSubsystem.setMotorOutput(TalonSRXControlMode.PercentOutput, -1)));
+    stick1.RB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
+    stick1.LB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
   }
 
   /**
@@ -209,6 +223,25 @@ public class RobotContainer
   public Command setShooterAutonTriggered(boolean value) {
     shooterAutonTriggered = value;
     return null;
+  }
+
+  public double indexCommand() {
+    double trig = stick1.getRightTrigger()*-1;
+    if (-0.06 <= trig && trig <= 0.06) {
+      trig = 0;
+    }
+    double joy = stick1.getLeftY()*-1;
+    if (-0.06 <= joy && joy <= 0.06) {
+      joy = 0;
+    }
+    if (shooterBeambrake.get() == true) {
+      return trig;
+    }
+    if (joy != 0.0) {
+      return joy;
+    } else {
+      return trig;
+    }
   }
 
   public Double getLEDCommand() {
@@ -239,7 +272,10 @@ public class RobotContainer
   }
 
   public double getIntakeControl() {
-    return 1.0;
+    if (shooterBeambrake.get() == false) {
+      return stick1.getLeftY()*-1;
+    }
+    return 0.0;
   }
     
   public double getRotateShooterControl() {
