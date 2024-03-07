@@ -49,9 +49,6 @@ public class RotateShooterSystem extends LogSubsystem {
 
     public void setMotorPosition(double degree) { 
         double wantedDegree = DoubleUtils.clamp(degree, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree);
-        //0 is base position(16 degree)
-        //14.25925757 is max revolutions(43 degree)
-        //2200/12 gear ratio  
 
         /*
         double m = (Constants.Shooter.motorStartRevolutions-Constants.Shooter.motorEndRevolutions)/(Constants.Shooter.shooterStartDegree-Constants.Shooter.shooterEndDegree);
@@ -88,16 +85,16 @@ public class RotateShooterSystem extends LogSubsystem {
         double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
 
         //calculate distance
-        double distanceFromLimelightToGoalCM = (goalHeightCM - limelightLensHeightCM) / Math.tan(angleToGoalRadians);
+        double distanceFromShooterToGoalCM = (goalHeightCM - limelightLensHeightCM) / Math.tan(angleToGoalRadians) + 48.26;
 
-        double shooterAngle = Math.atan(goalHeightCM/distanceFromLimelightToGoalCM);
+        double shooterAngle = Math.atan(goalHeightCM/distanceFromShooterToGoalCM);
 
         setMotorPosition(shooterAngle);
     }
 
     public void controlWithController(Double controllerValue) {
         double newShooterDegree = shooterDegree + controllerValue;
-        if (16 <= newShooterDegree && newShooterDegree <= 43) {//could use more fine tuning
+        if (Constants.Shooter.shooterStartDegree <= newShooterDegree && newShooterDegree <= Constants.Shooter.shooterEndDegree) {//could use more fine tuning
         shooterDegree = newShooterDegree;
         }
         setMotorPosition(shooterDegree);
