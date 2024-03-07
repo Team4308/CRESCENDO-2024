@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 import ca.team4308.absolutelib.math.DoubleUtils;
 import ca.team4308.absolutelib.wrapper.LogSubsystem;
@@ -22,7 +23,7 @@ public class RotateShooterSystem extends LogSubsystem {
     public final TalonFX motor;
     private final TalonFXConfiguration motorConfiguration;
     public final PIDController pidController;
-
+    public final DigitalInput limitSwitch;
     public static double shooterDegree = 20.0;
 
     public RotateShooterSystem() {
@@ -34,6 +35,8 @@ public class RotateShooterSystem extends LogSubsystem {
         motor.getConfigurator().apply(motorConfiguration);
 
         pidController = new PIDController(Constants.Shooter.AngleControl.kP, Constants.Shooter.AngleControl.kI, Constants.Shooter.AngleControl.kD);//pid not tuned
+
+        limitSwitch = new DigitalInput(Constants.Mapping.Shooter.limitSwitch);
     }
 
     public void setMotorOutput(double percent){

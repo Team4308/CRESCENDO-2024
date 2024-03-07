@@ -48,6 +48,7 @@ public final class Constants
     }
     public static class Shooter {
       public static final int motor = 1;
+      public static final int limitSwitch = 0;
     }
     public static class ShooterMotor {
       public static int kMotor1 = 0;
