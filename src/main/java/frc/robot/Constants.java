@@ -65,6 +65,9 @@ public final class Constants
     public static class Index {
       public static int indexMotor = 0;
     }
+    public static class encoder {
+      public static int encoder = 0;
+    }
   }
 
   public static class Generic {
@@ -92,7 +95,7 @@ public final class Constants
     public static final int shooterStartDegree = 16;
     public static final int shooterEndDegree = 43;
     public static final int motorStartRevolutions = 0;
-    public static final double motorEndRevolutions = 14.25925757;
+    public static final double motorEndRevolutions = 14.7272727273;
 
     public static final class AngleControl {
       public static final double kP = 0.03;
