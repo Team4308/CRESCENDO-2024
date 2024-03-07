@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import frc.robot.Constants;
 import frc.robot.Constants.AutonConstants;
 import frc.robot.LimelightHelpers;
 import frc.robot.subsystems.PixySystem;
@@ -263,13 +264,19 @@ public class SwerveSubsystem extends SubsystemBase
 }
 
   public double getOffsetLeftRight(double input) {
-    double Vs = 10;//shooter velocity
-    double dY = 10;//y distance from speaker
-    double dX = 10;//x distance from speaker
-    double vrX = 10;//horziontal velocity to speaker
-    double vrY = 10;//vertical velocity to speaker
+    double targetOffsetAngle_Vertical =LimelightHelpers.getTY("");
+    double limelightMountAngleDegrees = Constants.Limelight.measurements.limelightMountAngleDegrees; 
+    double limelightLensHeightCM = Constants.Limelight.measurements.limelightLensHeightCM;
+    double goalHeightCM = Constants.gamePieces.speaker.speakerAprilTagHeightCM;
+    double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
+    double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
+    double distanceFromLimelightToGoalCM = (goalHeightCM - limelightLensHeightCM) / Math.tan(angleToGoalRadians);
 
-    
+    double Vs = 10;//shooter velocity
+    double dY = distanceFromLimelightToGoalCM / 100;//y distance from speaker
+    double dX = dY / Math.tan(LimelightHelpers.getTX(""));//x distance from speaker
+    double vrX = getFieldVelocity().vxMetersPerSecond;//horziontal velocity to speaker
+    double vrY = getFieldVelocity().vyMetersPerSecond;//vertical velocity to speaker  
 
     double fracTop = Math.sqrt(-1*vrY*vrY+2*vrY*dY*vrX*dY-dY*dY*vrX*vrX+dY*dY*Vs*Vs+Vs*Vs*dX*dX)-dY*Vs;
     double fracBottom = (-1*vrX*dX+dY*vrX+Vs*dX);

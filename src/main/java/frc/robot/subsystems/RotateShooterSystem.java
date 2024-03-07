@@ -5,17 +5,15 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import ca.team4308.absolutelib.math.DoubleUtils;
 import ca.team4308.absolutelib.wrapper.LogSubsystem;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.LimelightHelpers;
 
 public class RotateShooterSystem extends LogSubsystem {
     public final TalonFX motor;
@@ -67,9 +65,7 @@ public class RotateShooterSystem extends LogSubsystem {
 
     public void autoAlignShooter() {
 
-        NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-        NetworkTableEntry ty = table.getEntry("ty");
-        double targetOffsetAngle_Vertical = ty.getDouble(0.0);
+        double targetOffsetAngle_Vertical = LimelightHelpers.getTY("");
 
         // how many degrees back is your limelight rotated from perfectly vertical?
         double limelightMountAngleDegrees = Constants.Limelight.measurements.limelightMountAngleDegrees; 
