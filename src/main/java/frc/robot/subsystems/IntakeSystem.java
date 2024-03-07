@@ -19,7 +19,7 @@ public class IntakeSystem extends MotoredSubsystem {
         // Setup and Add Controllers
 
         //change later
-        motor = new TalonSRX(Constants.Mapping.Claw.intakeMotor);
+        motor = new TalonSRX(Constants.Mapping.Intake.intakeMotor);
         controllersSRX.add(motor);
 
         // Reset Config for all

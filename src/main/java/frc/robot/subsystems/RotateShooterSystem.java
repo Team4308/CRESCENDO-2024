@@ -14,15 +14,11 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import ca.team4308.absolutelib.math.DoubleUtils;
 import ca.team4308.absolutelib.wrapper.LogSubsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.sendable.Sendable;
 import frc.robot.Constants;
-import frc.robot.Constants.Mapping.encoder;
-
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import frc.robot.LimelightHelpers;
 
 public class RotateShooterSystem extends LogSubsystem {
     public final TalonFX motor;
@@ -61,9 +57,6 @@ public class RotateShooterSystem extends LogSubsystem {
 
     public void setMotorPosition(double degree) { 
         double wantedDegree = DoubleUtils.clamp(degree, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree);
-        //0 is base position(16 degree)
-        //14.25925757 is max revolutions(43 degree)
-        //2200/12 gear ratio  
 
         /*
         double m = (Constants.Shooter.motorStartRevolutions-Constants.Shooter.motorEndRevolutions)/(Constants.Shooter.shooterStartDegree-Constants.Shooter.shooterEndDegree);
@@ -83,9 +76,7 @@ public class RotateShooterSystem extends LogSubsystem {
     }
 
     public void autoAlignShooter() {
-        NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-        NetworkTableEntry ty = table.getEntry("ty");
-        double targetOffsetAngle_Vertical = ty.getDouble(0.0);
+        double targetOffsetAngle_Vertical = LimelightHelpers.getTY("");
 
         // how many degrees back is your limelight rotated from perfectly vertical?
         double limelightMountAngleDegrees = Constants.Limelight.Measurements.limelightMountAngleDegrees; 
@@ -100,16 +91,16 @@ public class RotateShooterSystem extends LogSubsystem {
         double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
 
         //calculate distance
-        double distanceFromLimelightToGoalCM = (goalHeightCM - limelightLensHeightCM) / Math.tan(angleToGoalRadians);
+        double distanceFromShooterToGoalCM = (goalHeightCM - limelightLensHeightCM) / Math.tan(angleToGoalRadians) + 48.26;
 
-        double shooterAngle = Math.atan(goalHeightCM/distanceFromLimelightToGoalCM);
+        double shooterAngle = Math.atan(goalHeightCM/distanceFromShooterToGoalCM);
 
         setMotorPosition(shooterAngle);
     }
 
     public void controlWithController(Double controllerValue) {
         double newShooterDegree = shooterDegree + controllerValue;
-        if (16 <= newShooterDegree && newShooterDegree <= 43) {//could use more fine tuning
+        if (Constants.Shooter.shooterStartDegree <= newShooterDegree && newShooterDegree <= Constants.Shooter.shooterEndDegree) {//could use more fine tuning
         shooterDegree = newShooterDegree;
         }
         setMotorPosition(shooterDegree);
