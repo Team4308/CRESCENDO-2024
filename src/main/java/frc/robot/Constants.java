@@ -48,7 +48,6 @@ public final class Constants
     }
     public static class Shooter {
       public static final int motor = 1;
-      public static final int limitSwitch = 0;
     }
     public static class ShooterMotor {
       public static int kMotor1 = 0;
@@ -64,6 +63,9 @@ public final class Constants
     }
     public static class Index {
       public static int indexMotor = 0;
+    }
+    public static class limitSwitch {
+      public static int limitSwitch = 0;
     }
     public static class encoder {
       public static int encoder = 0;

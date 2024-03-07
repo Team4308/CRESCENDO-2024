@@ -38,6 +38,7 @@ public class RotateShooterSystem extends LogSubsystem {
     public RotateShooterSystem() {
         motor = new TalonFX(Constants.Mapping.Shooter.motor);
         revEncoder = new DutyCycleEncoder(Constants.Mapping.encoder.encoder);
+        limitSwitch = new DigitalInput(Constants.Mapping.limitSwitch.limitSwitch);
 
         motorConfiguration = new TalonFXConfiguration();
         motorConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -45,8 +46,6 @@ public class RotateShooterSystem extends LogSubsystem {
         motor.getConfigurator().apply(motorConfiguration);
 
         pidController = new PIDController(Constants.Shooter.AngleControl.kP, Constants.Shooter.AngleControl.kI, Constants.Shooter.AngleControl.kD);//pid not tuned
-
-        limitSwitch = new DigitalInput(Constants.Mapping.Shooter.limitSwitch);
     }
 
     public void setMotorOutput(double percent){
@@ -54,6 +53,9 @@ public class RotateShooterSystem extends LogSubsystem {
     }
 
     public double getMotorPosition() {
+        if (limitSwitch.get()){
+            revEncoder.reset();
+        }
         return revEncoder.getDistance();
     }
 
