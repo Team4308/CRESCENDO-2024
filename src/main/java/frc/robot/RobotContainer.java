@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.LEDCommand;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
@@ -28,6 +29,7 @@ import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.RotateShooterCommand;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.ClimbCommand;
+import frc.robot.commands.IndexCommand;
 import frc.robot.subsystems.LEDSystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.IntakeSystem;
@@ -64,6 +66,7 @@ public class RobotContainer
   private final RotateShooterCommand rotateShooterCommand;
   private final ShooterCommand ShooterCommand;
   private final ClimbCommand climbCommand;
+  private final IndexCommand indexCommand;
 
   // Controllers
   final CommandXboxController driverXbox = new CommandXboxController(0);
@@ -77,6 +80,7 @@ public class RobotContainer
   private Integer debounce = 0;
   private Double prev = 0.0;
   
+  private DigitalInput shooterBeambrake;
   public double shooterDegree = 20.0;
   
   // State Machines
@@ -122,7 +126,12 @@ public class RobotContainer
     climbCommand = new ClimbCommand(m_climbSubsystem, () -> climbControl());
     m_climbSubsystem.setDefaultCommand(climbCommand);
 
+    indexCommand = new IndexCommand(m_intakeSystem, () -> indexCommand());
+    m_indexSystem.setDefaultCommand(indexCommand);
+
     SmartDashboard.putData(autoCommandChooser);
+
+    shooterBeambrake = new DigitalInput(Constants.Mapping.Shooter.beambrake);
     
     // Configure the trigger bindings
     configureBindings();
@@ -216,8 +225,23 @@ public class RobotContainer
     return null;
   }
 
-  public double intakeCommand() {
-    return stick1.getLeftTrigger();
+  public double indexCommand() {
+    double trig = stick1.getRightTrigger()*-1;
+    if (-0.06 <= trig && trig <= 0.06) {
+      trig = 0;
+    }
+    double joy = stick1.getLeftY()*-1;
+    if (-0.06 <= joy && joy <= 0.06) {
+      joy = 0;
+    }
+    if (shooterBeambrake.get() == true) {
+      return trig;
+    }
+    if (joy != 0.0) {
+      return joy;
+    } else {
+      return trig;
+    }
   }
 
   public Double getLEDCommand() {
@@ -248,7 +272,10 @@ public class RobotContainer
   }
 
   public double getIntakeControl() {
-    return stick1.getLeftY()*-1;
+    if (shooterBeambrake.get() == false) {
+      return stick1.getLeftY()*-1;
+    }
+    return 0.0;
   }
     
   public double getRotateShooterControl() {
