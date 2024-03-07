@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import javax.sound.sampled.ReverbType;
-
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
