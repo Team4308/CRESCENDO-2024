@@ -214,8 +214,8 @@ public class RobotContainer
   public Double getLEDCommand() {
     
     if(RobotController.isBrownedOut()) {
-      prev = 0.63;
-      return 0.63; // red-orange
+      prev = 0.67;
+      return 0.67; // red-orange
     }
     if(PixySystem.getClosestTarget() != null) {
       // target in range
