@@ -197,10 +197,9 @@ public class RobotContainer
                                    new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
                               )); 
     // driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-    stick.Y.whileTrue(new IntakeCommand(m_intakeSystem, () -> getIntakeControl()));
-    stick.RB.onTrue(new InstantCommand(drivebase::alignToSpeaker));
-    stick.LB.onTrue(new InstantCommand(() -> drivebase.alignToNote()));
-    //stick.Start.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
+    stick.X.onTrue(new InstantCommand(drivebase::alignToSpeaker));
+    // stick.LB.onTrue(new InstantCommand(() -> drivebase.alignToNote()));
+    // stick.Start.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
     stick1.X.whileTrue(new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
     stick1.X.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
     stick1.X.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));

@@ -66,7 +66,8 @@ public final class Constants
       public static int indexMotor = 12;
     }
     public static class limitSwitch {
-      public static int limitSwitch = 0;
+      public static int limitSwitch1 = 0;
+      public static int limitSwitch2 = 1;
     }
     public static class encoder {
       public static int encoder = 0;
