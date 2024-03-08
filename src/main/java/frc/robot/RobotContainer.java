@@ -200,16 +200,17 @@ public class RobotContainer
   {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
  
-    stick.A.onTrue((Commands.runOnce(drivebase::zeroGyro)));
+    stick.Y.onTrue((Commands.runOnce(drivebase::zeroGyro)));
     // driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
-    stick.B.whileTrue(
-        Commands.deferredProxy(() -> drivebase.driveToPose(
-                                   new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
-                              )); 
+    // stick.B.whileTrue(
+    //     Commands.deferredProxy(() -> drivebase.driveToPose(
+    //                                new Pose2d(new Translation2d(1.8, 7.7), Rotation2d.fromDegrees(90.0)))
+    //                           )); 
     // driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-    stick.Y.onTrue(new InstantCommand(drivebase::alignToSpeaker));
-    // stick.LB.onTrue(new InstantCommand(() -> drivebase.alignToNote()));
-    stick.X.onTrue(new InstantCommand(() -> m_ledSystem.setOutput(0.69))); // yellow
+    stick.A.onTrue(new InstantCommand(drivebase::alignToSpeaker));
+    stick.X.onTrue(new InstantCommand(() -> drivebase.alignToNote()));
+    stick.B.onTrue(new InstantCommand(drivebase::alignToAmp));
+    stick1.Y.whileTrue(Commands.deferredProxy(() -> drivebase.alignToAmp())); // yellow
     // stick.Start.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
     stick1.X.whileTrue(new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
     stick1.X.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));

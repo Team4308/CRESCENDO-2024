@@ -151,6 +151,15 @@ public class SwerveSubsystem extends SubsystemBase
     });
   }
 
+  public Command alignToAmp()
+  {
+    return run(() -> {
+      drive(getTargetSpeeds(1 / LimelightHelpers.getTY(""),
+                            LimelightHelpers.getTX("") / 100,
+                            Rotation2d.fromDegrees(90)));
+    });
+  }
+
   /**
    * Get the path follower with events.
    *
@@ -533,18 +542,10 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   public void alignToSpeaker() {
-    if (alignToSpeaker) {
-      alignToSpeaker = false;
-    } else {
-      alignToSpeaker = true;
-    }
+    alignToSpeaker = !alignToSpeaker;
   }
 
   public void alignToNote() {
-    if (alignToNote) {
-      alignToNote = false;
-    } else {
-      alignToNote = true;
-    }
+    alignToNote = !alignToNote;
   }
 }
