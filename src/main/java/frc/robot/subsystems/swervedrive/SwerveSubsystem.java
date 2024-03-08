@@ -272,7 +272,7 @@ public class SwerveSubsystem extends SubsystemBase
     double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
     double distanceFromLimelightToGoalCM = (goalHeightCM - limelightLensHeightCM) / Math.tan(angleToGoalRadians);
 
-    double Vs = 10;//shooter velocity
+    double Vs = Constants.Shooter.shooterMaxVelocity;//shooter velocity
     double dY = distanceFromLimelightToGoalCM / 100;//y distance from speaker
     double dX = dY / Math.tan(LimelightHelpers.getTX(""));//x distance from speaker
     double vrX = getFieldVelocity().vxMetersPerSecond;//horziontal velocity to speaker
@@ -281,15 +281,10 @@ public class SwerveSubsystem extends SubsystemBase
     double fracTop = Math.sqrt(-1*vrY*vrY+2*vrY*dY*vrX*dY-dY*dY*vrX*vrX+dY*dY*Vs*Vs+Vs*Vs*dX*dX)-dY*Vs;
     double fracBottom = (-1*vrX*dX+dY*vrX+Vs*dX);
 
-    double result = 0.0;
-
-    if (1==1+0) {
-      result = 2*Math.atan(fracTop/fracBottom);
-    } else {
-      result = 2*Math.atan(-1*fracTop/fracBottom);
+    if (LimelightHelpers.getTX("") > 0) {
+      return 2*Math.atan(fracTop/fracBottom);
     }
-
-      return 0.0;
+    return 2*Math.atan(-1*fracTop/fracBottom);
   }
 
   /**
