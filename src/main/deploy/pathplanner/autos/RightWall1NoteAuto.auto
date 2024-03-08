@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.5628369034515848,
-      "y": 6.977901955803912
+      "x": 0.4135128270256541,
+      "y": 4.08167527446166
     },
     "rotation": 0
   },
@@ -28,7 +28,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "LeftWallDriveBack"
+                        "pathName": "RightWallDriveBack"
                       }
                     },
                     {
@@ -77,7 +77,7 @@
                                       {
                                         "type": "path",
                                         "data": {
-                                          "pathName": "LeftWallToNote"
+                                          "pathName": "RightWallToNote"
                                         }
                                       },
                                       {
