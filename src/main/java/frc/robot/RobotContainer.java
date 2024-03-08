@@ -275,6 +275,10 @@ public class RobotContainer
       prev = -0.39;
       return -0.39;
     }  // default enabled, colour waves lava
+    if (getShooterControl() != 0.0){
+      prev = 0.0;
+      return 0.0; // not colour; trigger colourOutputShooter
+    }
 
     return prev;
     // disabled state is slow rgb

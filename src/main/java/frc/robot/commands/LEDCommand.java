@@ -26,8 +26,11 @@ public class LEDCommand extends Command {
     public void execute() {
         double control = this.control.get();
 
-        m_subsystem.setOutput(control);
-
+        if (control == 0.0){
+            m_subsystem.colourOutputShooter(control);
+        } else {
+            m_subsystem.setOutput(control);
+        }
     }
 
     @Override
