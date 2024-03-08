@@ -209,9 +209,9 @@ public class RobotContainer
     // driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
     stick.A.onTrue(new InstantCommand(drivebase::alignToSpeaker));
     stick.X.onTrue(new InstantCommand(() -> drivebase.alignToNote()));
-    stick.B.onTrue(new InstantCommand(drivebase::alignToAmp));
-    stick1.Y.whileTrue(Commands.deferredProxy(() -> drivebase.alignToAmp())); // yellow
+    stick.B.whileTrue(Commands.deferredProxy(() -> drivebase.alignToAmp()));
     // stick.Start.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
+    stick1.Y.onTrue(new InstantCommand(() -> m_ledSystem.setOutput(0.69))); // yellow
     stick1.X.whileTrue(new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
     stick1.X.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
     stick1.X.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
