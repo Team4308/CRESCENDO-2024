@@ -314,6 +314,13 @@ public class RobotContainer
   {
     drivebase.setMotorBrake(brake); 
   }
+
+  public void stopRumble() {
+    stick.setLeftRumble(0.0);
+    stick.setRightRumble(0.0);
+    stick1.setLeftRumble(0.0);
+    stick1.setRightRumble(0.0);
+  }
   
   // Gets rid of the yellow errors in Robot.java
   public void ewyellowerrors() {}
