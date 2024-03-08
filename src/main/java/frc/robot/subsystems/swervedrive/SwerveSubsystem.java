@@ -154,7 +154,7 @@ public class SwerveSubsystem extends SubsystemBase
   public Command alignToAmp()
   {
     return run(() -> {
-      drive(getTargetSpeeds(1 / LimelightHelpers.getTY(""),
+      drive(getTargetSpeeds(0.5,
                             LimelightHelpers.getTX("") / 100,
                             Rotation2d.fromDegrees(90)));
     });
