@@ -32,9 +32,9 @@ public class RotateShooterSystem extends LogSubsystem {
 
     public RotateShooterSystem() {
         motor = new TalonFX(Constants.Mapping.Shooter.motor);
-        revEncoder = new DutyCycleEncoder(Constants.Mapping.encoder.encoder);
-        limitSwitch1 = new DigitalInput(Constants.Mapping.limitSwitch.limitSwitch1);
-        limitSwitch2 = new DigitalInput(Constants.Mapping.limitSwitch.limitSwitch2);
+        revEncoder = new DutyCycleEncoder(Constants.Mapping.Shooter.encoder);
+        limitSwitch1 = new DigitalInput(Constants.Mapping.Shooter.limitSwitch1);
+        limitSwitch2 = new DigitalInput(Constants.Mapping.Shooter.limitSwitch2);
 
         motorConfiguration = new TalonFXConfiguration();
         motorConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Coast;

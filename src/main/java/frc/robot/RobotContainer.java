@@ -137,7 +137,7 @@ public class RobotContainer
     climbCommand = new ClimbCommand(m_climbSubsystem, () -> climbControl());
     m_climbSubsystem.setDefaultCommand(climbCommand);
 
-    indexCommand = new IndexCommand(m_intakeSystem, () -> indexCommand());
+    indexCommand = new IndexCommand(m_indexSystem, () -> indexCommand());
     m_indexSystem.setDefaultCommand(indexCommand);
 
     SmartDashboard.putData(autoCommandChooser);

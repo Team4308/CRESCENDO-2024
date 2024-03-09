@@ -44,33 +44,29 @@ public final class Constants
   
   public static class Mapping {
     public static class Intake {
-      public static int intakeMotor = 11;
+      public static final int intakeMotor = 11;
     }
     public static class Shooter {
       public static final int motor = 13;
       public static final int beambrake = 0;
+      public static final int encoder = 1;
+      public static final int limitSwitch1 = 2;
+      public static final int limitSwitch2 = 3;
     }
     public static class ShooterMotor {
-      public static int kMotor1 = 14;
-      public static int kMotor2 = 15;
+      public static final int kMotor1 = 14;
+      public static final int kMotor2 = 15;
     }
     public static class Controllers {
-      public static int kStick = 0;
-      public static int kStick1 = 1;
+      public static final int kStick = 0;
+      public static final int kStick1 = 1;
     }
-    public static class climbMotors {
-      public static int motor1 = 9;
-      public static int motor2 = 10;
+    public static class ClimbMotors {
+      public static final int motor1 = 9;
+      public static final int motor2 = 10;
     }
     public static class Index {
-      public static int indexMotor = 12;
-    }
-    public static class limitSwitch {
-      public static int limitSwitch1 = 0;
-      public static int limitSwitch2 = 1;
-    }
-    public static class encoder {
-      public static int encoder = 0;
+      public static final int indexMotor = 12;
     }
   }
 

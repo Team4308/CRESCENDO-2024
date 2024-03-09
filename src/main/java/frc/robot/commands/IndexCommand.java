@@ -2,17 +2,15 @@ package frc.robot.commands;
 
 import java.util.function.Supplier;
 
-import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
-
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.IntakeSystem;
+import frc.robot.subsystems.IndexSystem;
 
 public class IndexCommand extends Command {
-    private final IntakeSystem m_subsystem;
+    private final IndexSystem m_subsystem;
     private final Supplier<Double> control;
 
     // Init
-    public IndexCommand(IntakeSystem subsystem, Supplier<Double> control) {
+    public IndexCommand(IndexSystem subsystem, Supplier<Double> control) {
         m_subsystem = subsystem;
         this.control = control;
         addRequirements(m_subsystem);
@@ -28,7 +26,7 @@ public class IndexCommand extends Command {
     @Override
     public void execute() {
         double control = this.control.get();
-        m_subsystem.setIntakeOutput(TalonSRXControlMode.PercentOutput, control);
+        m_subsystem.setIndexOutput(control);
     }
 
     @Override

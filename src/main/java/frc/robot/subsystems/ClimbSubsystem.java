@@ -18,8 +18,8 @@ public class ClimbSubsystem extends LogSubsystem {
     public ClimbSubsystem() {
 
         // Create Motor Controller Objects
-        motor1 = new TalonSRX(Constants.Mapping.climbMotors.motor1);
-        motor2 = new TalonSRX(Constants.Mapping.climbMotors.motor2);
+        motor1 = new TalonSRX(Constants.Mapping.ClimbMotors.motor1);
+        motor2 = new TalonSRX(Constants.Mapping.ClimbMotors.motor2);
 
         
         // Configure Motor Controllers to Factory Settings
