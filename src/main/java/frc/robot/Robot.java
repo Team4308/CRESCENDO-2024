@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import ca.team4308.absolutelib.wrapper.LogSubsystem;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -13,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import java.io.File;
 import java.io.IOException;
 
-import ca.team4308.absolutelib.wrapper.LogSubsystem;
 import swervelib.parser.SwerveParser;
 
 /**
@@ -51,6 +51,7 @@ public class Robot extends TimedRobot
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    m_robotContainer.ewyellowerrors();
 
     // Create a timer to disable motor brake a few seconds after disable.  This will let the robot stop
     // immediately when disabled, but then also let it be pushed more 
@@ -84,6 +85,7 @@ public class Robot extends TimedRobot
   public void disabledInit()
   {
     m_robotContainer.setMotorBrake(true);
+    m_robotContainer.stopRumble();
     disabledTimer.reset();
     disabledTimer.start();
   }
@@ -148,7 +150,6 @@ public class Robot extends TimedRobot
   @Override
   public void testInit()
   {
-    // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
     try
     {

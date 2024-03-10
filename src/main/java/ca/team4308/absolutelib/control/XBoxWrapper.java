@@ -1,6 +1,7 @@
 package ca.team4308.absolutelib.control;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 
@@ -86,5 +87,13 @@ public class XBoxWrapper {
 
     public double getRightTrigger() {
         return joystick.getRawAxis(3);
+    }
+
+    public void setLeftRumble(Double value) {
+        joystick.setRumble(RumbleType.kLeftRumble, value);
+    }
+
+    public void setRightRumble(Double value) {
+        joystick.setRumble(RumbleType.kRightRumble, value);
     }
 }

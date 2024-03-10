@@ -4,29 +4,44 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 import ca.team4308.absolutelib.math.DoubleUtils;
 import ca.team4308.absolutelib.wrapper.LogSubsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.util.sendable.Sendable;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 
 public class RotateShooterSystem extends LogSubsystem {
     public final TalonFX motor;
+    private final TalonFXConfiguration motorConfiguration;
     public final PIDController pidController;
-
-    private pigeon2System m_gyroSystem = new pigeon2System();
+    public final DigitalInput limitSwitch1;
+    public final DigitalInput limitSwitch2;
+    private final DutyCycleEncoder revEncoder; 
+    private final pigeon2System m_gyroSystem = new pigeon2System();
 
     public static double shooterDegree = 20.0;
+    public static double encoderDegree = 0.0;
 
     public RotateShooterSystem() {
         motor = new TalonFX(Constants.Mapping.Shooter.motor);
+        revEncoder = new DutyCycleEncoder(Constants.Mapping.Shooter.encoder);
+        limitSwitch1 = new DigitalInput(Constants.Mapping.Shooter.limitSwitch1);
+        limitSwitch2 = new DigitalInput(Constants.Mapping.Shooter.limitSwitch2);
 
-        pidController = new PIDController(Constants.PID.Shooter.kP, Constants.PID.Shooter.kI, Constants.PID.Shooter.kD);//pid not tuned
+        motorConfiguration = new TalonFXConfiguration();
+        motorConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+
+        motor.getConfigurator().apply(motorConfiguration);
+
+        pidController = new PIDController(Constants.Shooter.AngleControl.kP, Constants.Shooter.AngleControl.kI, Constants.Shooter.AngleControl.kD);//pid not tuned
     }
 
     public void setMotorOutput(double percent){
@@ -34,10 +49,12 @@ public class RotateShooterSystem extends LogSubsystem {
     }
 
     public double getMotorPosition() {
-        var rotorPosSignal = motor.getRotorPosition();
-        var rotorPos = rotorPosSignal.getValue();
-
-        return rotorPos;
+        if (limitSwitch1.get()){
+            revEncoder.reset();
+        } else if (limitSwitch2.get()) {
+            return 66.0;
+        }
+        return revEncoder.getDistance() + 16;
     }
 
     public void setMotorPosition(double degree) { 
@@ -93,7 +110,7 @@ public class RotateShooterSystem extends LogSubsystem {
 
     public void controlWithController(Double controllerValue) {
         double newShooterDegree = shooterDegree + controllerValue;
-        if (16 <= newShooterDegree && newShooterDegree <= 43) {//could use more fine tuning
+        if (Constants.Shooter.shooterStartDegree <= newShooterDegree && newShooterDegree <= Constants.Shooter.shooterEndDegree) {//could use more fine tuning
         shooterDegree = newShooterDegree;
         }
         setMotorPosition(shooterDegree);

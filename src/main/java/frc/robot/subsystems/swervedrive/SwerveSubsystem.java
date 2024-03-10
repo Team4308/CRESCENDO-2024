@@ -18,7 +18,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -30,7 +29,6 @@ import frc.robot.subsystems.PixySystem;
 import java.io.File;
 import java.util.function.DoubleSupplier;
 import org.photonvision.PhotonCamera;
-import java.util.Optional;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -152,6 +150,15 @@ public class SwerveSubsystem extends SubsystemBase
                               0,
                               Rotation2d.fromDegrees(LimelightHelpers.getTX("") * -1.1))); // Not sure if this will work, more math may be required.
       }
+    });
+  }
+
+  public Command alignToAmp()
+  {
+    return run(() -> {
+      drive(getTargetSpeeds(0.5,
+                            LimelightHelpers.getTX("") / 100,
+                            Rotation2d.fromDegrees(90)));
     });
   }
 
