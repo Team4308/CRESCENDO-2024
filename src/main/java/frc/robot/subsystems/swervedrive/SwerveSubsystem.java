@@ -313,7 +313,7 @@ public class SwerveSubsystem extends SubsystemBase
         double shootingWhileMovingOffsetValue = accelX * 0.5;
         rotation = -LimelightHelpers.getTX("") * (Math.PI / 180) * 4 + shootingWhileMovingOffsetValue;
       } else if (alignToNote) {
-        int targetX = PixySystem.getTargetX(PixySystem.getClosestTarget());
+        targetX = PixySystem.getTargetX(PixySystem.getClosestTarget());
         if (targetX > -10 && targetX < 10) {
           targetX = 0;
         }
