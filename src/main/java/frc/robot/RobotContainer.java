@@ -3,7 +3,6 @@ package frc.robot;
 import java.io.File;
 import java.util.ArrayList;
 
-import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import ca.team4308.absolutelib.control.XBoxWrapper;
@@ -28,7 +27,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.LEDCommand;
 // import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.RotateShooterCommand;
+// import frc.robot.commands.RotateShooterCommand;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.IndexCommand;
@@ -37,7 +36,7 @@ import frc.robot.subsystems.LEDSystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.IntakeSystem;
 import frc.robot.subsystems.PixySystem;
-import frc.robot.subsystems.RotateShooterSystem;
+// import frc.robot.subsystems.RotateShooterSystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.IndexSystem;
@@ -59,16 +58,17 @@ public class RobotContainer
   // Subsystems
   private final IntakeSystem m_intakeSystem;
   private final LEDSystem m_ledSystem;
-  private final RotateShooterSystem m_rotateShooterSystem;
+  // private final RotateShooterSystem m_rotateShooterSystem;
   private final ShooterSubsystem m_shooterSubsystem;
   private final ClimbSubsystem m_climbSubsystem;
   private final IndexSystem m_indexSystem;
   private final pigeon2System m_pigeon2System;
+  private final PixySystem m_pixySystem;
 
   // Commands
   private final IntakeCommand intakeCommand;
   private final LEDCommand ledCommand;
-  private final RotateShooterCommand rotateShooterCommand;
+  // private final RotateShooterCommand rotateShooterCommand;
   private final ShooterCommand ShooterCommand;
   private final ClimbCommand climbCommand;
   private final IndexCommand indexCommand;
@@ -105,8 +105,8 @@ public class RobotContainer
     m_ledSystem = new LEDSystem();
     subsystems.add(m_ledSystem);
     
-    m_rotateShooterSystem = new RotateShooterSystem();
-    subsystems.add(m_rotateShooterSystem);
+    // m_rotateShooterSystem = new RotateShooterSystem();
+    // subsystems.add(m_rotateShooterSystem);
     
     m_shooterSubsystem = new ShooterSubsystem();
     subsystems.add(m_shooterSubsystem);
@@ -120,11 +120,14 @@ public class RobotContainer
     m_pigeon2System = new pigeon2System();
     subsystems.add(m_pigeon2System);
 
+    m_pixySystem = new PixySystem();
+    subsystems.add(m_pixySystem);
+
     NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(m_intakeSystem, () -> 1.0));
     NamedCommands.registerCommand("IndexCommand", new InstantCommand(() -> m_indexSystem.setIndexOutput(-1.0)));
     NamedCommands.registerCommand("ShooterCommand", new ShooterCommand(m_shooterSubsystem, () -> 20.0));
     NamedCommands.registerCommand("AlignToSpeaker", new InstantCommand(drivebase::alignToSpeakerToggle));
-    NamedCommands.registerCommand("AutoAlignShooter", new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
+    // NamedCommands.registerCommand("AutoAlignShooter", new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
     NamedCommands.registerCommand("SetShooterAlignTrue", new InstantCommand(() -> setShooterAutonTriggered(true))); // not needed?
     NamedCommands.registerCommand("SetShooterAlignFalse", new InstantCommand(() -> setShooterAutonTriggered(false))); // not needed?
     
@@ -135,13 +138,13 @@ public class RobotContainer
     ledCommand = new LEDCommand(m_ledSystem, () -> getLEDCommand());
     m_ledSystem.setDefaultCommand(ledCommand);
     
-    rotateShooterCommand = new RotateShooterCommand(m_rotateShooterSystem, getRotateShooterControl());
-    m_rotateShooterSystem.setDefaultCommand(rotateShooterCommand);
+    // rotateShooterCommand = new RotateShooterCommand(m_rotateShooterSystem, getRotateShooterControl());
+    // m_rotateShooterSystem.setDefaultCommand(rotateShooterCommand);
     
     ShooterCommand = new ShooterCommand(m_shooterSubsystem, () -> getShooterControl());
     m_shooterSubsystem.setDefaultCommand(ShooterCommand);
     
-    climbCommand = new ClimbCommand(m_climbSubsystem, () -> climbControl());
+    climbCommand = new ClimbCommand(m_climbSubsystem, () -> 0.0);
     m_climbSubsystem.setDefaultCommand(climbCommand);
 
     indexCommand = new IndexCommand(m_indexSystem, () -> indexCommand());
@@ -185,8 +188,8 @@ public class RobotContainer
     // left stick controls translation
     // right stick controls the angular velocity of the robot
     Command driveFieldOrientedAnglularVelocity = drivebase.driveCommand(
-        () -> MathUtil.applyDeadband(stick.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-        () -> MathUtil.applyDeadband(stick.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+        () -> -MathUtil.applyDeadband(stick.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+        () -> -MathUtil.applyDeadband(stick.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
         () -> stick.getRightX());
 
     Command driveFieldOrientedDirectAngleSim = drivebase.simDriveCommand(
@@ -215,9 +218,12 @@ public class RobotContainer
     stick.X.onFalse(new InstantCommand(() -> drivebase.alignToNote(false)));
     stick.B.whileTrue(Commands.deferredProxy(() -> drivebase.alignToAmp()));
     // stick.Start.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
-    stick1.Y.onTrue(new InstantCommand(() -> m_ledSystem.setOutput(0.69))); // yellow
-    stick1.RB.whileTrue(new InstantCommand(() -> m_climbSubsystem.setMotorOutput(TalonSRXControlMode.PercentOutput, 1)));
-    stick1.LB.whileTrue(new InstantCommand(() -> m_climbSubsystem.setMotorOutput(TalonSRXControlMode.PercentOutput, -1)));
+    stick1.Y.whileTrue(new LEDCommand(m_ledSystem, () -> 0.69)); // yellow
+    // stick1.X.whileTrue(new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
+    stick1.X.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
+    stick1.X.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
+    stick1.RB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> 1.0));
+    stick1.LB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> -1.0));
     stick1.RB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
     stick1.LB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
     stick1.X.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
@@ -240,7 +246,7 @@ public class RobotContainer
   }
 
   public double indexCommand() {
-    double trig = stick1.getRightTrigger()*-1;
+    double trig = stick1.getLeftTrigger()*-1;
     if (-0.06 <= trig && trig <= 0.06) {
       trig = 0;
     }
@@ -248,7 +254,7 @@ public class RobotContainer
     if (-0.06 <= joy && joy <= 0.06) {
       joy = 0;
     }
-    if (shooterBeambrake.get() == true) {
+    if (shooterBeambrake.get() == false) {
       return trig;
     } else {
       return joy;
@@ -259,6 +265,10 @@ public class RobotContainer
     if(RobotController.isBrownedOut()) {
       prev = 0.67;
       return 0.67; // red-orange
+    }
+    if (getShooterControl() != 0.0){
+      prev = 0.0;
+      return 0.0; // not colour; trigger colourOutputShooter
     }
     if(PixySystem.getClosestTarget() != null) {
       // target in range
@@ -276,17 +286,13 @@ public class RobotContainer
       prev = -0.39;
       return -0.39;
     }  // default enabled, colour waves lava
-    if (getShooterControl() != 0.0){
-      prev = 0.0;
-      return 0.0; // not colour; trigger colourOutputShooter
-    }
 
     return prev;
     // disabled state is slow rgb
   }
 
   public double getIntakeControl() {
-    if (shooterBeambrake.get() == false) {
+    if (shooterBeambrake.get() == true) {
       return stick1.getLeftY()*-1;
     }
     return 0.0;
@@ -308,11 +314,7 @@ public class RobotContainer
   }
   
   public double getShooterControl() {
-    return stick.getRightTrigger() * 20;//converting into RPS
-  }
-    
-  public double climbControl(){
-    return stick.getLeftTrigger();
+    return stick1.getRightTrigger() * 100;//converting into RPM
   }
 
   public void setDriveMode()
