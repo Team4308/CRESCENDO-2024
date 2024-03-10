@@ -57,7 +57,7 @@ public class RobotContainer
   // Subsystems
   private final IntakeSystem m_intakeSystem;
   private final LEDSystem m_ledSystem;
-  private final RotateShooterSystem m_rotateShooterSystem;
+  // private final RotateShooterSystem m_rotateShooterSystem;
   private final ShooterSubsystem m_shooterSubsystem;
   private final ClimbSubsystem m_climbSubsystem;
   private final IndexSystem m_indexSystem;
@@ -66,7 +66,7 @@ public class RobotContainer
   // Commands
   private final IntakeCommand intakeCommand;
   private final LEDCommand ledCommand;
-  private final RotateShooterCommand rotateShooterCommand;
+  // private final RotateShooterCommand rotateShooterCommand;
   private final ShooterCommand ShooterCommand;
   private final ClimbCommand climbCommand;
   private final IndexCommand indexCommand;
@@ -102,8 +102,8 @@ public class RobotContainer
     m_ledSystem = new LEDSystem();
     subsystems.add(m_ledSystem);
     
-    m_rotateShooterSystem = new RotateShooterSystem();
-    subsystems.add(m_rotateShooterSystem);
+    // m_rotateShooterSystem = new RotateShooterSystem();
+    // subsystems.add(m_rotateShooterSystem);
     
     m_shooterSubsystem = new ShooterSubsystem();
     subsystems.add(m_shooterSubsystem);
@@ -121,7 +121,7 @@ public class RobotContainer
     NamedCommands.registerCommand("IndexCommand", new InstantCommand(() -> m_indexSystem.setIndexOutput(-1.0)));
     NamedCommands.registerCommand("ShooterCommand", new ShooterCommand(m_shooterSubsystem, () -> 1200.0));
     NamedCommands.registerCommand("AlignToSpeaker", new InstantCommand(drivebase::alignToSpeaker));
-    NamedCommands.registerCommand("AutoAlignShooter", new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
+    // NamedCommands.registerCommand("AutoAlignShooter", new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
     NamedCommands.registerCommand("SetShooterAlignTrue", new InstantCommand(() -> setShooterAutonTriggered(true))); // not needed?
     NamedCommands.registerCommand("SetShooterAlignFalse", new InstantCommand(() -> setShooterAutonTriggered(false))); // not needed?
     
@@ -132,13 +132,13 @@ public class RobotContainer
     ledCommand = new LEDCommand(m_ledSystem, () -> getLEDCommand());
     m_ledSystem.setDefaultCommand(ledCommand);
     
-    rotateShooterCommand = new RotateShooterCommand(m_rotateShooterSystem, getRotateShooterControl());
-    m_rotateShooterSystem.setDefaultCommand(rotateShooterCommand);
+    // rotateShooterCommand = new RotateShooterCommand(m_rotateShooterSystem, getRotateShooterControl());
+    // m_rotateShooterSystem.setDefaultCommand(rotateShooterCommand);
     
     ShooterCommand = new ShooterCommand(m_shooterSubsystem, () -> getShooterControl());
     m_shooterSubsystem.setDefaultCommand(ShooterCommand);
     
-    climbCommand = new ClimbCommand(m_climbSubsystem, () -> climbControl());
+    climbCommand = new ClimbCommand(m_climbSubsystem, () -> 0.0);
     m_climbSubsystem.setDefaultCommand(climbCommand);
 
     indexCommand = new IndexCommand(m_indexSystem, () -> indexCommand());
@@ -180,8 +180,8 @@ public class RobotContainer
     // left stick controls translation
     // right stick controls the angular velocity of the robot
     Command driveFieldOrientedAnglularVelocity = drivebase.driveCommand(
-        () -> MathUtil.applyDeadband(stick.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-        () -> MathUtil.applyDeadband(stick.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+        () -> -MathUtil.applyDeadband(stick.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+        () -> -MathUtil.applyDeadband(stick.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
         () -> stick.getRightX());
 
     Command driveFieldOrientedDirectAngleSim = drivebase.simDriveCommand(
@@ -216,7 +216,7 @@ public class RobotContainer
     stick.B.whileTrue(Commands.deferredProxy(() -> drivebase.alignToAmp()));
     // stick.Start.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
     stick1.Y.onTrue(new InstantCommand(() -> m_ledSystem.setOutput(0.69))); // yellow
-    stick1.X.whileTrue(new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
+    // stick1.X.whileTrue(new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
     stick1.X.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
     stick1.X.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
     stick1.RB.whileTrue(new InstantCommand(() -> m_climbSubsystem.setMotorOutput(TalonSRXControlMode.PercentOutput, 1)));
@@ -242,7 +242,7 @@ public class RobotContainer
   }
 
   public double indexCommand() {
-    double trig = stick1.getRightTrigger()*-1;
+    double trig = stick1.getLeftTrigger()*-1;
     if (-0.06 <= trig && trig <= 0.06) {
       trig = 0;
     }
@@ -297,7 +297,7 @@ public class RobotContainer
     
   public double getRotateShooterControl() {
     if (shooterAutonTriggered == false) {
-      double newShooterDegree = shooterDegree + stick.getRightY();
+      double newShooterDegree = shooterDegree + stick1.getRightY();
       if (Constants.Shooter.shooterStartDegree <= newShooterDegree && newShooterDegree <= Constants.Shooter.shooterEndDegree) {//could use more fine tuning
         shooterDegree = newShooterDegree;
       }
@@ -306,11 +306,7 @@ public class RobotContainer
   }
   
   public double getShooterControl() {
-    return stick.getRightTrigger() * 1200;//converting into RPM
-  }
-    
-  public double climbControl(){
-    return stick.getLeftTrigger();
+    return stick1.getRightTrigger() * 20;//converting into RPM
   }
 
   public void setDriveMode()

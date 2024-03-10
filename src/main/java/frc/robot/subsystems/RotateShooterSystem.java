@@ -54,6 +54,7 @@ public class RotateShooterSystem extends LogSubsystem {
         } else if (limitSwitch2.get()) {
             return 66.0;
         }
+        SmartDashboard.putNumber("encoder", revEncoder.getDistance());
         return revEncoder.getDistance() + 16;
     }
 
@@ -69,6 +70,8 @@ public class RotateShooterSystem extends LogSubsystem {
         double outputDegree = DoubleUtils.mapRangeNew(wantedDegree, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree, Constants.Shooter.motorStartRevolutions, Constants.Shooter.motorEndRevolutions);
 
         double encoderDegree = getMotorPosition();
+
+        SmartDashboard.putNumber("degree", encoderDegree);
 
         SmartDashboard.putNumber("Shooter Angle", DoubleUtils.mapRangeNew(encoderDegree, Constants.Shooter.motorStartRevolutions, Constants.Shooter.motorEndRevolutions, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree));
 
