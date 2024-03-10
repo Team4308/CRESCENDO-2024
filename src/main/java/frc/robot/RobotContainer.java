@@ -61,6 +61,7 @@ public class RobotContainer
   private final ShooterSubsystem m_shooterSubsystem;
   private final ClimbSubsystem m_climbSubsystem;
   private final IndexSystem m_indexSystem;
+  private final PixySystem m_pixySystem;
 
   // Commands
   private final IntakeCommand intakeCommand;
@@ -112,6 +113,9 @@ public class RobotContainer
     
     m_indexSystem = new IndexSystem();
     subsystems.add(m_indexSystem);
+
+    m_pixySystem = new PixySystem();
+    subsystems.add(m_pixySystem);
 
     NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(m_intakeSystem, () -> 1.0));
     NamedCommands.registerCommand("IndexCommand", new InstantCommand(() -> m_indexSystem.setIndexOutput(-1.0)));
