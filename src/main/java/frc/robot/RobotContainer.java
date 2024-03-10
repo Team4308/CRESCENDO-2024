@@ -289,6 +289,7 @@ public class RobotContainer
   }
 
   public double getIntakeControl() {
+    SmartDashboard.putBoolean("beambreak", shooterBeambrake.get());
     if (shooterBeambrake.get() == false) {
       return stick1.getLeftY()*-1;
     }
