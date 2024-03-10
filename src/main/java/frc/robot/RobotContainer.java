@@ -250,7 +250,7 @@ public class RobotContainer
     if (-0.06 <= joy && joy <= 0.06) {
       joy = 0;
     }
-    if (shooterBeambrake.get() == true) {
+    if (shooterBeambrake.get() == false) {
       return trig;
     } else {
       return joy;
@@ -289,8 +289,7 @@ public class RobotContainer
   }
 
   public double getIntakeControl() {
-    SmartDashboard.putBoolean("beambreak", shooterBeambrake.get());
-    if (shooterBeambrake.get() == false) {
+    if (shooterBeambrake.get() == true) {
       return stick1.getLeftY()*-1;
     }
     return 0.0;
