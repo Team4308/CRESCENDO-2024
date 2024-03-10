@@ -272,9 +272,9 @@ public class SwerveSubsystem extends SubsystemBase
 
   public double getOffsetLeftRight() {
     double targetOffsetAngle_Vertical =LimelightHelpers.getTY("");
-    double limelightMountAngleDegrees = Constants.Limelight.measurements.limelightMountAngleDegrees; 
-    double limelightLensHeightCM = Constants.Limelight.measurements.limelightLensHeightCM;
-    double goalHeightCM = Constants.gamePieces.speaker.speakerAprilTagHeightCM;
+    double limelightMountAngleDegrees = Constants.Limelight.Measurements.limelightMountAngleDegrees; 
+    double limelightLensHeightCM = Constants.Limelight.Measurements.limelightLensHeightCM;
+    double goalHeightCM = Constants.GamePieces.speaker.speakerAprilTagHeightCM;
     double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
     double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
     double distanceFromLimelightToGoalCM = (goalHeightCM - limelightLensHeightCM) / Math.tan(angleToGoalRadians);
@@ -575,5 +575,13 @@ public class SwerveSubsystem extends SubsystemBase
 
   public void alignToNote(boolean value) {
     alignToNote = value;
+  }
+
+  public void alignToSpeakerToggle() {
+    alignToSpeaker = !alignToSpeaker;
+  }
+
+  public void alignToNoteToggle() {
+    alignToNote = !alignToNote;
   }
 }

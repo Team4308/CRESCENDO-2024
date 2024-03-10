@@ -21,8 +21,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 // import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+//import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+//import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.LEDCommand;
@@ -122,8 +122,8 @@ public class RobotContainer
 
     NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(m_intakeSystem, () -> 1.0));
     NamedCommands.registerCommand("IndexCommand", new InstantCommand(() -> m_indexSystem.setIndexOutput(-1.0)));
-    NamedCommands.registerCommand("ShooterCommand", new ShooterCommand(m_shooterSubsystem, () -> 1200.0));
-    NamedCommands.registerCommand("AlignToSpeaker", new InstantCommand(drivebase::alignToSpeaker));
+    NamedCommands.registerCommand("ShooterCommand", new ShooterCommand(m_shooterSubsystem, () -> 20.0));
+    NamedCommands.registerCommand("AlignToSpeaker", new InstantCommand(drivebase::alignToSpeakerToggle));
     NamedCommands.registerCommand("AutoAlignShooter", new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
     NamedCommands.registerCommand("SetShooterAlignTrue", new InstantCommand(() -> setShooterAutonTriggered(true))); // not needed?
     NamedCommands.registerCommand("SetShooterAlignFalse", new InstantCommand(() -> setShooterAutonTriggered(false))); // not needed?
@@ -146,9 +146,6 @@ public class RobotContainer
 
     indexCommand = new IndexCommand(m_indexSystem, () -> indexCommand());
     m_indexSystem.setDefaultCommand(indexCommand);
-
-    rotateShooterCommand = new RotateShooterCommand(m_rotateShooterSystem, getRotateShooterControl());
-    m_rotateShooterSystem.setDefaultCommand(rotateShooterCommand);
 
     shootInAmpCommand = new ShootInAmpCommand(m_rotateShooterSystem);
 
@@ -214,7 +211,8 @@ public class RobotContainer
     // driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
     stick.A.onTrue(new InstantCommand(() -> drivebase.alignToSpeaker(true)));
     stick.A.onFalse(new InstantCommand(() -> drivebase.alignToSpeaker(false)));
-    stick.X.onTrue(new InstantCommand(() -> drivebase.alignToNote()));
+    stick.X.onTrue(new InstantCommand(() -> drivebase.alignToNote(true)));
+    stick.X.onFalse(new InstantCommand(() -> drivebase.alignToNote(false)));
     stick.B.whileTrue(Commands.deferredProxy(() -> drivebase.alignToAmp()));
     // stick.Start.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
     stick1.Y.onTrue(new InstantCommand(() -> m_ledSystem.setOutput(0.69))); // yellow
@@ -258,7 +256,6 @@ public class RobotContainer
   }
 
   public Double getLEDCommand() {
-    
     if(RobotController.isBrownedOut()) {
       prev = 0.67;
       return 0.67; // red-orange
@@ -311,7 +308,7 @@ public class RobotContainer
   }
   
   public double getShooterControl() {
-    return stick.getRightTrigger() * 1200;//converting into RPM
+    return stick.getRightTrigger() * 20;//converting into RPS
   }
     
   public double climbControl(){

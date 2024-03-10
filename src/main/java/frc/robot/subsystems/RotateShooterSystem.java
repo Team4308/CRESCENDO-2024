@@ -37,7 +37,7 @@ public class RotateShooterSystem extends LogSubsystem {
         limitSwitch2 = new DigitalInput(Constants.Mapping.Shooter.limitSwitch2);
 
         motorConfiguration = new TalonFXConfiguration();
-        motorConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        motorConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         motor.getConfigurator().apply(motorConfiguration);
 
@@ -59,21 +59,12 @@ public class RotateShooterSystem extends LogSubsystem {
 
     public void setMotorPosition(double degree) { 
         double wantedDegree = DoubleUtils.clamp(degree, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree);
-        //0 is base position(16 degree)
-        //14.25925757 is max revolutions(43 degree)
-        //2200/12 gear ratio  
 
-        /*
-        double m = (Constants.Shooter.motorStartRevolutions-Constants.Shooter.motorEndRevolutions)/(Constants.Shooter.shooterStartDegree-Constants.Shooter.shooterEndDegree);
-        double b = Constants.Shooter.motorStartRevolutions-(Constants.Shooter.shooterStartDegree*m);
-        double outputDegree = m*wantedDegree+b;
-        */
-
-        double outputDegree = DoubleUtils.mapRangeNew(wantedDegree, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree, Constants.Shooter.motorStartRevolutions, Constants.Shooter.motorEndRevolutions);
+        double outputDegree = DoubleUtils.mapRangeNew(wantedDegree, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree, Constants.Shooter.encoderStartRevolutions, Constants.Shooter.encoderEndRevolutions);
 
         double encoderDegree = getMotorPosition();
 
-        SmartDashboard.putNumber("Shooter Angle", DoubleUtils.mapRangeNew(encoderDegree, Constants.Shooter.motorStartRevolutions, Constants.Shooter.motorEndRevolutions, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree));
+        SmartDashboard.putNumber("Shooter Angle", DoubleUtils.mapRangeNew(encoderDegree, Constants.Shooter.encoderStartRevolutions, Constants.Shooter.encoderEndRevolutions, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree));
 
         double motorDegree = DoubleUtils.clamp(pidController.calculate(encoderDegree, outputDegree), -1.0, 1.0);
 
@@ -81,38 +72,36 @@ public class RotateShooterSystem extends LogSubsystem {
     }
 
     public void autoAlignShooter() {
-
         double targetOffsetAngle_Vertical = LimelightHelpers.getTY("");
 
         // how many degrees back is your limelight rotated from perfectly vertical?
-        double limelightMountAngleDegrees = Constants.Limelight.measurements.limelightMountAngleDegrees; 
+        double limelightMountAngleDegrees = Constants.Limelight.Measurements.limelightMountAngleDegrees; 
 
         // distance from the center of the Limelight lens to the floor
-        double limelightLensHeightCM = Constants.Limelight.measurements.limelightLensHeightCM;
+        double limelightLensHeightCM = Constants.Limelight.Measurements.limelightLensHeightCM;
 
         // distance from the target to the floor
-        double goalHeightCM = Constants.gamePieces.speaker.speakerAprilTagHeightCM;
-        double speakerOpeningHeightCM = Constants.gamePieces.speaker.speakerOpeningHeightCM;
+        double goalHeightCM = Constants.GamePieces.speaker.speakerAprilTagHeightCM;
+        double speakerOpeningHeightCM = Constants.GamePieces.speaker.speakerOpeningHeightCM;
 
         double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
         double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
 
+        double limelightDistanceFromShooterCM = Constants.Limelight.Measurements.limelightDistanceFromShooterCM;
+
         //calculate distance
-        double distanceFromLimelightToGoalCM = (goalHeightCM - limelightLensHeightCM) / Math.tan(angleToGoalRadians);
+        double distanceFromShhoterToGoalCM = (goalHeightCM - limelightLensHeightCM) / Math.tan(angleToGoalRadians) + limelightDistanceFromShooterCM;
 
         double accelY = m_gyroSystem.getAccelerationY();
-        double offset = accelY * 0.5;
+        double offset = accelY * 0.1;//shootingwhilemoving thing
 
-        double shooterAngle = Math.atan(speakerOpeningHeightCM/distanceFromLimelightToGoalCM) + offset;
+        double shooterAngle = Math.atan(speakerOpeningHeightCM/distanceFromShhoterToGoalCM) + offset;
 
         setMotorPosition(shooterAngle);
     }
 
     public void controlWithController(Double controllerValue) {
-        double newShooterDegree = shooterDegree + controllerValue;
-        if (Constants.Shooter.shooterStartDegree <= newShooterDegree && newShooterDegree <= Constants.Shooter.shooterEndDegree) {//could use more fine tuning
-        shooterDegree = newShooterDegree;
-        }
+        shooterDegree = DoubleUtils.clamp(shooterDegree + controllerValue, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree);
         setMotorPosition(shooterDegree);
     }
 

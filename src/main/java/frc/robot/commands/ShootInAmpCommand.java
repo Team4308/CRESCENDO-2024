@@ -20,7 +20,7 @@ public class ShootInAmpCommand extends Command {
 
     @Override
     public void execute() {
-        m_subsystem.setMotorPosition(Constants.gamePieces.amp.angleToshoot);
+        m_subsystem.setMotorPosition(Constants.GamePieces.amp.angleToshoot);
     }
 
     @Override

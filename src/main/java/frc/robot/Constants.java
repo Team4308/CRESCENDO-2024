@@ -97,8 +97,8 @@ public final class Constants
     public static int leftMultipler = 1;
     public static final int shooterStartDegree = 16;
     public static final int shooterEndDegree = 66;
-    public static final int motorStartRevolutions = 0;
-    public static final double motorEndRevolutions = 6/11*((shooterEndDegree-shooterStartDegree)/360)*100;
+    public static final int encoderStartRevolutions = 0;
+    public static final double encoderEndRevolutions = 6/11*((shooterEndDegree-shooterStartDegree)/360)*100;
     public static final double shooterMaxVelocity = 7;
 
     public static final class AngleControl {
@@ -119,6 +119,7 @@ public final class Constants
     public static class Measurements {
       public static final double limelightMountAngleDegrees = 25;
       public static final double limelightLensHeightCM = 20;
+      public static final double limelightDistanceFromShooterCM = 10;
     }
   }
   
