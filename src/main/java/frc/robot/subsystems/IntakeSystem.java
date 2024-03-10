@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
@@ -17,15 +16,6 @@ public class IntakeSystem extends MotoredSubsystem {
 
         //change later
         motor = new TalonSRX(Constants.Mapping.Intake.intakeMotor);
-
-        motor.configFactoryDefault(Constants.Generic.timeoutMs);
-        motor.configOpenloopRamp(Constants.Config.Drive.Power.kOpenLoopRamp, Constants.Generic.timeoutMs);
-        motor.configClosedloopRamp(0.1, Constants.Generic.timeoutMs);
-        motor.setNeutralMode(NeutralMode.Brake);
-        motor.configNeutralDeadband(0.001, Constants.Generic.timeoutMs);
-        motor.changeMotionControlFramePeriod(5);
-        motor.configVoltageCompSaturation(12.5, Constants.Generic.timeoutMs);
-        motor.enableVoltageCompensation(true);
 
         stopControllers();
     }
