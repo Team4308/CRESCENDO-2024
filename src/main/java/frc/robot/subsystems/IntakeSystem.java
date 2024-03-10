@@ -21,7 +21,7 @@ public class IntakeSystem extends MotoredSubsystem {
         motor.configFactoryDefault(Constants.Generic.timeoutMs);
         motor.configOpenloopRamp(Constants.Config.Drive.Power.kOpenLoopRamp, Constants.Generic.timeoutMs);
         motor.configClosedloopRamp(0.1, Constants.Generic.timeoutMs);
-        motor.setNeutralMode(NeutralMode.Coast);
+        motor.setNeutralMode(NeutralMode.Brake);
         motor.configNeutralDeadband(0.001, Constants.Generic.timeoutMs);
         motor.changeMotionControlFramePeriod(5);
         motor.configVoltageCompSaturation(12.5, Constants.Generic.timeoutMs);

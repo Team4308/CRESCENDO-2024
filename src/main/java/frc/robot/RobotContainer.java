@@ -251,9 +251,9 @@ public class RobotContainer
       joy = 0;
     }
     if (shooterBeambrake.get() == false) {
-      return trig;
+      return trig * 0.5;
     } else {
-      return joy;
+      return joy * 0.5;
     }
   }
 
