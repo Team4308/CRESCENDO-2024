@@ -28,7 +28,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.LEDCommand;
 // import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.RotateShooterCommand;
+// import frc.robot.commands.RotateShooterCommand;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.IndexCommand;
@@ -36,7 +36,7 @@ import frc.robot.subsystems.LEDSystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.IntakeSystem;
 import frc.robot.subsystems.PixySystem;
-import frc.robot.subsystems.RotateShooterSystem;
+// import frc.robot.subsystems.RotateShooterSystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.IndexSystem;
@@ -215,7 +215,7 @@ public class RobotContainer
     stick.X.onTrue(new InstantCommand(() -> drivebase.alignToNote()));
     stick.B.whileTrue(Commands.deferredProxy(() -> drivebase.alignToAmp()));
     // stick.Start.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
-    stick1.Y.onTrue(new InstantCommand(() -> m_ledSystem.setOutput(0.69))); // yellow
+    stick1.Y.whileTrue(new InstantCommand(() -> m_ledSystem.setOutput(0.69))); // yellow
     // stick1.X.whileTrue(new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
     stick1.X.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
     stick1.X.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
@@ -263,6 +263,10 @@ public class RobotContainer
       prev = 0.67;
       return 0.67; // red-orange
     }
+    if (getShooterControl() != 0.0){
+      prev = 0.0;
+      return 0.0; // not colour; trigger colourOutputShooter
+    }
     if(PixySystem.getClosestTarget() != null) {
       // target in range
       debounce++;
@@ -279,10 +283,6 @@ public class RobotContainer
       prev = -0.39;
       return -0.39;
     }  // default enabled, colour waves lava
-    if (getShooterControl() != 0.0){
-      prev = 0.0;
-      return 0.0; // not colour; trigger colourOutputShooter
-    }
 
     return prev;
     // disabled state is slow rgb
@@ -306,7 +306,7 @@ public class RobotContainer
   }
   
   public double getShooterControl() {
-    return stick1.getRightTrigger() * 20;//converting into RPM
+    return stick1.getRightTrigger() * 100;//converting into RPM
   }
 
   public void setDriveMode()
