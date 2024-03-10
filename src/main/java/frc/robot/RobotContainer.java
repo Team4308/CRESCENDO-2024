@@ -3,7 +3,6 @@ package frc.robot;
 import java.io.File;
 import java.util.ArrayList;
 
-import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import ca.team4308.absolutelib.control.XBoxWrapper;
@@ -215,12 +214,12 @@ public class RobotContainer
     stick.X.onTrue(new InstantCommand(() -> drivebase.alignToNote()));
     stick.B.whileTrue(Commands.deferredProxy(() -> drivebase.alignToAmp()));
     // stick.Start.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
-    stick1.Y.whileTrue(new InstantCommand(() -> m_ledSystem.setOutput(0.69))); // yellow
+    stick1.Y.whileTrue(new LEDCommand(m_ledSystem, () -> 0.69)); // yellow
     // stick1.X.whileTrue(new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
     stick1.X.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
     stick1.X.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
-    stick1.RB.whileTrue(new InstantCommand(() -> m_climbSubsystem.setMotorOutput(TalonSRXControlMode.PercentOutput, 1)));
-    stick1.LB.whileTrue(new InstantCommand(() -> m_climbSubsystem.setMotorOutput(TalonSRXControlMode.PercentOutput, -1)));
+    stick1.RB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> 1.0));
+    stick1.LB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> -1.0));
     stick1.RB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
     stick1.LB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
   }
