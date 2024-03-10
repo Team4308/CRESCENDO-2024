@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import frc.robot.Constants;
 import frc.robot.Constants.AutonConstants;
 import frc.robot.LimelightHelpers;
 import frc.robot.subsystems.PixySystem;
@@ -37,12 +38,13 @@ import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
+import frc.robot.subsystems.pigeon2System;
 
 public class SwerveSubsystem extends SubsystemBase
 {
   boolean alignToSpeaker = false;
   boolean alignToNote = false;
-
+  pigeon2System m_gyroSystem = new pigeon2System(); 
   /**
    * Swerve drive object.
    */
@@ -268,6 +270,30 @@ public class SwerveSubsystem extends SubsystemBase
     3.0, 5.0, 3.0);
 }
 
+  public double getOffsetLeftRight() {
+    double targetOffsetAngle_Vertical =LimelightHelpers.getTY("");
+    double limelightMountAngleDegrees = Constants.Limelight.measurements.limelightMountAngleDegrees; 
+    double limelightLensHeightCM = Constants.Limelight.measurements.limelightLensHeightCM;
+    double goalHeightCM = Constants.gamePieces.speaker.speakerAprilTagHeightCM;
+    double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
+    double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
+    double distanceFromLimelightToGoalCM = (goalHeightCM - limelightLensHeightCM) / Math.tan(angleToGoalRadians);
+
+    double Vs = Constants.Shooter.shooterMaxVelocity;//shooter velocity
+    double dY = distanceFromLimelightToGoalCM / 100;//y distance from speaker
+    double dX = dY / Math.tan(LimelightHelpers.getTX(""));//x distance from speaker
+    double vrX = getFieldVelocity().vxMetersPerSecond;//horziontal velocity to speaker
+    double vrY = getFieldVelocity().vyMetersPerSecond;//vertical velocity to speaker  
+
+    double fracTop = Math.sqrt(-1*vrY*vrY+2*vrY*dY*vrX*dY-dY*dY*vrX*vrX+dY*dY*Vs*Vs+Vs*Vs*dX*dX)-dY*Vs;
+    double fracBottom = (-1*vrX*dX+dY*vrX+Vs*dX);
+
+    if (LimelightHelpers.getTX("") > 0) {
+      return 2*Math.atan(fracTop/fracBottom);
+    }
+    return 2*Math.atan(-1*fracTop/fracBottom);
+  }
+
   /**
    * Command to drive the robot using translative values and heading as angular velocity.
    *
@@ -280,13 +306,15 @@ public class SwerveSubsystem extends SubsystemBase
   {
     return run(() -> {
       Double rotation;
-      int targetX = PixySystem.getTargetX(PixySystem.getClosestTarget());
-      if (targetX > -10 && targetX < 10) {
-        targetX = 0;
-      }
       if (alignToSpeaker) {
-        rotation = -LimelightHelpers.getTX("") * (Math.PI / 180) * 4;
+        double accelX = m_gyroSystem.getAccelerationX();
+        double shootingWhileMovingOffsetValue = accelX * 0.5;
+        rotation = -LimelightHelpers.getTX("") * (Math.PI / 180) * 4 + shootingWhileMovingOffsetValue;
       } else if (alignToNote) {
+        int targetX = PixySystem.getTargetX(PixySystem.getClosestTarget());
+        if (targetX > -10 && targetX < 10) {
+          targetX = 0;
+        }
         rotation = -targetX * 0.1;
       } else {
         rotation = Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumAngularVelocity();
@@ -541,11 +569,11 @@ public class SwerveSubsystem extends SubsystemBase
     swerveDrive.addVisionMeasurement(new Pose2d(3, 3, Rotation2d.fromDegrees(65)), Timer.getFPGATimestamp());
   }
 
-  public void alignToSpeaker() {
-    alignToSpeaker = !alignToSpeaker;
+  public void alignToSpeaker(boolean value) {
+    alignToSpeaker = value;
   }
 
-  public void alignToNote() {
-    alignToNote = !alignToNote;
+  public void alignToNote(boolean value) {
+    alignToNote = value;
   }
 }

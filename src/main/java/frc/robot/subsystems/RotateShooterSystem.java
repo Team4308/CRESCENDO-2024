@@ -24,10 +24,10 @@ public class RotateShooterSystem extends LogSubsystem {
     public final PIDController pidController;
     public final DigitalInput limitSwitch1;
     public final DigitalInput limitSwitch2;
-    private final DutyCycleEncoder revEncoder;
+    private final DutyCycleEncoder revEncoder; 
+    private final pigeon2System m_gyroSystem = new pigeon2System();
 
     public static double shooterDegree = 20.0;
-
     public static double encoderDegree = 0.0;
 
     public RotateShooterSystem() {
@@ -59,6 +59,9 @@ public class RotateShooterSystem extends LogSubsystem {
 
     public void setMotorPosition(double degree) { 
         double wantedDegree = DoubleUtils.clamp(degree, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree);
+        //0 is base position(16 degree)
+        //14.25925757 is max revolutions(43 degree)
+        //2200/12 gear ratio  
 
         /*
         double m = (Constants.Shooter.motorStartRevolutions-Constants.Shooter.motorEndRevolutions)/(Constants.Shooter.shooterStartDegree-Constants.Shooter.shooterEndDegree);
@@ -78,24 +81,29 @@ public class RotateShooterSystem extends LogSubsystem {
     }
 
     public void autoAlignShooter() {
+
         double targetOffsetAngle_Vertical = LimelightHelpers.getTY("");
 
         // how many degrees back is your limelight rotated from perfectly vertical?
-        double limelightMountAngleDegrees = Constants.Limelight.Measurements.limelightMountAngleDegrees; 
+        double limelightMountAngleDegrees = Constants.Limelight.measurements.limelightMountAngleDegrees; 
 
         // distance from the center of the Limelight lens to the floor
-        double limelightLensHeightCM = Constants.Limelight.Measurements.limelightLensHeightCM;
+        double limelightLensHeightCM = Constants.Limelight.measurements.limelightLensHeightCM;
 
         // distance from the target to the floor
-        double goalHeightCM = Constants.GamePieces.Dimensions.stageHeightCM;
+        double goalHeightCM = Constants.gamePieces.speaker.speakerAprilTagHeightCM;
+        double speakerOpeningHeightCM = Constants.gamePieces.speaker.speakerOpeningHeightCM;
 
         double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
         double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
 
         //calculate distance
-        double distanceFromShooterToGoalCM = (goalHeightCM - limelightLensHeightCM) / Math.tan(angleToGoalRadians) + 48.26;
+        double distanceFromLimelightToGoalCM = (goalHeightCM - limelightLensHeightCM) / Math.tan(angleToGoalRadians);
 
-        double shooterAngle = Math.atan(goalHeightCM/distanceFromShooterToGoalCM);
+        double accelY = m_gyroSystem.getAccelerationY();
+        double offset = accelY * 0.5;
+
+        double shooterAngle = Math.atan(speakerOpeningHeightCM/distanceFromLimelightToGoalCM) + offset;
 
         setMotorPosition(shooterAngle);
     }

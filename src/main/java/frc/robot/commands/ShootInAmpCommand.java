@@ -1,16 +1,15 @@
 package frc.robot.commands;
 
+import frc.robot.Constants;
 import frc.robot.subsystems.RotateShooterSystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class RotateShooterCommand extends Command {
+public class ShootInAmpCommand extends Command {
 
     private final RotateShooterSystem m_subsystem;
-    private final Double degree;
 
-    public RotateShooterCommand(RotateShooterSystem subsystem, Double degree) {
+    public ShootInAmpCommand(RotateShooterSystem subsystem) {
         m_subsystem = subsystem;
-        this.degree = degree;
 
         addRequirements(subsystem);
     }
@@ -21,7 +20,7 @@ public class RotateShooterCommand extends Command {
 
     @Override
     public void execute() {
-        m_subsystem.setMotorPosition(degree);
+        m_subsystem.setMotorPosition(Constants.gamePieces.amp.angleToshoot);
     }
 
     @Override
