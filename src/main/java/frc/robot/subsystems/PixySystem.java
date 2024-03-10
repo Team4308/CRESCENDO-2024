@@ -14,7 +14,6 @@ import frc.robot.pixy2api.links.SPILink;
 public class PixySystem extends LogSubsystem {
   public static Pixy2 pixy;
   private static int sig = Pixy2CCC.CCC_SIG1;
-  private static ArrayList<Integer> previousTargetX = new ArrayList<Integer>();
 
   public PixySystem() {
     pixy = Pixy2.createInstance(new SPILink());
@@ -28,7 +27,6 @@ public class PixySystem extends LogSubsystem {
     getClosestTarget();
     getTargetWidth(getClosestTarget());
     getTargetX(getClosestTarget());
-    previousTargetX.add(getTargetX(getClosestTarget()));
     // This method will be called once per scheduler run
   }
 
@@ -81,14 +79,6 @@ public class PixySystem extends LogSubsystem {
     targetY -= 103.5; // range from -103.5 to 103.5
     SmartDashboard.putNumber("Target Y", targetY);
     return targetY;
-  }
-
-  public static int getAverageTargetX() {
-    int average = 0;
-    for (int i = previousTargetX.size(); i > previousTargetX.size() - 5; i--) {
-      average += previousTargetX.get(i);
-    }
-    return average / 4;
   }
 
   @Override

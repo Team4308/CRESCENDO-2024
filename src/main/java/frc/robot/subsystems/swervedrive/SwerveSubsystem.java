@@ -19,6 +19,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
@@ -280,10 +281,7 @@ public class SwerveSubsystem extends SubsystemBase
   {
     return run(() -> {
       Double rotation;
-      int targetX = PixySystem.getTargetX(PixySystem.getClosestTarget());
-      if (targetX > -10 && targetX < 10) {
-        targetX = 0;
-      }
+      int targetX = Math.round(PixySystem.getTargetX(PixySystem.getClosestTarget()) / 20) * 20;
       if (alignToSpeaker) {
         rotation = -LimelightHelpers.getTX("") * (Math.PI / 180) * 4;
       } else if (alignToNote) {
