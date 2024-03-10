@@ -24,10 +24,10 @@ public class RotateShooterSystem extends LogSubsystem {
     public final PIDController pidController;
     public final DigitalInput limitSwitch1;
     public final DigitalInput limitSwitch2;
-    private final DutyCycleEncoder revEncoder;
+    private final DutyCycleEncoder revEncoder; 
+    private final pigeon2System m_gyroSystem = new pigeon2System();
 
     public static double shooterDegree = 20.0;
-
     public static double encoderDegree = 0.0;
 
     public RotateShooterSystem() {
@@ -37,7 +37,7 @@ public class RotateShooterSystem extends LogSubsystem {
         limitSwitch2 = new DigitalInput(Constants.Mapping.Shooter.limitSwitch2);
 
         motorConfiguration = new TalonFXConfiguration();
-        motorConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        motorConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         motor.getConfigurator().apply(motorConfiguration);
 
@@ -61,13 +61,7 @@ public class RotateShooterSystem extends LogSubsystem {
     public void setMotorPosition(double degree) { 
         double wantedDegree = DoubleUtils.clamp(degree, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree);
 
-        /*
-        double m = (Constants.Shooter.motorStartRevolutions-Constants.Shooter.motorEndRevolutions)/(Constants.Shooter.shooterStartDegree-Constants.Shooter.shooterEndDegree);
-        double b = Constants.Shooter.motorStartRevolutions-(Constants.Shooter.shooterStartDegree*m);
-        double outputDegree = m*wantedDegree+b;
-        */
-
-        double outputDegree = DoubleUtils.mapRangeNew(wantedDegree, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree, Constants.Shooter.motorStartRevolutions, Constants.Shooter.motorEndRevolutions);
+        double outputDegree = DoubleUtils.mapRangeNew(wantedDegree, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree, Constants.Shooter.encoderStartRevolutions, Constants.Shooter.encoderEndRevolutions);
 
         double encoderDegree = getMotorPosition();
 
@@ -90,24 +84,27 @@ public class RotateShooterSystem extends LogSubsystem {
         double limelightLensHeightCM = Constants.Limelight.Measurements.limelightLensHeightCM;
 
         // distance from the target to the floor
-        double goalHeightCM = Constants.GamePieces.Dimensions.stageHeightCM;
+        double goalHeightCM = Constants.GamePieces.speaker.speakerAprilTagHeightCM;
+        double speakerOpeningHeightCM = Constants.GamePieces.speaker.speakerOpeningHeightCM;
 
         double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
         double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
 
-        //calculate distance
-        double distanceFromShooterToGoalCM = (goalHeightCM - limelightLensHeightCM) / Math.tan(angleToGoalRadians) + 48.26;
+        double limelightDistanceFromShooterCM = Constants.Limelight.Measurements.limelightDistanceFromShooterCM;
 
-        double shooterAngle = Math.atan(goalHeightCM/distanceFromShooterToGoalCM);
+        //calculate distance
+        double distanceFromShhoterToGoalCM = (goalHeightCM - limelightLensHeightCM) / Math.tan(angleToGoalRadians) + limelightDistanceFromShooterCM;
+
+        double accelY = m_gyroSystem.getAccelerationY();
+        double offset = accelY * 0.1;//shootingwhilemoving thing
+
+        double shooterAngle = Math.atan(speakerOpeningHeightCM/distanceFromShhoterToGoalCM) + offset;
 
         setMotorPosition(shooterAngle);
     }
 
     public void controlWithController(Double controllerValue) {
-        double newShooterDegree = shooterDegree + controllerValue;
-        if (Constants.Shooter.shooterStartDegree <= newShooterDegree && newShooterDegree <= Constants.Shooter.shooterEndDegree) {//could use more fine tuning
-        shooterDegree = newShooterDegree;
-        }
+        shooterDegree = DoubleUtils.clamp(shooterDegree + controllerValue, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree);
         setMotorPosition(shooterDegree);
     }
 

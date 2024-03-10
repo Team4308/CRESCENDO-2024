@@ -54,8 +54,8 @@ public class ShooterSubsystem extends LogSubsystem {
         right.getConfigurator().apply(rightConfiguration);
         left.getConfigurator().apply(leftConfiguration);
 
-        right.getConfigurator().apply(slot0Configs, 0.050);
-        left.getConfigurator().apply(slot0Configs, 0.050);
+        right.getConfigurator().apply(slot0Configs, Constants.Generic.timeoutMs);
+        left.getConfigurator().apply(slot0Configs, Constants.Generic.timeoutMs);
         
         // Reset
         stopControllers();
@@ -65,11 +65,11 @@ public class ShooterSubsystem extends LogSubsystem {
     /**
      * Misc Stuff
      */
-    public void setMotorOutput(double rpm) {
+    public void setMotorOutput(double rps) {
         rightVelocity.Slot = 0;
         leftVelocity.Slot = 0;
-        right.setControl(rightVelocity.withVelocity(rpm));
-        left.setControl(leftVelocity.withVelocity(rpm));
+        right.setControl(rightVelocity.withVelocity(rps*Constants.Shooter.rightMultiplier));
+        left.setControl(leftVelocity.withVelocity(rps*Constants.Shooter.rightMultiplier));
 
         /*
         rightMotorOut.Output = rpm * Constants.Shooter.rightMultiplier;

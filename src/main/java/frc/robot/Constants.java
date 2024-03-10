@@ -68,6 +68,9 @@ public final class Constants
     public static class Index {
       public static final int indexMotor = 12;
     }
+    public static class Pigeon2 {
+      public static final int gyro = 1;
+    }
   }
 
   public static class Generic {
@@ -94,8 +97,9 @@ public final class Constants
     public static int leftMultipler = 1;
     public static final int shooterStartDegree = 16;
     public static final int shooterEndDegree = 66;
-    public static final int motorStartRevolutions = 0;
-    public static final double motorEndRevolutions = 6/11*((shooterEndDegree-shooterStartDegree)/360)*100;
+    public static final int encoderStartRevolutions = 0;
+    public static final double encoderEndRevolutions = 6/11*((shooterEndDegree-shooterStartDegree)/360)*100;
+    public static final double shooterMaxVelocity = 7;
 
     public static final class AngleControl {
       public static final double kP = 0.01;
@@ -115,12 +119,17 @@ public final class Constants
     public static class Measurements {
       public static final double limelightMountAngleDegrees = 25;
       public static final double limelightLensHeightCM = 20;
+      public static final double limelightDistanceFromShooterCM = 10;
     }
   }
   
   public static class GamePieces {
-    public static class Dimensions {
-      public static final double stageHeightCM = 60.0;
+    public static class speaker {
+      public static final double speakerAprilTagHeightCM = 60.0;
+      public static final double speakerOpeningHeightCM = 60.0;
+    }
+    public static class amp {
+      public static final double angleToshoot = 37.0;
     }
   }
 }

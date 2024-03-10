@@ -20,8 +20,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 // import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+//import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+//import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.LEDCommand;
@@ -31,6 +31,7 @@ import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.IndexCommand;
+import frc.robot.commands.ShootInAmpCommand;
 import frc.robot.subsystems.LEDSystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.IntakeSystem;
@@ -39,6 +40,7 @@ import frc.robot.subsystems.PixySystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.IndexSystem;
+import frc.robot.subsystems.pigeon2System;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -60,6 +62,7 @@ public class RobotContainer
   private final ShooterSubsystem m_shooterSubsystem;
   private final ClimbSubsystem m_climbSubsystem;
   private final IndexSystem m_indexSystem;
+  private final pigeon2System m_pigeon2System;
   private final PixySystem m_pixySystem;
 
   // Commands
@@ -69,6 +72,7 @@ public class RobotContainer
   private final ShooterCommand ShooterCommand;
   private final ClimbCommand climbCommand;
   private final IndexCommand indexCommand;
+  private final ShootInAmpCommand shootInAmpCommand;
 
   // Controllers
   // For swerve
@@ -112,14 +116,17 @@ public class RobotContainer
     
     m_indexSystem = new IndexSystem();
     subsystems.add(m_indexSystem);
+    
+    m_pigeon2System = new pigeon2System();
+    subsystems.add(m_pigeon2System);
 
     m_pixySystem = new PixySystem();
     subsystems.add(m_pixySystem);
 
     NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(m_intakeSystem, () -> 1.0));
     NamedCommands.registerCommand("IndexCommand", new InstantCommand(() -> m_indexSystem.setIndexOutput(-1.0)));
-    NamedCommands.registerCommand("ShooterCommand", new ShooterCommand(m_shooterSubsystem, () -> 1200.0));
-    NamedCommands.registerCommand("AlignToSpeaker", new InstantCommand(drivebase::alignToSpeaker));
+    NamedCommands.registerCommand("ShooterCommand", new ShooterCommand(m_shooterSubsystem, () -> 20.0));
+    NamedCommands.registerCommand("AlignToSpeaker", new InstantCommand(drivebase::alignToSpeakerToggle));
     // NamedCommands.registerCommand("AutoAlignShooter", new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
     NamedCommands.registerCommand("SetShooterAlignTrue", new InstantCommand(() -> setShooterAutonTriggered(true))); // not needed?
     NamedCommands.registerCommand("SetShooterAlignFalse", new InstantCommand(() -> setShooterAutonTriggered(false))); // not needed?
@@ -142,6 +149,8 @@ public class RobotContainer
 
     indexCommand = new IndexCommand(m_indexSystem, () -> indexCommand());
     m_indexSystem.setDefaultCommand(indexCommand);
+
+    shootInAmpCommand = new ShootInAmpCommand(m_rotateShooterSystem);
 
     SmartDashboard.putData(autoCommandChooser);
 
@@ -192,13 +201,6 @@ public class RobotContainer
         !RobotBase.isSimulation() ? driveFieldOrientedAnglularVelocity : driveFieldOrientedDirectAngleSim);
   }
 
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary predicate, or via the
-   * named factories in {@link edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
-   * {@link CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller PS4}
-   * controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joysticks}.
-   */
   private void configureBindings()
   {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
@@ -210,8 +212,10 @@ public class RobotContainer
     //                                new Pose2d(new Translation2d(1.8, 7.7), Rotation2d.fromDegrees(90.0)))
     //                           )); 
     // driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-    stick.A.onTrue(new InstantCommand(drivebase::alignToSpeaker));
-    stick.X.onTrue(new InstantCommand(() -> drivebase.alignToNote()));
+    stick.A.onTrue(new InstantCommand(() -> drivebase.alignToSpeaker(true)));
+    stick.A.onFalse(new InstantCommand(() -> drivebase.alignToSpeaker(false)));
+    stick.X.onTrue(new InstantCommand(() -> drivebase.alignToNote(true)));
+    stick.X.onFalse(new InstantCommand(() -> drivebase.alignToNote(false)));
     stick.B.whileTrue(Commands.deferredProxy(() -> drivebase.alignToAmp()));
     // stick.Start.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
     stick1.Y.whileTrue(new LEDCommand(m_ledSystem, () -> 0.69)); // yellow
@@ -222,17 +226,18 @@ public class RobotContainer
     stick1.LB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> -1.0));
     stick1.RB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
     stick1.LB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
+    stick1.X.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
+    stick1.X.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
+    stick1.X.whileTrue(new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
+    stick1.A.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
+    stick1.B.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
+    stick1.B.whileTrue(shootInAmpCommand);
+    stick1.B.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
   }
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
   public Command getAutonomousCommand()
   {
-    // An example command will be run in autonomous
-    return drivebase.getAutonomousCommand("TestAuto");
+    return autoCommandChooser.getSelected();
   }
     
   public Command setShooterAutonTriggered(boolean value) {
@@ -257,7 +262,6 @@ public class RobotContainer
   }
 
   public Double getLEDCommand() {
-    
     if(RobotController.isBrownedOut()) {
       prev = 0.67;
       return 0.67; // red-orange
@@ -294,13 +298,18 @@ public class RobotContainer
     return 0.0;
   }
     
-  public double getRotateShooterControl() {
+  public double getRotateShooterControl(){
     if (shooterAutonTriggered == false) {
-      double newShooterDegree = shooterDegree + stick1.getRightY();
+      var newVal = stick.getRightY();
+      if (-0.06 <= newVal && newVal <= 0.06) {//deadband; too lazy to code properly
+        newVal = 0;
+      }
+      double newShooterDegree = shooterDegree + newVal;
       if (Constants.Shooter.shooterStartDegree <= newShooterDegree && newShooterDegree <= Constants.Shooter.shooterEndDegree) {//could use more fine tuning
         shooterDegree = newShooterDegree;
       }
-    } 
+    }
+    
     return shooterDegree;
   }
   
