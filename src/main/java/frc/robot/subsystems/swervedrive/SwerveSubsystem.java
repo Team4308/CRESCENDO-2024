@@ -296,12 +296,12 @@ public class SwerveSubsystem extends SubsystemBase
 
     double relativeX;
     if (0 <= botAngle && botAngle <= 90) {
-      relativeX = -1 * distanceFromLimelightToGoalCM * Math.cos(botAngle);
+      relativeX = -1 * distanceFromLimelightToGoalCM * Math.sin(botAngle);
     } else {
-      relativeX = distanceFromLimelightToGoalCM * Math.cos(botAngle);
+      relativeX = distanceFromLimelightToGoalCM * Math.sin(botAngle);
     }
     
-    double relativeY = distanceFromLimelightToGoalCM * Math.sin(botAngle);
+    double relativeY = distanceFromLimelightToGoalCM * Math.cos(botAngle);
 
     double Vs = Constants.Shooter.shooterMaxVelocity;//shooter velocity
     double dY = relativeY;//y distance from speaker
