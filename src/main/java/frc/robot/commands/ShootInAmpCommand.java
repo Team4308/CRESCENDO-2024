@@ -2,16 +2,19 @@ package frc.robot.commands;
 
 import frc.robot.Constants;
 import frc.robot.subsystems.RotateShooterSystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class ShootInAmpCommand extends Command {
 
-    private final RotateShooterSystem m_subsystem;
+    private final RotateShooterSystem m_rotateSubsystem;
+    private final ShooterSubsystem m_shooterSubsystem;
 
-    public ShootInAmpCommand(RotateShooterSystem subsystem) {
-        m_subsystem = subsystem;
+    public ShootInAmpCommand(RotateShooterSystem rotateSubsystem, ShooterSubsystem shooterSubsystem) {
+        m_rotateSubsystem = rotateSubsystem;
+        m_shooterSubsystem = shooterSubsystem;
 
-        addRequirements(subsystem);
+        addRequirements(rotateSubsystem, shooterSubsystem);
     }
 
     @Override
@@ -20,12 +23,13 @@ public class ShootInAmpCommand extends Command {
 
     @Override
     public void execute() {
-        m_subsystem.setMotorPosition(Constants.GamePieces.amp.angleToshoot);
+        m_rotateSubsystem.setMotorPosition(Constants.GamePieces.amp.angleToshoot);
+        m_shooterSubsystem.setMaxSpeed(Constants.GamePieces.amp.speedToShoot);//idk
     }
 
     @Override
     public void end(boolean interrupted) {
-        m_subsystem.stopControllers();
+        m_shooterSubsystem.setMaxSpeed(10000);
     }
 
     @Override

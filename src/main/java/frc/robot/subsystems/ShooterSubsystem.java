@@ -25,6 +25,8 @@ public class ShooterSubsystem extends LogSubsystem {
 
     final VelocityVoltage rightVelocity;
     final VelocityVoltage leftVelocity;
+    
+    public double maxSpeed;
 
     public ShooterSubsystem() {
         // Create Motor Controller Objects
@@ -56,6 +58,8 @@ public class ShooterSubsystem extends LogSubsystem {
 
         right.getConfigurator().apply(slot0Configs, Constants.Generic.timeoutMs);
         left.getConfigurator().apply(slot0Configs, Constants.Generic.timeoutMs);
+
+        maxSpeed = 10000;
         
         // Reset
         stopControllers();
@@ -78,6 +82,10 @@ public class ShooterSubsystem extends LogSubsystem {
         left.setControl(leftMotorOut);
         //right.set(1);
         */
+    }
+
+    public void setMaxSpeed(double rps) {
+        maxSpeed = rps;
     }
 
     public void selectProfileSlot(int slot) {

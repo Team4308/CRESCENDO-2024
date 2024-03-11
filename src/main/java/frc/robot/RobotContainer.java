@@ -145,7 +145,7 @@ public class RobotContainer
     indexCommand = new IndexCommand(m_indexSystem, () -> indexCommand());
     m_indexSystem.setDefaultCommand(indexCommand);
 
-    //shootInAmpCommand = new ShootInAmpCommand(m_rotateShooterSystem);
+    //shootInAmpCommand = new ShootInAmpCommand(m_rotateShooterSystem, m_shooterSubsystem);
 
     SmartDashboard.putData(autoCommandChooser);
 
@@ -228,6 +228,7 @@ public class RobotContainer
     stick1.B.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
     //stick1.B.whileTrue(shootInAmpCommand);
     stick1.B.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
+    stick1.B.onFalse(new InstantCommand(() -> m_shooterSubsystem.setMaxSpeed(10000)));
   }
 
   public Command getAutonomousCommand()
