@@ -31,7 +31,7 @@ import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.IndexCommand;
-import frc.robot.commands.ShootInAmpCommand;
+// import frc.robot.commands.ShootInAmpCommand;
 import frc.robot.subsystems.LEDSystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.IntakeSystem;
@@ -40,7 +40,6 @@ import frc.robot.subsystems.PixySystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.IndexSystem;
-import frc.robot.subsystems.pigeon2System;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -62,7 +61,6 @@ public class RobotContainer
   private final ShooterSubsystem m_shooterSubsystem;
   private final ClimbSubsystem m_climbSubsystem;
   private final IndexSystem m_indexSystem;
-  private final pigeon2System m_pigeon2System;
   private final PixySystem m_pixySystem;
 
   // Commands
@@ -116,9 +114,6 @@ public class RobotContainer
     
     m_indexSystem = new IndexSystem();
     subsystems.add(m_indexSystem);
-    
-    m_pigeon2System = new pigeon2System();
-    subsystems.add(m_pigeon2System);
 
     m_pixySystem = new PixySystem();
     subsystems.add(m_pixySystem);
