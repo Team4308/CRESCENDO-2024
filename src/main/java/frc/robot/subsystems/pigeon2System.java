@@ -22,6 +22,10 @@ public class pigeon2System extends LogSubsystem {
         return pigeon.getAccelerationY().getValueAsDouble();
     }
 
+    public double getAngle() {
+        return pigeon.getAngle();
+    }
+
     public Sendable log() {
         return this;
     }
