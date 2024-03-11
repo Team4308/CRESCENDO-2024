@@ -93,12 +93,12 @@ public class RotateShooterSystem extends LogSubsystem {
         double limelightDistanceFromShooterCM = Constants.Limelight.Measurements.limelightDistanceFromShooterCM;
 
         //calculate distance
-        double distanceFromShhoterToGoalCM = (goalHeightCM - limelightLensHeightCM) / Math.tan(angleToGoalRadians) + limelightDistanceFromShooterCM;
+        double distanceFromShooterToGoalCM = (goalHeightCM - limelightLensHeightCM) / Math.tan(angleToGoalRadians) + limelightDistanceFromShooterCM;
 
         double accelY = m_gyroSystem.getAccelerationY();
         double offset = accelY * 0.1;//shootingwhilemoving thing
 
-        double shooterAngle = Math.atan(speakerOpeningHeightCM/distanceFromShhoterToGoalCM) + offset;
+        double shooterAngle = Math.atan(speakerOpeningHeightCM/distanceFromShooterToGoalCM) + offset;
 
         setMotorPosition(shooterAngle);
     }

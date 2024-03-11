@@ -119,7 +119,7 @@ public final class Constants
     public static class Measurements {
       public static final double limelightMountAngleDegrees = 25;
       public static final double limelightLensHeightCM = 20;
-      public static final double limelightDistanceFromShooterCM = 10;
+      public static final double limelightDistanceFromShooterCM = 30;
     }
   }
   
