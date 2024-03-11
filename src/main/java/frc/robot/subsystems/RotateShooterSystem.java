@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -25,7 +26,7 @@ public class RotateShooterSystem extends LogSubsystem {
     public final DigitalInput limitSwitch1;
     public final DigitalInput limitSwitch2;
     private final DutyCycleEncoder revEncoder; 
-    private final pigeon2System m_gyroSystem = new pigeon2System();
+    private final Pigeon2 gyro = new Pigeon2(Constants.Mapping.Pigeon2.gyro);
 
     public static double shooterDegree = 20.0;
     public static double encoderDegree = 0.0;
@@ -95,7 +96,7 @@ public class RotateShooterSystem extends LogSubsystem {
         //calculate distance
         double distanceFromShooterToGoalCM = (goalHeightCM - limelightLensHeightCM) / Math.tan(angleToGoalRadians) + limelightDistanceFromShooterCM;
 
-        double accelY = m_gyroSystem.getAccelerationY();
+        double accelY = gyro.getAccelerationY().getValueAsDouble();
         double offset = accelY * 0.1;//shootingwhilemoving thing
 
         double shooterAngle = Math.atan(speakerOpeningHeightCM/distanceFromShooterToGoalCM) + offset;
