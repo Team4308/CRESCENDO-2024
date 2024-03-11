@@ -300,8 +300,8 @@ public class SwerveSubsystem extends SubsystemBase
     SmartDashboard.putNumber("X Velocity", vrX);
     SmartDashboard.putNumber("Y Velocity", vrY);
 
-    double fracTop = Math.sqrt(-1*vrY*vrY+2*vrY*dY*vrX*dY-dY*dY*vrX*vrX+dY*dY*Vs*Vs+Vs*Vs*dX*dX)-dY*Vs;
-    double fracBottom = (-1*vrX*dX+dY*vrX+Vs*dX);
+    double fracTop = Math.sqrt(-1*vrY*vrY*dX*dX+2*vrY*dY*vrX*dY-dY*dY*vrX*vrX+dY*dY*Vs*Vs+Vs*Vs*dX*dX)-dY*Vs;
+    double fracBottom = (-1*vrY*dX+dY*vrX+Vs*dX);
 
     SmartDashboard.putNumber("Angle 1", 2*Math.atan(fracTop/fracBottom));
     SmartDashboard.putNumber("Angle 2", 2*Math.atan(-1*fracTop/fracBottom));
