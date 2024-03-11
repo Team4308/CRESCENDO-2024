@@ -290,11 +290,11 @@ public class SwerveSubsystem extends SubsystemBase
     double limelightDistanceFromShooterCM = Constants.Limelight.Measurements.limelightDistanceFromShooterCM;
     double distanceFromShooterToGoalCM = (goalHeightCM - limelightLensHeightCM) / Math.tan(angleToGoalRadians) + limelightDistanceFromShooterCM;
     
-    double Vs = Constants.Shooter.shooterMaxVelocity;                     // shooter velocity
-    double dY = distanceFromShooterToGoalCM / 100;                        // y distance from speaker
-    double dX = dY / Math.tan(LimelightHelpers.getTX(""));  // x distance from speaker
-    double vrX = getFieldVelocity().vxMetersPerSecond;                    // horziontal velocity to speaker
-    double vrY = getFieldVelocity().vyMetersPerSecond;                    // vertical velocity to speaker 
+    double Vs = Constants.Shooter.shooterMaxVelocity;                                                                   // shooter velocity
+    double dY = distanceFromShooterToGoalCM / 100;                                                                      // y distance from speaker
+    double dX = dY / Math.tan((LimelightHelpers.getTX("") - gyro.getAngle() % 360) * (3.14159 / 180.0));  // x distance from speaker
+    double vrX = getFieldVelocity().vxMetersPerSecond;                                                                  // horziontal velocity to speaker
+    double vrY = getFieldVelocity().vyMetersPerSecond;                                                                  // vertical velocity to speaker 
     
     SmartDashboard.putNumber("Y Distance", dY);
     SmartDashboard.putNumber("X Distance", dX);

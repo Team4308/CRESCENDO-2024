@@ -84,7 +84,7 @@ public final class Constants
       }
 
       public static class AngleControl {
-        public static double kP = 0.005;
+        public static double kP = 0.01;
         public static double kI = 0.0;
         public static double kD = 0.0;
         public static double kTolerance = 0.5;
@@ -132,8 +132,8 @@ public final class Constants
   
   public static class GamePieces {
     public static class speaker {
-      public static final double speakerAprilTagHeightCM = 60.0;
-      public static final double speakerOpeningHeightCM = 60.0;
+      public static final double speakerAprilTagHeightCM = 136.8425;
+      public static final double speakerOpeningHeightCM = 200.0;
     }
     public static class amp {
       public static final double angleToshoot = 37.0;
