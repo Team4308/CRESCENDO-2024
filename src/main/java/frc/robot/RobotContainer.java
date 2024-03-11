@@ -221,8 +221,6 @@ public class RobotContainer
     stick1.LB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> -1.0));
     stick1.RB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
     stick1.LB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
-    stick1.X.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
-    stick1.X.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
     //stick1.X.whileTrue(new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
     //stick1.A.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
     stick1.B.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
