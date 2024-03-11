@@ -288,24 +288,28 @@ public class SwerveSubsystem extends SubsystemBase
     double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
     double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
     double distanceFromLimelightToGoalCM = (goalHeightCM - limelightLensHeightCM) / Math.tan(angleToGoalRadians);
-    double botAngle = gyro.getAngle()%360;
+    double botAngle = 180 - gyro.getAngle() % 360;
+
+    SmartDashboard.putNumber("no please", distanceFromLimelightToGoalCM);
 
     if (botAngle < 0) {
-      botAngle = (360+botAngle)%360;
+      botAngle = (360 + botAngle) % 360;
     }
+
+    SmartDashboard.putNumber("Bot Angle", botAngle);
 
     double relativeX;
     if (0 <= botAngle && botAngle <= 90) {
-      relativeX = -1 * distanceFromLimelightToGoalCM * Math.sin(botAngle);
+      relativeX = -1 * distanceFromLimelightToGoalCM * Math.sin((botAngle % 90) * (3.14159 / 180.0));
     } else {
-      relativeX = distanceFromLimelightToGoalCM * Math.sin(botAngle);
+      relativeX = distanceFromLimelightToGoalCM * Math.sin((botAngle % 90) * (3.14159 / 180.0));
     }
     
-    double relativeY = distanceFromLimelightToGoalCM * Math.cos(botAngle);
+    double relativeY = distanceFromLimelightToGoalCM * Math.cos((botAngle % 90) * (3.14159 / 180.0));
 
     double Vs = Constants.Shooter.shooterMaxVelocity;//shooter velocity
-    double dY = relativeY;//y distance from speaker
-    double dX = relativeX;//x distance from speaker
+    double dY = relativeY / 100;//y distance from speaker
+    double dX = relativeX / 100;//x distance from speaker
     double vrX = getFieldVelocity().vxMetersPerSecond;//horziontal velocity to speaker
     double vrY = getFieldVelocity().vyMetersPerSecond;//vertical velocity to speaker  
 
