@@ -136,8 +136,8 @@ public final class Constants
       public static final double speakerOpeningHeightCM = 200.0;
     }
     public static class amp {
-      public static final double angleToshoot = 37.0;
-      public static final double speedToShoot = 500;//needs tuning
+      public static final double angleToshoot = 60.0;
+      public static final double speedToShoot = 10;//needs tuning
     }
   }
 }
