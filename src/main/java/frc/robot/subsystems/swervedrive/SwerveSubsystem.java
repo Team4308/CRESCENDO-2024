@@ -289,7 +289,7 @@ public class SwerveSubsystem extends SubsystemBase
     double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
     double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
     double distanceFromLimelightToGoalCM = (goalHeightCM - limelightLensHeightCM) / Math.tan(angleToGoalRadians);
-    double botAngle = gyro.getAngle()%360;
+    double botAngle = gyro.getAngle() % 360;
 
     double Vs = Constants.Shooter.shooterMaxVelocity;                                                                     //shooter velocity
     double dY = distanceFromLimelightToGoalCM * Math.cos((botAngle)*(3.14159/180.0)) / 100;                               //y distance from speaker
@@ -299,17 +299,27 @@ public class SwerveSubsystem extends SubsystemBase
     
     SmartDashboard.putNumber("X Velocity", vrX);
     SmartDashboard.putNumber("Y Velocity", vrY);
+    SmartDashboard.putNumber("dY", dY);
+    SmartDashboard.putNumber("dX", dX);
 
     double fracTop = Math.sqrt(-1*vrY*vrY*dX*dX+2*vrY*dY*vrX*dY-dY*dY*vrX*vrX+dY*dY*Vs*Vs+Vs*Vs*dX*dX)-dY*Vs;
     double fracBottom = (-1*vrY*dX+dY*vrX+Vs*dX);
 
-    SmartDashboard.putNumber("Angle 1", 2*Math.atan(fracTop/fracBottom));
-    SmartDashboard.putNumber("Angle 2", 2*Math.atan(-1*fracTop/fracBottom));
+    Double angle = (2*Math.atan(fracTop/fracBottom) * (180.0 / 3.14159));
 
-    if (LimelightHelpers.getTX("") > 0) {
-      return 2*Math.atan(fracTop/fracBottom);
+    SmartDashboard.putNumber("Angle", angle);
+
+    angle_controller.setSetpoint(angle);
+
+    if (180 < botAngle && botAngle <= 360) {
+      botAngle = botAngle - 360;
     }
-    return 2*Math.atan(-1*fracTop/fracBottom);
+    if (-360 <= botAngle && botAngle < -180) {
+      botAngle = botAngle + 360;
+    }
+
+    SmartDashboard.putNumber("botangle", botAngle);
+    return -DoubleUtils.clamp(angle_controller.calculate(botAngle), -Math.PI, Math.PI);
   }
 
   /**
@@ -325,8 +335,7 @@ public class SwerveSubsystem extends SubsystemBase
     return run(() -> {
       Double rotation;
       if (alignToSpeaker) {
-        angle_controller.setSetpoint(getOffsetLeftRight());
-        rotation = DoubleUtils.clamp(angle_controller.calculate(gyro.getAngle() % 360), -1.0, 1.0);;
+        rotation = getOffsetLeftRight();
       } else if (alignToNote) {
         rotation = Math.round(PixySystem.getTargetX(PixySystem.getClosestTarget()) / 20) * 20 * -0.1;
       } else {

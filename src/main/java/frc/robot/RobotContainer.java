@@ -302,7 +302,6 @@ public class RobotContainer
         shooterDegree = newShooterDegree;
       }
     }
-    SmartDashboard.putNumber("rah", shooterDegree);
     return shooterDegree; 
   }
   

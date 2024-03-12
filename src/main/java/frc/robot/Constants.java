@@ -84,7 +84,7 @@ public final class Constants
       }
 
       public static class AngleControl {
-        public static double kP = 0.01;
+        public static double kP = 0.1;
         public static double kI = 0.0;
         public static double kD = 0.0;
         public static double kTolerance = 0.5;
@@ -104,8 +104,8 @@ public final class Constants
     public static int leftMultipler = 1;
     public static final int shooterStartDegree = 18;
     public static final int shooterEndDegree = 72;
-    public static final double encoderStartRevolutions = 0.16;
-    public static final double encoderEndRevolutions = -0.07;
+    public static final double encoderStartRevolutions = 0.26;
+    public static final double encoderEndRevolutions = 0.013;
     public static final double shooterMaxVelocity = 7;
 
     public static final class AngleControl {
