@@ -32,7 +32,6 @@ import frc.robot.commands.RotateShooterCommand;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.IndexCommand;
-import frc.robot.commands.ShootInAmpCommand;
 import frc.robot.subsystems.LEDSystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.IntakeSystem;
@@ -71,7 +70,6 @@ public class RobotContainer
   private final ShooterCommand ShooterCommand;
   private final ClimbCommand climbCommand;
   private final IndexCommand indexCommand;
-  private final ShootInAmpCommand shootInAmpCommand;
 
   // Controllers
   // For swerve
@@ -119,13 +117,11 @@ public class RobotContainer
     m_pixySystem = new PixySystem();
     subsystems.add(m_pixySystem);
 
-    NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(m_intakeSystem, () -> 1.0));
+    NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(m_intakeSystem, () -> -1.0));
     NamedCommands.registerCommand("IndexCommand", new InstantCommand(() -> m_indexSystem.setIndexOutput(-1.0)));
     NamedCommands.registerCommand("ShooterCommand", new ShooterCommand(m_shooterSubsystem, () -> 20.0));
     NamedCommands.registerCommand("AlignToSpeaker", new InstantCommand(drivebase::alignToSpeakerToggle));
-    // NamedCommands.registerCommand("AutoAlignShooter", new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
-    NamedCommands.registerCommand("SetShooterAlignTrue", new InstantCommand(() -> setShooterAutonTriggered(true))); // not needed?
-    NamedCommands.registerCommand("SetShooterAlignFalse", new InstantCommand(() -> setShooterAutonTriggered(false))); // not needed?
+    NamedCommands.registerCommand("AutoAlignShooter", new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
     
     //Command Instantiations
     intakeCommand = new IntakeCommand(m_intakeSystem, () -> getIntakeControl());
@@ -145,8 +141,6 @@ public class RobotContainer
 
     indexCommand = new IndexCommand(m_indexSystem, () -> indexCommand());
     m_indexSystem.setDefaultCommand(indexCommand);
-
-    shootInAmpCommand = new ShootInAmpCommand(m_rotateShooterSystem, m_shooterSubsystem);
     
     autonomousChooser = AutoBuilder.buildAutoChooser();
 
@@ -215,7 +209,6 @@ public class RobotContainer
     stick.X.onTrue(new InstantCommand(() -> drivebase.alignToNote(true)));
     stick.X.onFalse(new InstantCommand(() -> drivebase.alignToNote(false)));
     stick.B.whileTrue(Commands.deferredProxy(() -> drivebase.alignToAmp()));
-    stick.Start.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
     stick1.Y.whileTrue(new LEDCommand(m_ledSystem, () -> 0.69)); // yellow
     stick1.X.whileTrue(new RotateShooterCommand(m_rotateShooterSystem, () -> m_rotateShooterSystem.autoAlignShooter()));
     stick1.X.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
@@ -224,11 +217,11 @@ public class RobotContainer
     stick1.LB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> -1.0));
     stick1.RB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
     stick1.LB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
-    stick1.A.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
+    stick1.A.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));  // debugging
     stick1.B.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
-    stick1.B.whileTrue(shootInAmpCommand);
+    stick1.B.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> 10.0));
+    stick1.B.whileTrue(new RotateShooterCommand(m_rotateShooterSystem, () -> Constants.GamePieces.amp.angleToshoot));
     stick1.B.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
-    stick1.B.onFalse(new InstantCommand(() -> m_shooterSubsystem.setMaxSpeed(10000)));
   }
 
   public Command getAutonomousCommand()
