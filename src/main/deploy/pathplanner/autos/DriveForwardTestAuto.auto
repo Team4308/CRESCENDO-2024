@@ -12,9 +12,22 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "DriveForwardTest"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "DriveForwardTest"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeCommand"
+                }
+              }
+            ]
           }
         }
       ]
