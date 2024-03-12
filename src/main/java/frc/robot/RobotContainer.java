@@ -86,7 +86,7 @@ public class RobotContainer
   private Double prev = 0.0;
   
   private DigitalInput shooterBeambrake;
-  public double shooterDegree = 20;
+  public double shooterDegree = 30;
   
   // State Machines
   private boolean shooterAutonTriggered = false;
@@ -292,7 +292,7 @@ public class RobotContainer
   }
     
   public double getRotateShooterControl(){
-    /* if (shooterAutonTriggered == false) {
+     if (shooterAutonTriggered == false) {
       var newVal = stick1.getRightY();
       if (-0.1 <= newVal && newVal <= 0.1) {//deadband; too lazy to code properly
         newVal = 0;
@@ -303,8 +303,7 @@ public class RobotContainer
       }
     }
     
-    return shooterDegree; */
-    return 0.0;
+    return shooterDegree; 
   }
   
   public double getShooterControl() {

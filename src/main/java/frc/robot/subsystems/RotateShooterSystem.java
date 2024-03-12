@@ -75,6 +75,8 @@ public class RotateShooterSystem extends LogSubsystem {
 
         double motorOutput = DoubleUtils.clamp(pidController.calculate(encoderDegree, outputDegree), -1.0, 1.0);
 
+        SmartDashboard.putNumber("motorOutput", motorOutput);
+
         setMotorOutput(motorOutput);
     }
 

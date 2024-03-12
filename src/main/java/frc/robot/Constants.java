@@ -102,14 +102,14 @@ public final class Constants
   public static class Shooter {
     public static int rightMultiplier = 1;
     public static int leftMultipler = 1;
-    public static final int shooterStartDegree = 16;
-    public static final int shooterEndDegree = 66;
-    public static final double encoderStartRevolutions = 0.1717;
+    public static final int shooterStartDegree = 18;
+    public static final int shooterEndDegree = 72;
+    public static final double encoderStartRevolutions = 0.175;
     public static final double encoderEndRevolutions = -0.07;
     public static final double shooterMaxVelocity = 7;
 
     public static final class AngleControl {
-      public static final double kP = 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001;
+      public static final double kP = 5.0;
       public static final double kI = 0;
       public static final double kD = 0;
     }
