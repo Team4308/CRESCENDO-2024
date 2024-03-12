@@ -20,23 +20,23 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 // import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-//import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-//import edu.wpi.first.wpilibj2.command.button.Trigger;
+// import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+// import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.LEDCommand;
 // import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.commands.IntakeCommand;
-// import frc.robot.commands.RotateShooterCommand;
+import frc.robot.commands.RotateShooterCommand;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.IndexCommand;
-// import frc.robot.commands.ShootInAmpCommand;
+import frc.robot.commands.ShootInAmpCommand;
 import frc.robot.subsystems.LEDSystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.IntakeSystem;
 import frc.robot.subsystems.PixySystem;
-// import frc.robot.subsystems.RotateShooterSystem;
+import frc.robot.subsystems.RotateShooterSystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.IndexSystem;
@@ -57,7 +57,7 @@ public class RobotContainer
   // Subsystems
   private final IntakeSystem m_intakeSystem;
   private final LEDSystem m_ledSystem;
-  // private final RotateShooterSystem m_rotateShooterSystem;
+  private final RotateShooterSystem m_rotateShooterSystem;
   private final ShooterSubsystem m_shooterSubsystem;
   private final ClimbSubsystem m_climbSubsystem;
   private final IndexSystem m_indexSystem;
@@ -66,11 +66,11 @@ public class RobotContainer
   // Commands
   private final IntakeCommand intakeCommand;
   private final LEDCommand ledCommand;
-  // private final RotateShooterCommand rotateShooterCommand;
+  private final RotateShooterCommand rotateShooterCommand;
   private final ShooterCommand ShooterCommand;
   private final ClimbCommand climbCommand;
   private final IndexCommand indexCommand;
-  //private final ShootInAmpCommand shootInAmpCommand;
+  private final ShootInAmpCommand shootInAmpCommand;
 
   // Controllers
   // For swerve
@@ -86,7 +86,7 @@ public class RobotContainer
   private Double prev = 0.0;
   
   private DigitalInput shooterBeambrake;
-  public double shooterDegree = 20.0;
+  public double shooterDegree = 20;
   
   // State Machines
   private boolean shooterAutonTriggered = false;
@@ -103,8 +103,8 @@ public class RobotContainer
     m_ledSystem = new LEDSystem();
     subsystems.add(m_ledSystem);
     
-    // m_rotateShooterSystem = new RotateShooterSystem();
-    // subsystems.add(m_rotateShooterSystem);
+    m_rotateShooterSystem = new RotateShooterSystem();
+    subsystems.add(m_rotateShooterSystem);
     
     m_shooterSubsystem = new ShooterSubsystem();
     subsystems.add(m_shooterSubsystem);
@@ -133,8 +133,8 @@ public class RobotContainer
     ledCommand = new LEDCommand(m_ledSystem, () -> getLEDCommand());
     m_ledSystem.setDefaultCommand(ledCommand);
     
-    // rotateShooterCommand = new RotateShooterCommand(m_rotateShooterSystem, getRotateShooterControl());
-    // m_rotateShooterSystem.setDefaultCommand(rotateShooterCommand);
+    rotateShooterCommand = new RotateShooterCommand(m_rotateShooterSystem, getRotateShooterControl());
+    m_rotateShooterSystem.setDefaultCommand(rotateShooterCommand);
     
     ShooterCommand = new ShooterCommand(m_shooterSubsystem, () -> getShooterControl());
     m_shooterSubsystem.setDefaultCommand(ShooterCommand);
@@ -145,7 +145,7 @@ public class RobotContainer
     indexCommand = new IndexCommand(m_indexSystem, () -> indexCommand());
     m_indexSystem.setDefaultCommand(indexCommand);
 
-    //shootInAmpCommand = new ShootInAmpCommand(m_rotateShooterSystem, m_shooterSubsystem);
+    shootInAmpCommand = new ShootInAmpCommand(m_rotateShooterSystem, m_shooterSubsystem);
 
     SmartDashboard.putData(autoCommandChooser);
 
@@ -212,19 +212,18 @@ public class RobotContainer
     stick.X.onTrue(new InstantCommand(() -> drivebase.alignToNote(true)));
     stick.X.onFalse(new InstantCommand(() -> drivebase.alignToNote(false)));
     stick.B.whileTrue(Commands.deferredProxy(() -> drivebase.alignToAmp()));
-    // stick.Start.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
+    stick.Start.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
     stick1.Y.whileTrue(new LEDCommand(m_ledSystem, () -> 0.69)); // yellow
-    // stick1.X.whileTrue(new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
+    stick1.X.whileTrue(new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
     stick1.X.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
     stick1.X.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
     stick1.RB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> 1.0));
     stick1.LB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> -1.0));
     stick1.RB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
     stick1.LB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
-    //stick1.X.whileTrue(new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
-    //stick1.A.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
+    stick1.A.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
     stick1.B.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
-    //stick1.B.whileTrue(shootInAmpCommand);
+    stick1.B.whileTrue(shootInAmpCommand);
     stick1.B.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
     stick1.B.onFalse(new InstantCommand(() -> m_shooterSubsystem.setMaxSpeed(10000)));
   }
@@ -293,9 +292,9 @@ public class RobotContainer
   }
     
   public double getRotateShooterControl(){
-    if (shooterAutonTriggered == false) {
-      var newVal = stick.getRightY();
-      if (-0.06 <= newVal && newVal <= 0.06) {//deadband; too lazy to code properly
+    /* if (shooterAutonTriggered == false) {
+      var newVal = stick1.getRightY();
+      if (-0.1 <= newVal && newVal <= 0.1) {//deadband; too lazy to code properly
         newVal = 0;
       }
       double newShooterDegree = shooterDegree + newVal;
@@ -304,7 +303,8 @@ public class RobotContainer
       }
     }
     
-    return shooterDegree;
+    return shooterDegree; */
+    return 0.0;
   }
   
   public double getShooterControl() {

@@ -28,13 +28,14 @@ public class RotateShooterSystem extends LogSubsystem {
     private final DutyCycleEncoder revEncoder; 
     private final Pigeon2 gyro = new Pigeon2(Constants.Mapping.Pigeon2.gyro);
 
-    public static double shooterDegree = 20.0;
-    public static double encoderDegree = 0.0;
+    public static double shooterDegree;
+    public static double encoderDegree;
 
     public RotateShooterSystem() {
         motor = new TalonFX(Constants.Mapping.Shooter.motor);
         
         revEncoder = new DutyCycleEncoder(Constants.Mapping.Shooter.encoder);
+        revEncoder.setDistancePerRotation(1.0);
         revEncoder.reset();
 
         limitSwitch1 = new DigitalInput(Constants.Mapping.Shooter.limitSwitch1);
@@ -73,9 +74,9 @@ public class RotateShooterSystem extends LogSubsystem {
 
         SmartDashboard.putNumber("Shooter Angle", DoubleUtils.mapRangeNew(encoderDegree, Constants.Shooter.encoderStartRevolutions, Constants.Shooter.encoderEndRevolutions, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree));
 
-        double motorDegree = DoubleUtils.clamp(pidController.calculate(encoderDegree, outputDegree), -1.0, 1.0);
+        double motorOutput = DoubleUtils.clamp(pidController.calculate(encoderDegree, outputDegree), -1.0, 1.0);
 
-        setMotorOutput(motorDegree);
+        setMotorOutput(motorOutput);
     }
 
     public void autoAlignShooter() {
@@ -100,7 +101,7 @@ public class RotateShooterSystem extends LogSubsystem {
         double distanceFromShooterToGoalCM = (goalHeightCM - limelightLensHeightCM) / Math.tan(angleToGoalRadians) + limelightDistanceFromShooterCM;
 
         double accelY = gyro.getAccelerationY().getValueAsDouble();
-        double offset = accelY * 0.1;//shootingwhilemoving thing
+        double offset = accelY * 0.0;//shootingwhilemoving thing
 
         double shooterAngle = Math.atan(speakerOpeningHeightCM/distanceFromShooterToGoalCM) + offset;
 
