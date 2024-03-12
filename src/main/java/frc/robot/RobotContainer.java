@@ -3,6 +3,7 @@ package frc.robot;
 import java.io.File;
 import java.util.ArrayList;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import ca.team4308.absolutelib.control.XBoxWrapper;
@@ -79,7 +80,7 @@ public class RobotContainer
   public final XBoxWrapper stick1 = new XBoxWrapper(Constants.Mapping.Controllers.kStick1);
   
   // Auto
-  private final SendableChooser<Command> autoCommandChooser = new SendableChooser<Command>();
+  private final SendableChooser<Command> autonomousChooser;
 
   // LED
   private Integer debounce = 0;
@@ -146,8 +147,10 @@ public class RobotContainer
     m_indexSystem.setDefaultCommand(indexCommand);
 
     shootInAmpCommand = new ShootInAmpCommand(m_rotateShooterSystem, m_shooterSubsystem);
+    
+    autonomousChooser = AutoBuilder.buildAutoChooser();
 
-    SmartDashboard.putData(autoCommandChooser);
+    SmartDashboard.putData("Auto Chooser", autonomousChooser);
 
     shooterBeambrake = new DigitalInput(Constants.Mapping.Shooter.beambrake);
     
@@ -230,7 +233,7 @@ public class RobotContainer
 
   public Command getAutonomousCommand()
   {
-    return autoCommandChooser.getSelected();
+    return autonomousChooser.getSelected();
   }
     
   public Command setShooterAutonTriggered(boolean value) {
