@@ -30,6 +30,7 @@ import frc.robot.commands.LEDCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.RotateShooterCommand;
 import frc.robot.commands.ShooterCommand;
+import frc.robot.commands.BeambreakCommand;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.IndexCommand;
 import frc.robot.subsystems.LEDSystem;
@@ -118,10 +119,12 @@ public class RobotContainer
     subsystems.add(m_pixySystem);
 
     NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(m_intakeSystem, () -> -1.0));
-    NamedCommands.registerCommand("IndexCommand", new InstantCommand(() -> m_indexSystem.setIndexOutput(-1.0)));
+    NamedCommands.registerCommand("IndexCommand", new IndexCommand(m_indexSystem, () -> -1.0));
     NamedCommands.registerCommand("ShooterCommand", new ShooterCommand(m_shooterSubsystem, () -> 20.0));
     NamedCommands.registerCommand("AlignToSpeaker", new InstantCommand(drivebase::alignToSpeakerToggle));
+    NamedCommands.registerCommand("ResetGyro", new InstantCommand(drivebase::zeroGyro));
     NamedCommands.registerCommand("AutoAlignShooter", new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
+    NamedCommands.registerCommand("BeambreakCommand", new BeambreakCommand(() -> getBeambreakControl()));
     
     //Command Instantiations
     intakeCommand = new IntakeCommand(m_intakeSystem, () -> getIntakeControl());
@@ -303,6 +306,10 @@ public class RobotContainer
   
   public double getShooterControl() {
     return stick1.getRightTrigger() * 100;  //converting into RPS
+  }
+
+  public boolean getBeambreakControl() {
+    return shooterBeambrake.get();
   }
 
   public void setDriveMode()
