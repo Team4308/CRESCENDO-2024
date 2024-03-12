@@ -133,7 +133,7 @@ public class RobotContainer
     ledCommand = new LEDCommand(m_ledSystem, () -> getLEDCommand());
     m_ledSystem.setDefaultCommand(ledCommand);
     
-    rotateShooterCommand = new RotateShooterCommand(m_rotateShooterSystem, getRotateShooterControl());
+    rotateShooterCommand = new RotateShooterCommand(m_rotateShooterSystem, () -> getRotateShooterControl());
     m_rotateShooterSystem.setDefaultCommand(rotateShooterCommand);
     
     ShooterCommand = new ShooterCommand(m_shooterSubsystem, () -> getShooterControl());
@@ -292,9 +292,9 @@ public class RobotContainer
   }
     
   public double getRotateShooterControl(){
-     if (shooterAutonTriggered == false) {
+    if (shooterAutonTriggered == false) {
       var newVal = stick1.getRightY();
-      if (-0.1 <= newVal && newVal <= 0.1) {//deadband; too lazy to code properly
+      if (-0.1 <= newVal && newVal <= 0.1) {  //deadband; too lazy to code properly
         newVal = 0;
       }
       double newShooterDegree = shooterDegree + newVal;
@@ -302,12 +302,11 @@ public class RobotContainer
         shooterDegree = newShooterDegree;
       }
     }
-    
     return shooterDegree; 
   }
   
   public double getShooterControl() {
-    return stick1.getRightTrigger() * 100;//converting into RPM
+    return stick1.getRightTrigger() * 100;  //converting into RPS
   }
 
   public void setDriveMode()
