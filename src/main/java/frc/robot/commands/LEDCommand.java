@@ -26,7 +26,7 @@ public class LEDCommand extends Command {
     public void execute() {
         double control = this.control.get();
 
-        if (control == 0.0){
+        if (control != 0.67 && control != -0.09 && control != -0.39){
             m_subsystem.colourOutputShooter(control);
         } else {
             m_subsystem.setOutput(control);

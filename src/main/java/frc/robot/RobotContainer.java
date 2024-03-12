@@ -259,8 +259,8 @@ public class RobotContainer
       return 0.67; // red-orange
     }
     if (getShooterControl() != 0.0){
-      prev = 0.0;
-      return 0.0; // not colour; trigger colourOutputShooter
+      prev = getShooterControl();
+      return getShooterControl(); // trigger colourOutputShooter
     }
     if(PixySystem.getClosestTarget() != null) {
       // target in range
