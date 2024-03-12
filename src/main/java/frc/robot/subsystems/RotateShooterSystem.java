@@ -78,7 +78,7 @@ public class RotateShooterSystem extends LogSubsystem {
         setMotorOutput(motorOutput);
     }
 
-    public void autoAlignShooter() {
+    public Double autoAlignShooter() {
         double targetOffsetAngle_Vertical = LimelightHelpers.getTY("");
 
         // how many degrees back is your limelight rotated from perfectly vertical?
@@ -100,11 +100,13 @@ public class RotateShooterSystem extends LogSubsystem {
         double distanceFromShooterToGoalCM = (goalHeightCM - limelightLensHeightCM) / Math.tan(angleToGoalRadians) + limelightDistanceFromShooterCM;
 
         double accelY = gyro.getAccelerationY().getValueAsDouble();
-        double offset = accelY * 0.0;//shootingwhilemoving thing
+        double offset = accelY * 0.0;   // shootingwhilemoving thing
 
-        double shooterAngle = Math.atan(speakerOpeningHeightCM/distanceFromShooterToGoalCM) + offset;
+        double shooterAngle = Math.atan(speakerOpeningHeightCM/distanceFromShooterToGoalCM) * (180.0 / 3.14159) + offset;
 
-        setMotorPosition(shooterAngle);
+        SmartDashboard.putNumber("autoalign", shooterAngle);
+
+        return shooterAngle;
     }
 
     public void controlWithController(Double controllerValue) {
