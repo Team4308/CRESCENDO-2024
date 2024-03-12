@@ -59,8 +59,7 @@ public class RotateShooterSystem extends LogSubsystem {
         } else if (limitSwitch2.get()) {
             return Constants.Shooter.encoderEndRevolutions;
         }
-        SmartDashboard.putNumber("encoder", revEncoder.getDistance());
-        return revEncoder.getDistance() ;
+        return revEncoder.getDistance();
     }
 
     public void setMotorPosition(double degree) { 

@@ -104,8 +104,8 @@ public final class Constants
     public static int leftMultipler = 1;
     public static final int shooterStartDegree = 16;
     public static final int shooterEndDegree = 66;
-    public static final int encoderStartRevolutions = 0;
-    public static final double encoderEndRevolutions = 6/11*((shooterEndDegree-shooterStartDegree)/360)*100;
+    public static final double encoderStartRevolutions = 0.1717;
+    public static final double encoderEndRevolutions = -0.07;
     public static final double shooterMaxVelocity = 7;
 
     public static final class AngleControl {
