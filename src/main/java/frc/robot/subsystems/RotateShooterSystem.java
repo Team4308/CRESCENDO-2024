@@ -69,13 +69,9 @@ public class RotateShooterSystem extends LogSubsystem {
 
         double encoderDegree = getMotorPosition();
 
-        SmartDashboard.putNumber("degree", encoderDegree);
-
         SmartDashboard.putNumber("Shooter Angle", DoubleUtils.mapRangeNew(encoderDegree, Constants.Shooter.encoderStartRevolutions, Constants.Shooter.encoderEndRevolutions, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree));
 
         double motorOutput = DoubleUtils.clamp(pidController.calculate(encoderDegree, outputDegree), -1.0, 1.0);
-
-        SmartDashboard.putNumber("motorOutput", motorOutput);
 
         setMotorOutput(motorOutput);
     }

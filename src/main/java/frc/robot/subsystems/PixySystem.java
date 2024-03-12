@@ -24,8 +24,6 @@ public class PixySystem extends LogSubsystem {
 
   @Override
   public void periodic() {
-    getClosestTarget();
-    getTargetWidth(getClosestTarget());
     getTargetX(getClosestTarget());
     // This method will be called once per scheduler run
   }
