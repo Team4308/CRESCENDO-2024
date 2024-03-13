@@ -30,13 +30,12 @@ public class RotateShooterSystem extends LogSubsystem {
 
     public static double shooterDegree;
     public static double encoderDegree;
+    public static double offset;
 
     public RotateShooterSystem() {
         motor = new TalonFX(Constants.Mapping.Shooter.motor);
         
         revEncoder = new DutyCycleEncoder(Constants.Mapping.Shooter.encoder);
-        revEncoder.setDistancePerRotation(1.0);
-        revEncoder.reset();
 
         limitSwitch1 = new DigitalInput(Constants.Mapping.Shooter.limitSwitch1);
         limitSwitch2 = new DigitalInput(Constants.Mapping.Shooter.limitSwitch2);
@@ -56,10 +55,12 @@ public class RotateShooterSystem extends LogSubsystem {
     public double getMotorPosition() {
         if (limitSwitch1.get()){
             revEncoder.reset();
+            offset = Constants.Shooter.encoderStartRevolutions;
         } else if (limitSwitch2.get()) {
-            return Constants.Shooter.encoderEndRevolutions;
+            revEncoder.reset();
+            offset = Constants.Shooter.encoderEndRevolutions;
         }
-        return revEncoder.getDistance();
+        return revEncoder.getDistance() + offset;
     }
 
     public void setMotorPosition(double degree) { 
