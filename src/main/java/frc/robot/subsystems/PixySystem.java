@@ -24,7 +24,6 @@ public class PixySystem extends LogSubsystem {
 
   @Override
   public void periodic() {
-    getTargetX(getClosestTarget());
     // This method will be called once per scheduler run
   }
 
@@ -36,7 +35,6 @@ public class PixySystem extends LogSubsystem {
 		if (targetCount <= 0) {
 			return null; // If blocks were not found, stop processing
 		}
-    SmartDashboard.putNumber("Targets", targetCount);
 		ArrayList<Block> targets = pixy.getCCC().getBlockCache(); // Gets a list of all blocks found by the Pixy2
 		Block closestTarget = null;
 		for (Block target : targets) { // Loops through all blocks and finds the widest one
@@ -55,7 +53,6 @@ public class PixySystem extends LogSubsystem {
       return 0; 
     }
     int targetWidth = target.getWidth();
-    SmartDashboard.putNumber("Target Width", targetWidth);
     return targetWidth;
   }
 
@@ -65,7 +62,6 @@ public class PixySystem extends LogSubsystem {
     }
     int targetX = target.getX();
     targetX -= 157.5; // range from -157.5 to 157.5
-    SmartDashboard.putNumber("Target X", targetX);
     return targetX;
   }
 
@@ -75,7 +71,6 @@ public class PixySystem extends LogSubsystem {
     }
     int targetY = target.getY();
     targetY -= 103.5; // range from -103.5 to 103.5
-    SmartDashboard.putNumber("Target Y", targetY);
     return targetY;
   }
 

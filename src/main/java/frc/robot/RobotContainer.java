@@ -207,7 +207,7 @@ public class RobotContainer
     //     Commands.deferredProxy(() -> drivebase.driveToPose(
     //                                new Pose2d(new Translation2d(1.8, 7.7), Rotation2d.fromDegrees(90.0)))
     //                           )); 
-    // driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
+    stick.Start.whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
     stick.A.onTrue(new InstantCommand(() -> drivebase.alignToSpeaker(true)));
     stick.A.onFalse(new InstantCommand(() -> drivebase.alignToSpeaker(false)));
     stick.X.onTrue(new InstantCommand(() -> drivebase.alignToNote(true)));
