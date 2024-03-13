@@ -103,8 +103,8 @@ public final class Constants
     public static int leftMultipler = 1;
     public static final int shooterStartDegree = 18;
     public static final int shooterEndDegree = 72;
-    public static final double encoderStartRevolutions = 0.25;
-    public static final double encoderEndRevolutions = 0.013;
+    public static final double encoderStartRevolutions = 0.0;
+    public static final double encoderEndRevolutions = -0.26;
     public static final double shooterMaxVelocity = 7;
     public static final double shooterMaxRPS = 100;
 
