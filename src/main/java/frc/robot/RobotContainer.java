@@ -313,9 +313,9 @@ public class RobotContainer
     return shooterBeambrake.get();
   }
 
-  public void setDriveMode()
+  public void zeroGyroOnTeleop()
   {
-    // drivebase.setDefaultCommand();
+    drivebase.zeroGyro();
   }
 
   public void setMotorBrake(boolean brake)
