@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.5283775011994468,
-      "y": 4.08167527446166
+      "x": 0.56,
+      "y": 7.0
     },
     "rotation": 0
   },
@@ -130,6 +130,12 @@
                                   "type": "named",
                                   "data": {
                                     "name": "SpeakerAlignFalse"
+                                  }
+                                },
+                                {
+                                  "type": "path",
+                                  "data": {
+                                    "pathName": "LeftNoteEnd"
                                   }
                                 }
                               ]

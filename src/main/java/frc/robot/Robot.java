@@ -135,7 +135,7 @@ public class Robot extends TimedRobot
     {
       m_autonomousCommand.cancel();
     }
-    m_robotContainer.setDriveMode();
+    m_robotContainer.zeroGyroOnTeleop();
     m_robotContainer.setMotorBrake(true);
   }
 

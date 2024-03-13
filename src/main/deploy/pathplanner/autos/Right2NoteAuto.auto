@@ -131,6 +131,12 @@
                                   "data": {
                                     "name": "SpeakerAlignFalse"
                                   }
+                                },
+                                {
+                                  "type": "path",
+                                  "data": {
+                                    "pathName": "RightNoteEnd"
+                                  }
                                 }
                               ]
                             }
