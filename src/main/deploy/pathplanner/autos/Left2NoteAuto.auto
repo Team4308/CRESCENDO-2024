@@ -2,7 +2,7 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.5628369034515848,
+      "x": 0.5283775011994468,
       "y": 4.08167527446166
     },
     "rotation": 0
@@ -28,29 +28,23 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "RightWallDriveBack"
+                        "pathName": "LeftWallDriveBack"
                       }
                     },
                     {
-                      "type": "parallel",
+                      "type": "named",
+                      "data": {
+                        "name": "SpeakerAlignTrue"
+                      }
+                    },
+                    {
+                      "type": "deadline",
                       "data": {
                         "commands": [
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "AutoAlignShooter"
-                            }
-                          },
                           {
                             "type": "sequential",
                             "data": {
                               "commands": [
-                                {
-                                  "type": "named",
-                                  "data": {
-                                    "name": "AlignToSpeaker"
-                                  }
-                                },
                                 {
                                   "type": "deadline",
                                   "data": {
@@ -71,13 +65,25 @@
                                   }
                                 },
                                 {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "SpeakerAlignFalse"
+                                  }
+                                },
+                                {
+                                  "type": "path",
+                                  "data": {
+                                    "pathName": "LeftWallToNote"
+                                  }
+                                },
+                                {
                                   "type": "deadline",
                                   "data": {
                                     "commands": [
                                       {
-                                        "type": "path",
+                                        "type": "named",
                                         "data": {
-                                          "pathName": "RightWallToNote"
+                                          "name": "BeambreakCommand"
                                         }
                                       },
                                       {
@@ -87,22 +93,9 @@
                                         }
                                       },
                                       {
-                                        "type": "deadline",
+                                        "type": "named",
                                         "data": {
-                                          "commands": [
-                                            {
-                                              "type": "wait",
-                                              "data": {
-                                                "waitTime": 0.2
-                                              }
-                                            },
-                                            {
-                                              "type": "named",
-                                              "data": {
-                                                "name": "IndexCommand"
-                                              }
-                                            }
-                                          ]
+                                          "name": "IndexCommand"
                                         }
                                       }
                                     ]
@@ -111,7 +104,7 @@
                                 {
                                   "type": "named",
                                   "data": {
-                                    "name": "AlignToSpeaker"
+                                    "name": "SpeakerAlignTrue"
                                   }
                                 },
                                 {
@@ -132,8 +125,20 @@
                                       }
                                     ]
                                   }
+                                },
+                                {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "SpeakerAlignFalse"
+                                  }
                                 }
                               ]
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "AutoAlignShooter"
                             }
                           }
                         ]

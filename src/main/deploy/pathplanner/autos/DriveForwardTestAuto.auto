@@ -20,9 +20,9 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "named",
+                      "type": "wait",
                       "data": {
-                        "name": "BeambreakCommand"
+                        "waitTime": 2.0
                       }
                     },
                     {
@@ -50,9 +50,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "DriveForwardTest"
+            "name": "AutoAlignShooter"
           }
         }
       ]
