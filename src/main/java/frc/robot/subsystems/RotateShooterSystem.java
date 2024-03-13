@@ -70,10 +70,6 @@ public class RotateShooterSystem extends LogSubsystem {
 
         double encoderDegree = getMotorPosition();
 
-        SmartDashboard.putNumber("Shooter Angle", DoubleUtils.mapRangeNew(encoderDegree, Constants.Shooter.encoderStartRevolutions, Constants.Shooter.encoderEndRevolutions, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree));
-
-        SmartDashboard.putNumber("encoder", encoderDegree);
-
         double motorOutput = DoubleUtils.clamp(pidController.calculate(encoderDegree, outputDegree), -1.0, 1.0);
 
         setMotorOutput(motorOutput);
@@ -104,8 +100,6 @@ public class RotateShooterSystem extends LogSubsystem {
         double offset = accelY * 0.0;   // shootingwhilemoving thing
 
         double shooterAngle = Math.atan(speakerOpeningHeightCM/distanceFromShooterToGoalCM) * (180.0 / 3.14159) + offset;
-
-        SmartDashboard.putNumber("autoalign", shooterAngle);
 
         return shooterAngle;
     }

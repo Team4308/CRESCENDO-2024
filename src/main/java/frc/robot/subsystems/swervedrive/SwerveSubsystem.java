@@ -295,29 +295,18 @@ public class SwerveSubsystem extends SubsystemBase
     double dX = distanceFromLimelightToGoalCM * Math.sin((botAngle+targetOffsetAngle_Horizontal)*(3.14159/180.0)) / 100;  //x distance from speaker
     double vrX = getFieldVelocity().vxMetersPerSecond;                                                                    //horziontal velocity to speaker
     double vrY = getFieldVelocity().vyMetersPerSecond;                                                                    //vertical velocity to speaker  
-    
-    SmartDashboard.putNumber("X Velocity", vrX);
-    SmartDashboard.putNumber("Y Velocity", vrY);
-    SmartDashboard.putNumber("dY", dY);
-    SmartDashboard.putNumber("dX", dX);
 
     double fracTop = Math.sqrt(-1*vrY*vrY*dX*dX+2*vrY*dY*vrX*dY-dY*dY*vrX*vrX+dY*dY*Vs*Vs+Vs*Vs*dX*dX)-dY*Vs;
     double fracBottom = (-1*vrY*dX+dY*vrX+Vs*dX);
 
-    Double angle = (2*Math.atan(fracTop/fracBottom) * (180.0 / 3.14159));
-
-    SmartDashboard.putNumber("Angle", angle);
-
-    angle_controller.setSetpoint(angle);
+    angle_controller.setSetpoint(2*Math.atan(fracTop/fracBottom) * (180.0 / 3.14159));
 
     if (180 < botAngle && botAngle <= 360) {
       botAngle = botAngle - 360;
-    }
-    if (-360 <= botAngle && botAngle < -180) {
+    } else if (-360 <= botAngle && botAngle < -180) {
       botAngle = botAngle + 360;
     }
-
-    SmartDashboard.putNumber("botangle", botAngle);
+    
     return -DoubleUtils.clamp(angle_controller.calculate(botAngle), -Math.PI, Math.PI);
   }
 
