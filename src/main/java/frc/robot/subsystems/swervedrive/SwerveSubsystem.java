@@ -393,7 +393,6 @@ public class SwerveSubsystem extends SubsystemBase
   @Override
   public void periodic()
   {
-    getOffsetLeftRight();
   }
 
   @Override
@@ -596,10 +595,6 @@ public class SwerveSubsystem extends SubsystemBase
 
   public void alignToNote(boolean value) {
     alignToNote = value;
-  }
-
-  public void alignToSpeakerToggle() {
-    alignToSpeaker = !alignToSpeaker;
   }
 
   public void alignToNoteToggle() {
