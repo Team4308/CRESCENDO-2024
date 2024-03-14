@@ -223,8 +223,10 @@ public class RobotContainer
     stick1.LB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
     stick1.A.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
     stick1.B.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
+    stick1.B.onFalse(new InstantCommand(() -> m_shooterSubsystem.changeBottomMultiplier(Constants.Shooter.shootInAmpMultiplier)));
     stick1.B.whileTrue(shootInAmpCommand);
     stick1.B.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
+    stick1.B.onFalse(new InstantCommand(() -> m_shooterSubsystem.changeBottomMultiplier(1)));
     stick1.B.onFalse(new InstantCommand(() -> m_shooterSubsystem.setMaxSpeed(10000)));
   }
 
