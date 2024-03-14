@@ -24,7 +24,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
@@ -306,7 +305,7 @@ public class SwerveSubsystem extends SubsystemBase
     } else if (-360 <= botAngle && botAngle < -180) {
       botAngle = botAngle + 360;
     }
-    
+
     return -DoubleUtils.clamp(angle_controller.calculate(botAngle), -Math.PI, Math.PI);
   }
 
