@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 
 import ca.team4308.absolutelib.math.DoubleUtils;
 import ca.team4308.absolutelib.wrapper.LogSubsystem;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.util.sendable.Sendable;
@@ -30,13 +29,12 @@ public class RotateShooterSystem extends LogSubsystem {
 
     public static double shooterDegree;
     public static double encoderDegree;
+    public static double offset;
 
     public RotateShooterSystem() {
         motor = new TalonFX(Constants.Mapping.Shooter.motor);
         
         revEncoder = new DutyCycleEncoder(Constants.Mapping.Shooter.encoder);
-        revEncoder.setDistancePerRotation(1.0);
-        revEncoder.reset();
 
         limitSwitch1 = new DigitalInput(Constants.Mapping.Shooter.limitSwitch1);
         limitSwitch2 = new DigitalInput(Constants.Mapping.Shooter.limitSwitch2);
@@ -56,10 +54,12 @@ public class RotateShooterSystem extends LogSubsystem {
     public double getMotorPosition() {
         if (limitSwitch1.get()){
             revEncoder.reset();
+            offset = Constants.Shooter.encoderStartRevolutions;
         } else if (limitSwitch2.get()) {
-            return Constants.Shooter.encoderEndRevolutions;
+            revEncoder.reset();
+            offset = Constants.Shooter.encoderEndRevolutions;
         }
-        return revEncoder.getDistance();
+        return revEncoder.getDistance() + offset;
     }
 
     public void setMotorPosition(double degree) { 
@@ -69,18 +69,12 @@ public class RotateShooterSystem extends LogSubsystem {
 
         double encoderDegree = getMotorPosition();
 
-        SmartDashboard.putNumber("degree", encoderDegree);
-
-        SmartDashboard.putNumber("Shooter Angle", DoubleUtils.mapRangeNew(encoderDegree, Constants.Shooter.encoderStartRevolutions, Constants.Shooter.encoderEndRevolutions, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree));
-
         double motorOutput = DoubleUtils.clamp(pidController.calculate(encoderDegree, outputDegree), -1.0, 1.0);
-
-        SmartDashboard.putNumber("motorOutput", motorOutput);
 
         setMotorOutput(motorOutput);
     }
 
-    public void autoAlignShooter() {
+    public Double autoAlignShooter() {
         double targetOffsetAngle_Vertical = LimelightHelpers.getTY("");
 
         // how many degrees back is your limelight rotated from perfectly vertical?
@@ -102,11 +96,11 @@ public class RotateShooterSystem extends LogSubsystem {
         double distanceFromShooterToGoalCM = (goalHeightCM - limelightLensHeightCM) / Math.tan(angleToGoalRadians) + limelightDistanceFromShooterCM;
 
         double accelY = gyro.getAccelerationY().getValueAsDouble();
-        double offset = accelY * 0.0;//shootingwhilemoving thing
+        double offset = accelY * 0.0;   // shootingwhilemoving thing
 
-        double shooterAngle = Math.atan(speakerOpeningHeightCM/distanceFromShooterToGoalCM) + offset;
+        double shooterAngle = Math.atan(speakerOpeningHeightCM/distanceFromShooterToGoalCM) * (180.0 / 3.14159) + offset;
 
-        setMotorPosition(shooterAngle);
+        return shooterAngle;
     }
 
     public void controlWithController(Double controllerValue) {

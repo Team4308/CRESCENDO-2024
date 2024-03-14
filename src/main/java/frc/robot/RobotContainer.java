@@ -3,6 +3,7 @@ package frc.robot;
 import java.io.File;
 import java.util.ArrayList;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import ca.team4308.absolutelib.control.XBoxWrapper;
@@ -29,9 +30,9 @@ import frc.robot.commands.LEDCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.RotateShooterCommand;
 import frc.robot.commands.ShooterCommand;
+import frc.robot.commands.BeambreakCommand;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.IndexCommand;
-import frc.robot.commands.ShootInAmpCommand;
 import frc.robot.subsystems.LEDSystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.IntakeSystem;
@@ -70,7 +71,6 @@ public class RobotContainer
   private final ShooterCommand ShooterCommand;
   private final ClimbCommand climbCommand;
   private final IndexCommand indexCommand;
-  private final ShootInAmpCommand shootInAmpCommand;
 
   // Controllers
   // For swerve
@@ -79,7 +79,7 @@ public class RobotContainer
   public final XBoxWrapper stick1 = new XBoxWrapper(Constants.Mapping.Controllers.kStick1);
   
   // Auto
-  private final SendableChooser<Command> autoCommandChooser = new SendableChooser<Command>();
+  private final SendableChooser<Command> autonomousChooser;
 
   // LED
   private Integer debounce = 0;
@@ -118,13 +118,14 @@ public class RobotContainer
     m_pixySystem = new PixySystem();
     subsystems.add(m_pixySystem);
 
-    NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(m_intakeSystem, () -> 1.0));
-    NamedCommands.registerCommand("IndexCommand", new InstantCommand(() -> m_indexSystem.setIndexOutput(-1.0)));
+    NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(m_intakeSystem, () -> -1.0));
+    NamedCommands.registerCommand("IndexCommand", new IndexCommand(m_indexSystem, () -> -1.0));
     NamedCommands.registerCommand("ShooterCommand", new ShooterCommand(m_shooterSubsystem, () -> 20.0));
-    NamedCommands.registerCommand("AlignToSpeaker", new InstantCommand(drivebase::alignToSpeakerToggle));
-    // NamedCommands.registerCommand("AutoAlignShooter", new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
-    NamedCommands.registerCommand("SetShooterAlignTrue", new InstantCommand(() -> setShooterAutonTriggered(true))); // not needed?
-    NamedCommands.registerCommand("SetShooterAlignFalse", new InstantCommand(() -> setShooterAutonTriggered(false))); // not needed?
+    NamedCommands.registerCommand("SpeakerAlignTrue", new InstantCommand(() -> drivebase.alignToSpeaker(true)));
+    NamedCommands.registerCommand("SpeakerAlignFalse", new InstantCommand(() -> drivebase.alignToSpeaker(false)));
+    NamedCommands.registerCommand("ResetGyro", new InstantCommand(drivebase::zeroGyro));
+    NamedCommands.registerCommand("AutoAlignShooter", new RotateShooterCommand(m_rotateShooterSystem, () -> m_rotateShooterSystem.autoAlignShooter()));
+    NamedCommands.registerCommand("BeambreakCommand", new BeambreakCommand(() -> getBeambreakControl()));
     
     //Command Instantiations
     intakeCommand = new IntakeCommand(m_intakeSystem, () -> getIntakeControl());
@@ -133,7 +134,7 @@ public class RobotContainer
     ledCommand = new LEDCommand(m_ledSystem, () -> getLEDCommand());
     m_ledSystem.setDefaultCommand(ledCommand);
     
-    rotateShooterCommand = new RotateShooterCommand(m_rotateShooterSystem, getRotateShooterControl());
+    rotateShooterCommand = new RotateShooterCommand(m_rotateShooterSystem, () -> getRotateShooterControl());
     m_rotateShooterSystem.setDefaultCommand(rotateShooterCommand);
     
     ShooterCommand = new ShooterCommand(m_shooterSubsystem, () -> getShooterControl());
@@ -144,10 +145,10 @@ public class RobotContainer
 
     indexCommand = new IndexCommand(m_indexSystem, () -> indexCommand());
     m_indexSystem.setDefaultCommand(indexCommand);
+    
+    autonomousChooser = AutoBuilder.buildAutoChooser();
 
-    shootInAmpCommand = new ShootInAmpCommand(m_rotateShooterSystem, m_shooterSubsystem);
-
-    SmartDashboard.putData(autoCommandChooser);
+    SmartDashboard.putData("Auto Chooser", autonomousChooser);
 
     shooterBeambrake = new DigitalInput(Constants.Mapping.Shooter.beambrake);
     
@@ -206,25 +207,25 @@ public class RobotContainer
     //     Commands.deferredProxy(() -> drivebase.driveToPose(
     //                                new Pose2d(new Translation2d(1.8, 7.7), Rotation2d.fromDegrees(90.0)))
     //                           )); 
-    // driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
+    stick.Start.whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
     stick.A.onTrue(new InstantCommand(() -> drivebase.alignToSpeaker(true)));
     stick.A.onFalse(new InstantCommand(() -> drivebase.alignToSpeaker(false)));
     stick.X.onTrue(new InstantCommand(() -> drivebase.alignToNote(true)));
     stick.X.onFalse(new InstantCommand(() -> drivebase.alignToNote(false)));
     stick.B.whileTrue(Commands.deferredProxy(() -> drivebase.alignToAmp()));
-    stick.Start.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
     stick1.Y.whileTrue(new LEDCommand(m_ledSystem, () -> 0.69)); // yellow
-    stick1.X.whileTrue(new InstantCommand(() -> m_rotateShooterSystem.autoAlignShooter()));
+    stick1.X.whileTrue(new RotateShooterCommand(m_rotateShooterSystem, () -> m_rotateShooterSystem.autoAlignShooter()));
     stick1.X.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
     stick1.X.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
     stick1.RB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> 1.0));
     stick1.LB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> -1.0));
     stick1.RB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
     stick1.LB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
-    stick1.A.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));//debugging
+    stick1.A.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));  // debugging
     stick1.B.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
+    stick1.B.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> 10.0));
+    stick1.B.whileTrue(new RotateShooterCommand(m_rotateShooterSystem, () -> Constants.GamePieces.amp.angleToshoot));
     stick1.B.onFalse(new InstantCommand(() -> m_shooterSubsystem.changeBottomMultiplier(Constants.Shooter.shootInAmpMultiplier)));
-    stick1.B.whileTrue(shootInAmpCommand);
     stick1.B.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
     stick1.B.onFalse(new InstantCommand(() -> m_shooterSubsystem.changeBottomMultiplier(1)));
     stick1.B.onFalse(new InstantCommand(() -> m_shooterSubsystem.setMaxSpeed(10000)));
@@ -232,7 +233,7 @@ public class RobotContainer
 
   public Command getAutonomousCommand()
   {
-    return autoCommandChooser.getSelected();
+    return autonomousChooser.getSelected();
   }
     
   public Command setShooterAutonTriggered(boolean value) {
@@ -262,8 +263,8 @@ public class RobotContainer
       return 0.67; // red-orange
     }
     if (getShooterControl() != 0.0){
-      prev = 0.0;
-      return 0.0; // not colour; trigger colourOutputShooter
+      prev = getShooterControl();
+      return getShooterControl(); // trigger colourOutputShooter
     }
     if(PixySystem.getClosestTarget() != null) {
       // target in range
@@ -294,9 +295,9 @@ public class RobotContainer
   }
     
   public double getRotateShooterControl(){
-     if (shooterAutonTriggered == false) {
+    if (shooterAutonTriggered == false) {
       var newVal = stick1.getRightY();
-      if (-0.1 <= newVal && newVal <= 0.1) {//deadband; too lazy to code properly
+      if (-0.1 <= newVal && newVal <= 0.1) {  //deadband; too lazy to code properly
         newVal = 0;
       }
       double newShooterDegree = shooterDegree + newVal;
@@ -304,17 +305,20 @@ public class RobotContainer
         shooterDegree = newShooterDegree;
       }
     }
-    
     return shooterDegree; 
   }
   
   public double getShooterControl() {
-    return stick1.getRightTrigger() * 100;//converting into RPM
+    return stick1.getRightTrigger() * 100;  //converting into RPS
   }
 
-  public void setDriveMode()
+  public boolean getBeambreakControl() {
+    return shooterBeambrake.get();
+  }
+
+  public void zeroGyroOnTeleop()
   {
-    // drivebase.setDefaultCommand();
+    drivebase.zeroGyro();
   }
 
   public void setMotorBrake(boolean brake)

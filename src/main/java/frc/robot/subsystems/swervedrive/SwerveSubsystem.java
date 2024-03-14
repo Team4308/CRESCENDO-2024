@@ -10,6 +10,7 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import ca.team4308.absolutelib.math.DoubleUtils;
@@ -23,7 +24,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
@@ -69,8 +69,6 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public SwerveSubsystem(File directory)
   {
-    angle_controller.setTolerance(Constants.Config.Drive.AngleControl.kTolerance);
-
     // Angle conversion factor is 360 / (GEAR RATIO * ENCODER RESOLUTION)
     //  In this case the gear ratio is 12.8 motor revolutions per wheel rotation.
     //  The encoder resolution per motor revolution is 1 per motor revolution.
@@ -123,10 +121,10 @@ public class SwerveSubsystem extends SubsystemBase
         this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
         this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
         new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                                         AutonConstants.TRANSLATION_PID,
-                                         // Translation PID constants
-                                         AutonConstants.ANGLE_PID,
-                                         // Rotation PID constants
+                                         new PIDConstants(5.0, 0.0, 0.0),
+                                         // Translation PID constants (DO NOT TOUCH THESE)
+                                         new PIDConstants(5.0, 0.0, 0.0),
+                                         // Rotation PID constants (DO NOT TOUCH THESE)
                                          4.5,
                                          // Max module speed, in m/s
                                          swerveDrive.swerveDriveConfiguration.getDriveBaseRadiusMeters(),
@@ -289,27 +287,26 @@ public class SwerveSubsystem extends SubsystemBase
     double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
     double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
     double distanceFromLimelightToGoalCM = (goalHeightCM - limelightLensHeightCM) / Math.tan(angleToGoalRadians);
-    double botAngle = gyro.getAngle()%360;
+    double botAngle = gyro.getAngle() % 360;
 
     double Vs = Constants.Shooter.shooterMaxVelocity;                                                                     //shooter velocity
     double dY = distanceFromLimelightToGoalCM * Math.cos((botAngle)*(3.14159/180.0)) / 100;                               //y distance from speaker
     double dX = distanceFromLimelightToGoalCM * Math.sin((botAngle+targetOffsetAngle_Horizontal)*(3.14159/180.0)) / 100;  //x distance from speaker
     double vrX = getFieldVelocity().vxMetersPerSecond;                                                                    //horziontal velocity to speaker
     double vrY = getFieldVelocity().vyMetersPerSecond;                                                                    //vertical velocity to speaker  
-    
-    SmartDashboard.putNumber("X Velocity", vrX);
-    SmartDashboard.putNumber("Y Velocity", vrY);
 
     double fracTop = Math.sqrt(-1*vrY*vrY*dX*dX+2*vrY*dY*vrX*dY-dY*dY*vrX*vrX+dY*dY*Vs*Vs+Vs*Vs*dX*dX)-dY*Vs;
     double fracBottom = (-1*vrY*dX+dY*vrX+Vs*dX);
 
-    SmartDashboard.putNumber("Angle 1", 2*Math.atan(fracTop/fracBottom));
-    SmartDashboard.putNumber("Angle 2", 2*Math.atan(-1*fracTop/fracBottom));
+    angle_controller.setSetpoint(2*Math.atan(fracTop/fracBottom) * (180.0 / 3.14159));
 
-    if (LimelightHelpers.getTX("") > 0) {
-      return 2*Math.atan(fracTop/fracBottom);
+    if (180 < botAngle && botAngle <= 360) {
+      botAngle = botAngle - 360;
+    } else if (-360 <= botAngle && botAngle < -180) {
+      botAngle = botAngle + 360;
     }
-    return 2*Math.atan(-1*fracTop/fracBottom);
+
+    return -DoubleUtils.clamp(angle_controller.calculate(botAngle), -Math.PI, Math.PI);
   }
 
   /**
@@ -325,8 +322,7 @@ public class SwerveSubsystem extends SubsystemBase
     return run(() -> {
       Double rotation;
       if (alignToSpeaker) {
-        angle_controller.setSetpoint(getOffsetLeftRight());
-        rotation = DoubleUtils.clamp(angle_controller.calculate(gyro.getAngle() % 360), -1.0, 1.0);;
+        rotation = getOffsetLeftRight();
       } else if (alignToNote) {
         rotation = Math.round(PixySystem.getTargetX(PixySystem.getClosestTarget()) / 20) * 20 * -0.1;
       } else {
@@ -386,7 +382,6 @@ public class SwerveSubsystem extends SubsystemBase
   @Override
   public void periodic()
   {
-    getOffsetLeftRight();
   }
 
   @Override
@@ -589,10 +584,6 @@ public class SwerveSubsystem extends SubsystemBase
 
   public void alignToNote(boolean value) {
     alignToNote = value;
-  }
-
-  public void alignToSpeakerToggle() {
-    alignToSpeaker = !alignToSpeaker;
   }
 
   public void alignToNoteToggle() {

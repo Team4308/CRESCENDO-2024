@@ -84,10 +84,9 @@ public final class Constants
       }
 
       public static class AngleControl {
-        public static double kP = 0.01;
+        public static double kP = 0.1;
         public static double kI = 0.0;
         public static double kD = 0.0;
-        public static double kTolerance = 0.5;
       }
     }
     public static class Input {
@@ -103,12 +102,13 @@ public final class Constants
     public static final double shootInAmpMultiplier = 0.5;
     public static final int shooterStartDegree = 18;
     public static final int shooterEndDegree = 72;
-    public static final double encoderStartRevolutions = 0.175;
-    public static final double encoderEndRevolutions = -0.07;
+    public static final double encoderStartRevolutions = 0.0;
+    public static final double encoderEndRevolutions = -0.26;
     public static final double shooterMaxVelocity = 7;
+    public static final double shooterMaxRPS = 100;
 
     public static final class AngleControl {
-      public static final double kP = 5.0;
+      public static final double kP = 1.0;
       public static final double kI = 0;
       public static final double kD = 0;
     }
@@ -124,7 +124,7 @@ public final class Constants
   public static class Limelight {
     public static class Measurements {
       public static final double limelightMountAngleDegrees = 25;
-      public static final double limelightLensHeightCM = 20;
+      public static final double limelightLensHeightCM = 26;
       public static final double limelightDistanceFromShooterCM = 30;
     }
   }
@@ -132,11 +132,11 @@ public final class Constants
   public static class GamePieces {
     public static class speaker {
       public static final double speakerAprilTagHeightCM = 136.8425;
-      public static final double speakerOpeningHeightCM = 200.0;
+      public static final double speakerOpeningHeightCM = 204.47;
     }
     public static class amp {
-      public static final double angleToshoot = 60.0;
-      public static final double speedToShoot = 10;//needs tuning
+      public static final double angleToshoot = 70.0;
+      public static final double speedToShoot = 100; // needs tuning
     }
   }
 }
