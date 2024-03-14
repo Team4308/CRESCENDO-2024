@@ -99,7 +99,7 @@ public final class Constants
   }
     
   public static class Shooter {
-    public static final double shootInAmpMultiplier = 0.5;
+    public static final double shootInAmpMultiplier = 0.3;
     public static final int shooterStartDegree = 18;
     public static final int shooterEndDegree = 72;
     public static final double encoderStartRevolutions = 0.0;
