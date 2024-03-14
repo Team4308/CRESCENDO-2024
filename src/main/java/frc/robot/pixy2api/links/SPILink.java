@@ -1,6 +1,8 @@
 package frc.robot.pixy2api.links;
 
+import edu.wpi.first.hal.SPIJNI;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SPI.Mode;
 import frc.robot.pixy2api.Pixy2.Checksum;
 
 /**
@@ -64,9 +66,10 @@ public class SPILink implements Link {
 		}
 		spi = new SPI(port);
 		spi.setClockRate(PIXY_SPI_CLOCKRATE);
-		//spi.setMSBFirst(); //depreciated
-		//spi.setSampleDataOnTrailingEdge();
-		//spi.setClockActiveLow();
+		//spi.setMSBFirst(); // depreciated
+		spi.setMode(Mode.kMode0); // needs to be tested
+		//spi.setSampleDataOnTrailingEdge(); part of setMode, data changes on leading edge
+		//spi.setClockActiveLow(); part of setMode, idle = low
 		spi.setChipSelectActiveLow();
 		return 0;
 	}
