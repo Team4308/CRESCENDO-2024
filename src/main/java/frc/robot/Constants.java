@@ -84,9 +84,9 @@ public final class Constants
       }
 
       public static class AngleControl {
-        public static double kP = 0.1;
+        public static double kP = 0.05;
         public static double kI = 0.0;
-        public static double kD = 0.01;
+        public static double kD = 0.0;
       }
     }
     public static class Input {
@@ -108,9 +108,9 @@ public final class Constants
     public static final double shooterMaxRPS = 100;
 
     public static final class AngleControl {
-      public static final double kP = 1.5;
+      public static final double kP = 0.005;
       public static final double kI = 0;
-      public static final double kD = 0.01;
+      public static final double kD = 0;
     }
 
     public static final class ShooterControl {

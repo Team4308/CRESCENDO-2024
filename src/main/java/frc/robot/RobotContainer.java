@@ -234,7 +234,7 @@ public class RobotContainer
     stick1.B.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.GamePieces.amp.speedToShoot));
     stick1.B.whileTrue(new RotateShooterCommand(m_rotateShooterSystem, () -> Constants.GamePieces.amp.angleToshoot));
     stick1.B.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
-    stick1.B.onFalse(new InstantCommand(() -> m_shooterSubsystem.changeBottomMultiplier(1)));
+    stick1.B.onFalse(new InstantCommand(() -> m_shooterSubsystem.changeTopMultiplier(1)));
   }
 
   public Command getAutonomousCommand()
@@ -303,7 +303,7 @@ public class RobotContainer
   public double getRotateShooterControl(){
     if (shooterAutonTriggered == false) {
       var newVal = stick1.getRightY();
-      if (-0.1 <= newVal && newVal <= 0.1) {  //deadband; too lazy to code properly
+      if (-0.06 <= newVal && newVal <= 0.06) {  //deadband; too lazy to code properly
         newVal = 0;
       }
       double newShooterDegree = shooterDegree + newVal;

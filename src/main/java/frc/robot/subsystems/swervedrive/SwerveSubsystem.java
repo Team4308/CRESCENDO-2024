@@ -297,15 +297,13 @@ public class SwerveSubsystem extends SubsystemBase
     double fracTop = Math.sqrt(-1*vrY*vrY*dX*dX+2*vrY*dY*vrX*dY-dY*dY*vrX*vrX+dY*dY*Vs*Vs+Vs*Vs*dX*dX)-dY*Vs;
     double fracBottom = (-1*vrY*dX+dY*vrX+Vs*dX);
 
-    angle_controller.setSetpoint(2*Math.atan(fracTop/fracBottom) * (180.0 / 3.14159));
-
     if (180 < botAngle && botAngle <= 360) {
       botAngle = botAngle - 360;
     } else if (-360 <= botAngle && botAngle < -180) {
       botAngle = botAngle + 360;
     }
 
-    return -DoubleUtils.clamp(angle_controller.calculate(botAngle), -Math.PI, Math.PI);
+    return -DoubleUtils.clamp(angle_controller.calculate(botAngle, 2*Math.atan(fracTop/fracBottom) * (180.0 / 3.14159)), -3*Math.PI, 3*Math.PI);
   }
 
   /**
