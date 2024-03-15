@@ -186,7 +186,7 @@ public class RobotContainer
     Command driveFieldOrientedAnglularVelocity = drivebase.driveCommand(
         () -> -MathUtil.applyDeadband(stick.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
         () -> -MathUtil.applyDeadband(stick.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-        () -> stick.getRightX());
+        () -> -stick.getRightX());
 
     Command driveFieldOrientedDirectAngleSim = drivebase.simDriveCommand(
         () -> MathUtil.applyDeadband(stick.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
@@ -231,7 +231,7 @@ public class RobotContainer
     //shoot in amp
     stick1.B.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
     stick1.B.onTrue(new InstantCommand(() -> m_shooterSubsystem.changeTopMultiplier(Constants.Shooter.shootInAmpMultiplier)));
-    stick1.B.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> 10.0));
+    stick1.B.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.GamePieces.amp.speedToShoot));
     stick1.B.whileTrue(new RotateShooterCommand(m_rotateShooterSystem, () -> Constants.GamePieces.amp.angleToshoot));
     stick1.B.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
     stick1.B.onFalse(new InstantCommand(() -> m_shooterSubsystem.changeBottomMultiplier(1)));
@@ -254,12 +254,12 @@ public class RobotContainer
     }
     double joy = stick1.getLeftY()*-1;
     if (-0.06 <= joy && joy <= 0.06) {
-      joy = 0;
+      joy = 0.0;
     }
     if (shooterBeambrake.get() == false) {
       return trig;
     } else {
-      return joy;
+      return joy * 0.25;
     }
   }
 

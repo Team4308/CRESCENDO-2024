@@ -28,7 +28,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
-import frc.robot.Constants.AutonConstants;
 import frc.robot.LimelightHelpers;
 import frc.robot.subsystems.PixySystem;
 import java.io.File;

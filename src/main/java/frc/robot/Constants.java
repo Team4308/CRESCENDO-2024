@@ -86,7 +86,7 @@ public final class Constants
       public static class AngleControl {
         public static double kP = 0.1;
         public static double kI = 0.0;
-        public static double kD = 0.0;
+        public static double kD = 0.01;
       }
     }
     public static class Input {
@@ -108,9 +108,9 @@ public final class Constants
     public static final double shooterMaxRPS = 100;
 
     public static final class AngleControl {
-      public static final double kP = 1.0;
+      public static final double kP = 1.5;
       public static final double kI = 0;
-      public static final double kD = 0;
+      public static final double kD = 0.01;
     }
 
     public static final class ShooterControl {
@@ -132,11 +132,11 @@ public final class Constants
   public static class GamePieces {
     public static class speaker {
       public static final double speakerAprilTagHeightCM = 136.8425;
-      public static final double speakerOpeningHeightCM = 204.47;
+      public static final double speakerOpeningHeightCM = 210.82;
     }
     public static class amp {
-      public static final double angleToshoot = 70.0;
-      public static final double speedToShoot = 100; // needs tuning
+      public static final double angleToshoot = 64;
+      public static final double speedToShoot = 11; // needs tuning
     }
   }
 }
