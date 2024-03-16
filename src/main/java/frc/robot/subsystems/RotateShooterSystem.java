@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import ca.team4308.absolutelib.math.DoubleUtils;
 import ca.team4308.absolutelib.wrapper.LogSubsystem;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.util.sendable.Sendable;
 import frc.robot.Constants;
@@ -65,11 +66,13 @@ public class RotateShooterSystem extends LogSubsystem {
     public void setMotorPosition(double degree) { 
         double wantedDegree = DoubleUtils.clamp(degree, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree);
 
-        double outputDegree = DoubleUtils.mapRangeNew(wantedDegree, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree, Constants.Shooter.encoderStartRevolutions, Constants.Shooter.encoderEndRevolutions);
+        double shooterDegree = DoubleUtils.mapRangeNew(getMotorPosition(), Constants.Shooter.encoderStartRevolutions, Constants.Shooter.encoderEndRevolutions, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree);
 
-        double encoderDegree = getMotorPosition();
+        double motorOutput = -DoubleUtils.clamp(pidController.calculate(shooterDegree, wantedDegree), -1.0, 1.0);
 
-        double motorOutput = DoubleUtils.clamp(pidController.calculate(encoderDegree, outputDegree), -1.0, 1.0);
+        SmartDashboard.putNumber("shooterDegree", shooterDegree);
+        SmartDashboard.putNumber("wantedDegree", wantedDegree);
+        SmartDashboard.putNumber("motorOutput", motorOutput);
 
         setMotorOutput(motorOutput);
     }

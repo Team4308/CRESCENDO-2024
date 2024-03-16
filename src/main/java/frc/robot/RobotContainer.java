@@ -186,7 +186,7 @@ public class RobotContainer
     Command driveFieldOrientedAnglularVelocity = drivebase.driveCommand(
         () -> -MathUtil.applyDeadband(stick.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
         () -> -MathUtil.applyDeadband(stick.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-        () -> stick.getRightX());
+        () -> -stick.getRightX());
 
     Command driveFieldOrientedDirectAngleSim = drivebase.simDriveCommand(
         () -> MathUtil.applyDeadband(stick.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
@@ -214,18 +214,27 @@ public class RobotContainer
     stick.X.onFalse(new InstantCommand(() -> drivebase.alignToNote(false)));
     stick.B.whileTrue(Commands.deferredProxy(() -> drivebase.alignToAmp()));
     stick1.Y.whileTrue(new LEDCommand(m_ledSystem, () -> 0.69)); // yellow
+
+    //auto align shooter
     stick1.X.whileTrue(new RotateShooterCommand(m_rotateShooterSystem, () -> m_rotateShooterSystem.autoAlignShooter()));
     stick1.X.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
     stick1.X.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
+
+    //climb
     stick1.RB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> 1.0));
     stick1.LB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> -1.0));
     stick1.RB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
     stick1.LB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
+
     stick1.A.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));  // debugging
+
+    //shoot in amp
     stick1.B.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
-    stick1.B.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> 10.0));
+    stick1.B.onTrue(new InstantCommand(() -> m_shooterSubsystem.changeTopMultiplier(Constants.Shooter.shootInAmpMultiplier)));
+    stick1.B.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.GamePieces.amp.speedToShoot));
     stick1.B.whileTrue(new RotateShooterCommand(m_rotateShooterSystem, () -> Constants.GamePieces.amp.angleToshoot));
     stick1.B.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
+    stick1.B.onFalse(new InstantCommand(() -> m_shooterSubsystem.changeTopMultiplier(1)));
   }
 
   public Command getAutonomousCommand()
@@ -245,12 +254,12 @@ public class RobotContainer
     }
     double joy = stick1.getLeftY()*-1;
     if (-0.06 <= joy && joy <= 0.06) {
-      joy = 0;
+      joy = 0.0;
     }
     if (shooterBeambrake.get() == false) {
       return trig;
     } else {
-      return joy;
+      return joy * 0.25;
     }
   }
 
@@ -294,7 +303,7 @@ public class RobotContainer
   public double getRotateShooterControl(){
     if (shooterAutonTriggered == false) {
       var newVal = stick1.getRightY();
-      if (-0.1 <= newVal && newVal <= 0.1) {  //deadband; too lazy to code properly
+      if (-0.06 <= newVal && newVal <= 0.06) {  //deadband; too lazy to code properly
         newVal = 0;
       }
       double newShooterDegree = shooterDegree + newVal;

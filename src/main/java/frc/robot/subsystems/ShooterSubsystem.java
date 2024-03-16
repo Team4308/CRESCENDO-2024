@@ -28,6 +28,9 @@ public class ShooterSubsystem extends LogSubsystem {
     
     public double maxSpeed;
 
+    public double bottomMultiplier;
+    public double topMultiplier;
+
     public ShooterSubsystem() {
         // Create Motor Controller Objects
         right = new TalonFX(Constants.Mapping.ShooterMotor.kMotor1);
@@ -60,10 +63,20 @@ public class ShooterSubsystem extends LogSubsystem {
         left.getConfigurator().apply(slot0Configs, Constants.Generic.timeoutMs);
 
         maxSpeed = 10000;
+        topMultiplier = 1;
+        bottomMultiplier = 1;
         
         // Reset
         stopControllers();
         resetSensors();
+    }
+
+    public void changeTopMultiplier(double newValue) {
+        topMultiplier = newValue;
+    }
+
+    public void changeBottomMultiplier(double newValue) {
+        bottomMultiplier = newValue;
     }
 
     /**
@@ -72,8 +85,8 @@ public class ShooterSubsystem extends LogSubsystem {
     public void setMotorOutput(double rps) {
         rightVelocity.Slot = 0;
         leftVelocity.Slot = 0;
-        right.setControl(rightVelocity.withVelocity(rps*Constants.Shooter.rightMultiplier));
-        left.setControl(leftVelocity.withVelocity(rps*Constants.Shooter.rightMultiplier));
+        right.setControl(rightVelocity.withVelocity(rps*topMultiplier));
+        left.setControl(leftVelocity.withVelocity(rps*bottomMultiplier));
 
         /*
         rightMotorOut.Output = rpm * Constants.Shooter.rightMultiplier;

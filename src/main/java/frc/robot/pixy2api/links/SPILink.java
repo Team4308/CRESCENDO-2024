@@ -1,6 +1,6 @@
 package frc.robot.pixy2api.links;
 
-import edu.wpi.first.hal.SPIJNI;
+// import edu.wpi.first.hal.SPIJNI;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SPI.Mode;
 import frc.robot.pixy2api.Pixy2.Checksum;
