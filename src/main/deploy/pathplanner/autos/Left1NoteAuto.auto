@@ -71,31 +71,38 @@
                                   }
                                 },
                                 {
-                                  "type": "path",
-                                  "data": {
-                                    "pathName": "LeftWallToNote"
-                                  }
-                                },
-                                {
-                                  "type": "deadline",
+                                  "type": "parallel",
                                   "data": {
                                     "commands": [
                                       {
-                                        "type": "named",
+                                        "type": "deadline",
                                         "data": {
-                                          "name": "BeambreakCommand"
+                                          "commands": [
+                                            {
+                                              "type": "named",
+                                              "data": {
+                                                "name": "BeambreakCommand"
+                                              }
+                                            },
+                                            {
+                                              "type": "named",
+                                              "data": {
+                                                "name": "IntakeCommand"
+                                              }
+                                            },
+                                            {
+                                              "type": "named",
+                                              "data": {
+                                                "name": "IndexCommand"
+                                              }
+                                            }
+                                          ]
                                         }
                                       },
                                       {
-                                        "type": "named",
+                                        "type": "path",
                                         "data": {
-                                          "name": "IntakeCommand"
-                                        }
-                                      },
-                                      {
-                                        "type": "named",
-                                        "data": {
-                                          "name": "IndexCommand"
+                                          "pathName": "LeftWallToNote"
                                         }
                                       }
                                     ]

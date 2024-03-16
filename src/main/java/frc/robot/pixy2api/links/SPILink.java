@@ -68,7 +68,7 @@ public class SPILink implements Link {
 		spi.setClockRate(PIXY_SPI_CLOCKRATE);
 		//spi.setMSBFirst(); // depreciated
 		spi.setMode(Mode.kMode0); // needs to be tested
-		//spi.setSampleDataOnTrailingEdge(); part of setMode, data changes on leading edge
+		//spi.setSampleDataOnTrailingEdge(); part of setMode, data changes on leading edge 
 		//spi.setClockActiveLow(); part of setMode, idle = low
 		spi.setChipSelectActiveLow();
 		return 0;
