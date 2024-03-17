@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 // import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 // import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.LEDCommand;
 // import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
@@ -86,7 +87,7 @@ public class RobotContainer
   private Double prev = 0.0;
   
   private DigitalInput shooterBeambrake;
-  public double shooterDegree = 30;
+  public double shooterDegree = 45;
   
   // State Machines
   private boolean shooterAutonTriggered = false;
@@ -96,6 +97,8 @@ public class RobotContainer
    */
   public RobotContainer()
   {
+    setSpeaker();
+
     //Subsystem Instantiations
     m_intakeSystem = new IntakeSystem();
     subsystems.add(m_intakeSystem);
@@ -213,6 +216,8 @@ public class RobotContainer
     stick.X.onTrue(new InstantCommand(() -> drivebase.alignToNote(true)));
     stick.X.onFalse(new InstantCommand(() -> drivebase.alignToNote(false)));
     stick.B.whileTrue(Commands.deferredProxy(() -> drivebase.alignToAmp()));
+    stick.B.onTrue(new InstantCommand(() -> setAmp()));
+    stick.B.onFalse(new InstantCommand(() -> setSpeaker()));
     stick1.Y.whileTrue(new LEDCommand(m_ledSystem, () -> 0.69)); // yellow
 
     //auto align shooter
@@ -221,8 +226,8 @@ public class RobotContainer
     stick1.X.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
 
     //climb
-    stick1.RB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> 1.0));
-    stick1.LB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> -1.0));
+    stick1.RB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> 0.5));
+    stick1.LB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> -0.5));
     stick1.RB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
     stick1.LB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
 
@@ -337,6 +342,22 @@ public class RobotContainer
     stick.setRightRumble(0.0);
     stick1.setLeftRumble(0.0);
     stick1.setRightRumble(0.0);
+  }
+
+  public void setSpeaker() {
+    if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
+      LimelightHelpers.setPipelineIndex("", 0);
+    } else {
+      LimelightHelpers.setPipelineIndex("", 2);
+    }
+  }
+
+  public void setAmp() {
+    if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
+      LimelightHelpers.setPipelineIndex("", 1);
+    } else {
+      LimelightHelpers.setPipelineIndex("", 3);
+    }
   }
   
   // Gets rid of the yellow errors in Robot.java
