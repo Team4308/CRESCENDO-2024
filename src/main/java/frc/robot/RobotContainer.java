@@ -9,9 +9,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 import ca.team4308.absolutelib.control.XBoxWrapper;
 import ca.team4308.absolutelib.wrapper.LogSubsystem;
 import edu.wpi.first.math.MathUtil;
-// import edu.wpi.first.math.geometry.Pose2d;
-// import edu.wpi.first.math.geometry.Rotation2d;
-// import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
@@ -20,14 +17,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-// import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-// import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-// import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.LEDCommand;
-// import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.RotateShooterCommand;
 import frc.robot.commands.ShooterCommand;
@@ -205,11 +198,6 @@ public class RobotContainer
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
  
     stick.Y.onTrue((Commands.runOnce(drivebase::zeroGyro)));
-    // driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
-    // stick.B.whileTrue(
-    //     Commands.deferredProxy(() -> drivebase.driveToPose(
-    //                                new Pose2d(new Translation2d(1.8, 7.7), Rotation2d.fromDegrees(90.0)))
-    //                           )); 
     stick.Start.whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
     stick.A.onTrue(new InstantCommand(() -> drivebase.alignToSpeaker(true)));
     stick.A.onFalse(new InstantCommand(() -> drivebase.alignToSpeaker(false)));
@@ -218,6 +206,8 @@ public class RobotContainer
     stick.B.whileTrue(Commands.deferredProxy(() -> drivebase.alignToAmp()));
     stick.B.onTrue(new InstantCommand(() -> setAmp()));
     stick.B.onFalse(new InstantCommand(() -> setSpeaker()));
+    stick.RB.onTrue(new InstantCommand(() -> drivebase.fieldRelative(false)));
+    stick.RB.onFalse(new InstantCommand(() -> drivebase.fieldRelative(true)));
     stick1.Y.whileTrue(new LEDCommand(m_ledSystem, () -> 0.69)); // yellow
 
     //auto align shooter

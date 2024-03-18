@@ -48,6 +48,7 @@ public class SwerveSubsystem extends SubsystemBase
 {
   boolean alignToSpeaker = false;
   boolean alignToNote = false;
+  boolean fieldRelative = true;
 
   private final Pigeon2 gyro = new Pigeon2(Constants.Mapping.Pigeon2.gyro);
   private final PIDController angle_controller = new PIDController(Constants.Config.Drive.AngleControl.kP,
@@ -333,7 +334,7 @@ public class SwerveSubsystem extends SubsystemBase
       swerveDrive.drive(new Translation2d(Math.pow(translationX.getAsDouble(), 3) * swerveDrive.getMaximumVelocity(),
                                           Math.pow(translationY.getAsDouble(), 3) * swerveDrive.getMaximumVelocity()),
                         rotation,
-                        true,
+                        fieldRelative,
                         false);
     });
   }
@@ -588,7 +589,7 @@ public class SwerveSubsystem extends SubsystemBase
     alignToNote = value;
   }
 
-  public void alignToNoteToggle() {
-    alignToNote = !alignToNote;
+  public void fieldRelative(boolean value) {
+    fieldRelative = value;
   }
 }
