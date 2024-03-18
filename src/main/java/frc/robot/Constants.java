@@ -123,15 +123,15 @@ public final class Constants
   
   public static class Limelight {
     public static class Measurements {
-      public static final double limelightMountAngleDegrees = 25;
-      public static final double limelightLensHeightCM = 26;
-      public static final double limelightDistanceFromShooterCM = 30;
+      public static final double limelightMountAngleDegrees = 30;
+      public static final double limelightLensHeightCM = 24;
+      public static final double limelightDistanceFromShooterCM = 32;
     }
   }
   
   public static class GamePieces {
     public static class speaker {
-      public static final double speakerAprilTagHeightCM = 136.8425;
+      public static final double speakerAprilTagHeightCM = 145.0975;
       public static final double speakerOpeningHeightCM = 210.82;
     }
     public static class amp {
