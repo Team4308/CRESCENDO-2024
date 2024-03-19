@@ -137,7 +137,7 @@ public final class Constants
     }
     public static class amp {
       public static final double angleToshoot = 64;
-      public static final double speedToShoot = 16; // needs tuning
+      public static final double speedToShoot = 15; // needs tuning
     }
   }
 }
