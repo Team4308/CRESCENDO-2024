@@ -206,8 +206,8 @@ public class RobotContainer
     stick.B.whileTrue(Commands.deferredProxy(() -> drivebase.alignToAmp()));
     stick.B.onTrue(new InstantCommand(() -> setAmp()));
     stick.B.onFalse(new InstantCommand(() -> setSpeaker()));
-    stick.Back.onTrue(new InstantCommand(() -> m_rotateShooterSystem.changeGoalHeight(1.0)));
-    stick.Start.onTrue(new InstantCommand(() -> m_rotateShooterSystem.changeGoalHeight(-1.0)));
+    stick.Start.onTrue(new InstantCommand(() -> m_rotateShooterSystem.changeGoalHeight(1.0)));
+    stick.Back.onTrue(new InstantCommand(() -> m_rotateShooterSystem.changeGoalHeight(-1.0)));
     stick.RB.onTrue(new InstantCommand(() -> drivebase.fieldRelative(false)));
     stick.RB.onFalse(new InstantCommand(() -> drivebase.fieldRelative(true)));
     stick1.Y.whileTrue(new LEDCommand(m_ledSystem, () -> 0.69)); // yellow
@@ -223,7 +223,7 @@ public class RobotContainer
     stick1.RB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
     stick1.LB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
 
-    stick1.A.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));  // debugging
+    // stick1.A.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));  // debugging
 
     //shoot in amp
     stick1.B.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
@@ -232,6 +232,8 @@ public class RobotContainer
     stick1.B.whileTrue(new RotateShooterCommand(m_rotateShooterSystem, () -> Constants.GamePieces.amp.angleToshoot));
     stick1.B.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
     stick1.B.onFalse(new InstantCommand(() -> m_shooterSubsystem.changeTopMultiplier(1)));
+
+    stick1.A.whileTrue(new RotateShooterCommand(m_rotateShooterSystem, () -> Constants.GamePieces.amp.angleToshoot));
   }
 
   public Command getAutonomousCommand()
