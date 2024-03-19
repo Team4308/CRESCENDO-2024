@@ -71,31 +71,38 @@
                                   }
                                 },
                                 {
-                                  "type": "path",
-                                  "data": {
-                                    "pathName": "RightWallToNote"
-                                  }
-                                },
-                                {
-                                  "type": "deadline",
+                                  "type": "parallel",
                                   "data": {
                                     "commands": [
                                       {
-                                        "type": "named",
+                                        "type": "path",
                                         "data": {
-                                          "name": "BeambreakCommand"
+                                          "pathName": "RightWallToNote"
                                         }
                                       },
                                       {
-                                        "type": "named",
+                                        "type": "deadline",
                                         "data": {
-                                          "name": "IntakeCommand"
-                                        }
-                                      },
-                                      {
-                                        "type": "named",
-                                        "data": {
-                                          "name": "IndexCommand"
+                                          "commands": [
+                                            {
+                                              "type": "named",
+                                              "data": {
+                                                "name": "BeambreakCommand"
+                                              }
+                                            },
+                                            {
+                                              "type": "named",
+                                              "data": {
+                                                "name": "IntakeCommand"
+                                              }
+                                            },
+                                            {
+                                              "type": "named",
+                                              "data": {
+                                                "name": "IndexCommand"
+                                              }
+                                            }
+                                          ]
                                         }
                                       }
                                     ]

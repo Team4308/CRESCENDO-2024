@@ -93,6 +93,11 @@ public class SPILink implements Link {
 	public int receive(byte[] buffer, int length, Checksum cs) {
 		if (cs != null)
 			cs.reset();
+		try {
+			spi.read(false, buffer, length);
+		} catch (IllegalArgumentException e) {
+			
+		}
 		spi.read(false, buffer, length);
 		if (cs != null)
 			for (int i = 0; i < length; i++) {
