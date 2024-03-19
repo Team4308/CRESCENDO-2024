@@ -80,7 +80,7 @@ public class RobotContainer
   private Double prev = 0.0;
   
   private DigitalInput shooterBeambrake;
-  public double shooterDegree = 45;
+  public double shooterDegree = 18;
   
   // State Machines
   private boolean shooterAutonTriggered = false;
@@ -234,7 +234,7 @@ public class RobotContainer
     stick1.B.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
     stick1.B.onFalse(new InstantCommand(() -> m_shooterSubsystem.changeTopMultiplier(1)));
 
-    stick1.A.whileTrue(new RotateShooterCommand(m_rotateShooterSystem, () -> Constants.GamePieces.amp.angleToshoot));
+    stick1.A.whileTrue(new RotateShooterCommand(m_rotateShooterSystem, () -> Constants.GamePieces.speaker.angle));
   }
 
   public Command getAutonomousCommand()
