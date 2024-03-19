@@ -31,6 +31,7 @@ public class ClimbSubsystem extends LogSubsystem {
         // but in most cases, they will be used
         motor1.setNeutralMode(NeutralMode.Brake);
         motor2.setNeutralMode(NeutralMode.Brake);
+        motor1.setInverted(true);
         // Reset
         stopControllers();
         resetSensors();
@@ -41,7 +42,7 @@ public class ClimbSubsystem extends LogSubsystem {
      */
     public void setMotorOutput(TalonSRXControlMode mode, double percent) {
         motor1.set(mode, percent);
-        motor2.set(mode, percent*-1);
+        motor2.set(mode, percent);
     }
 
     public void selectProfileSlot(int slot) {
