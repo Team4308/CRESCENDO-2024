@@ -198,7 +198,7 @@ public class RobotContainer
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
  
     stick.Y.onTrue((Commands.runOnce(drivebase::zeroGyro)));
-    stick.Start.whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
+    stick.LB.whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
     stick.A.onTrue(new InstantCommand(() -> drivebase.alignToSpeaker(true)));
     stick.A.onFalse(new InstantCommand(() -> drivebase.alignToSpeaker(false)));
     stick.X.onTrue(new InstantCommand(() -> drivebase.alignToNote(true)));
@@ -206,6 +206,8 @@ public class RobotContainer
     stick.B.whileTrue(Commands.deferredProxy(() -> drivebase.alignToAmp()));
     stick.B.onTrue(new InstantCommand(() -> setAmp()));
     stick.B.onFalse(new InstantCommand(() -> setSpeaker()));
+    stick.Back.onTrue(new InstantCommand(() -> m_rotateShooterSystem.changeGoalHeight(1.0)));
+    stick.Start.onTrue(new InstantCommand(() -> m_rotateShooterSystem.changeGoalHeight(-1.0)));
     stick.RB.onTrue(new InstantCommand(() -> drivebase.fieldRelative(false)));
     stick.RB.onFalse(new InstantCommand(() -> drivebase.fieldRelative(true)));
     stick1.Y.whileTrue(new LEDCommand(m_ledSystem, () -> 0.69)); // yellow
