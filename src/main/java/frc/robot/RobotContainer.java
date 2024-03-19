@@ -117,8 +117,9 @@ public class RobotContainer
     NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(m_intakeSystem, () -> -1.0));
     NamedCommands.registerCommand("IndexCommand", new IndexCommand(m_indexSystem, () -> -1.0));
     NamedCommands.registerCommand("ShooterCommand", new ShooterCommand(m_shooterSubsystem, () -> 20.0));
-    NamedCommands.registerCommand("SpeakerAlignTrue", new InstantCommand(() -> drivebase.alignToSpeaker(true)));
-    NamedCommands.registerCommand("SpeakerAlignFalse", new InstantCommand(() -> drivebase.alignToSpeaker(false)));
+    //NamedCommands.registerCommand("SpeakerAlignTrue", new InstantCommand(() -> drivebase.alignToSpeaker(true)));
+    //NamedCommands.registerCommand("SpeakerAlignFalse", new InstantCommand(() -> drivebase.alignToSpeaker(false)));
+    NamedCommands.registerCommand("SpeakerAlign", new InstantCommand(() -> drivebase.speakerAlignCommand()));
     NamedCommands.registerCommand("ResetGyro", new InstantCommand(drivebase::zeroGyro));
     NamedCommands.registerCommand("AutoAlignShooter", new RotateShooterCommand(m_rotateShooterSystem, () -> m_rotateShooterSystem.autoAlignShooter()));
     NamedCommands.registerCommand("BeambreakCommand", new BeambreakCommand(() -> getBeambreakControl()));

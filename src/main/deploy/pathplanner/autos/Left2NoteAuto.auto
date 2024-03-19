@@ -28,7 +28,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "SpeakerAlignTrue"
+                        "name": "SpeakerAlign"
                       }
                     },
                     {
@@ -39,6 +39,12 @@
                             "type": "sequential",
                             "data": {
                               "commands": [
+                                {
+                                  "type": "wait",
+                                  "data": {
+                                    "waitTime": 2.0
+                                  }
+                                },
                                 {
                                   "type": "deadline",
                                   "data": {
@@ -56,12 +62,6 @@
                                         }
                                       }
                                     ]
-                                  }
-                                },
-                                {
-                                  "type": "named",
-                                  "data": {
-                                    "name": "SpeakerAlignFalse"
                                   }
                                 },
                                 {
@@ -105,7 +105,13 @@
                                 {
                                   "type": "named",
                                   "data": {
-                                    "name": "SpeakerAlignTrue"
+                                    "name": "SpeakerAlign"
+                                  }
+                                },
+                                {
+                                  "type": "wait",
+                                  "data": {
+                                    "waitTime": 2.0
                                   }
                                 },
                                 {
@@ -125,12 +131,6 @@
                                         }
                                       }
                                     ]
-                                  }
-                                },
-                                {
-                                  "type": "named",
-                                  "data": {
-                                    "name": "SpeakerAlignFalse"
                                   }
                                 },
                                 {

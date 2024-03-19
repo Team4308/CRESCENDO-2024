@@ -339,6 +339,19 @@ public class SwerveSubsystem extends SubsystemBase
     });
   }
 
+  public Command speakerAlignCommand()
+  {
+    return run(() -> {
+      Double rotation = getOffsetLeftRight();
+      // Make the robot move
+      swerveDrive.drive(new Translation2d(0,
+                                          0),
+                        rotation,
+                        fieldRelative,
+                        false);
+    });
+  }
+
   /**
    * The primary method for controlling the drivebase.  Takes a {@link Translation2d} and a rotation rate, and
    * calculates and commands module states accordingly.  Can use either open-loop or closed-loop velocity control for
