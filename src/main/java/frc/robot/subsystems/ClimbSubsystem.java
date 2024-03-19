@@ -31,6 +31,7 @@ public class ClimbSubsystem extends LogSubsystem {
         // but in most cases, they will be used
         motor1.setNeutralMode(NeutralMode.Brake);
         motor2.setNeutralMode(NeutralMode.Brake);
+        motor1.setInverted(true);
         // Reset
         stopControllers();
         resetSensors();
