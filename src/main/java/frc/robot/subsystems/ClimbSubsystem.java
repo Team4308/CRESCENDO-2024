@@ -42,7 +42,7 @@ public class ClimbSubsystem extends LogSubsystem {
      */
     public void setMotorOutput(TalonSRXControlMode mode, double percent) {
         motor1.set(mode, percent);
-        motor2.set(mode, percent*-1);
+        motor2.set(mode, percent);
     }
 
     public void selectProfileSlot(int slot) {
