@@ -29,16 +29,8 @@ public class ClimbSubsystem extends LogSubsystem {
         // Configure Motor Controllers
         // Note: These are unneeded for this case in specific,
         // but in most cases, they will be used
-        motor1.setNeutralMode(NeutralMode.Coast);
-        motor1.configNeutralDeadband(0.001, Constants.Generic.timeoutMs);
-        motor1.changeMotionControlFramePeriod(5);
-        motor1.configVoltageCompSaturation(12.5, Constants.Generic.timeoutMs);
-        motor1.enableVoltageCompensation(true);
-        motor2.setNeutralMode(NeutralMode.Coast);
-        motor2.configNeutralDeadband(0.001, Constants.Generic.timeoutMs);
-        motor2.changeMotionControlFramePeriod(5);
-        motor2.configVoltageCompSaturation(12.5, Constants.Generic.timeoutMs);
-        motor2.enableVoltageCompensation(true);
+        motor1.setNeutralMode(NeutralMode.Brake);
+        motor2.setNeutralMode(NeutralMode.Brake);
         // Reset
         stopControllers();
         resetSensors();
