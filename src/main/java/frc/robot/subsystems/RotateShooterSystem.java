@@ -28,13 +28,14 @@ public class RotateShooterSystem extends LogSubsystem {
 
     public static double shooterDegree;
     public static double encoderDegree;
-    public static double offset;
-    public static double x = 0;
+    public static double offset = 0.0;
+    public static double x = 0.0;
 
     public RotateShooterSystem() {
         motor = new TalonFX(Constants.Mapping.Shooter.motor);
         
         revEncoder = new DutyCycleEncoder(Constants.Mapping.Shooter.encoder);
+        revEncoder.reset();
 
         limitSwitch1 = new DigitalInput(Constants.Mapping.Shooter.limitSwitch1);
         limitSwitch2 = new DigitalInput(Constants.Mapping.Shooter.limitSwitch2);
