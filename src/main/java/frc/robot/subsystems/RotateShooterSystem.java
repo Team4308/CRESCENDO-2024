@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -26,11 +25,11 @@ public class RotateShooterSystem extends LogSubsystem {
     public final DigitalInput limitSwitch1;
     public final DigitalInput limitSwitch2;
     private final DutyCycleEncoder revEncoder; 
-    private final Pigeon2 gyro = new Pigeon2(Constants.Mapping.Pigeon2.gyro);
 
     public static double shooterDegree;
     public static double encoderDegree;
     public static double offset;
+    public static double x = 0;
 
     public RotateShooterSystem() {
         motor = new TalonFX(Constants.Mapping.Shooter.motor);
@@ -87,7 +86,7 @@ public class RotateShooterSystem extends LogSubsystem {
         double limelightLensHeightCM = Constants.Limelight.Measurements.limelightLensHeightCM;
 
         // distance from the target to the floor
-        double goalHeightCM = Constants.GamePieces.speaker.speakerAprilTagHeightCM;
+        double goalHeightCM = Constants.GamePieces.speaker.speakerAprilTagHeightCM + x;
         double speakerOpeningHeightCM = Constants.GamePieces.speaker.speakerOpeningHeightCM;
 
         double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
@@ -98,12 +97,13 @@ public class RotateShooterSystem extends LogSubsystem {
         //calculate distance
         double distanceFromShooterToGoalCM = (goalHeightCM - limelightLensHeightCM) / Math.tan(angleToGoalRadians) + limelightDistanceFromShooterCM;
 
-        double accelY = gyro.getAccelerationY().getValueAsDouble();
-        double offset = accelY * 0.0;   // shootingwhilemoving thing
-
-        double shooterAngle = Math.atan(speakerOpeningHeightCM/distanceFromShooterToGoalCM) * (180.0 / 3.14159) + offset;
+        double shooterAngle = Math.atan(speakerOpeningHeightCM/distanceFromShooterToGoalCM) * (180.0 / 3.14159);
 
         return shooterAngle;
+    }
+
+    public void changeGoalHeight(Double value) {
+        x = x + value;
     }
 
     public void controlWithController(Double controllerValue) {
