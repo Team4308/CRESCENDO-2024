@@ -116,7 +116,7 @@ public class RobotContainer
 
     NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(m_intakeSystem, () -> -1.0));
     NamedCommands.registerCommand("IndexCommand", new IndexCommand(m_indexSystem, () -> -1.0));
-    NamedCommands.registerCommand("ShooterCommand", new ShooterCommand(m_shooterSubsystem, () -> 80.0));
+    NamedCommands.registerCommand("ShooterCommand", new ShooterCommand(m_shooterSubsystem, () -> 90.0));
     //NamedCommands.registerCommand("SpeakerAlignTrue", new InstantCommand(() -> drivebase.alignToSpeaker(true)));
     //NamedCommands.registerCommand("SpeakerAlignFalse", new InstantCommand(() -> drivebase.alignToSpeaker(false)));
     NamedCommands.registerCommand("SpeakerAlign", new InstantCommand(() -> drivebase.speakerAlignCommand()));
@@ -315,7 +315,7 @@ public class RobotContainer
   }
   
   public double getShooterControl() {
-    return stick1.getRightTrigger() * 100;  //converting into RPS
+    return stick1.getRightTrigger() * 90;  //converting into RPS
   }
 
   public boolean getBeambreakControl() {
