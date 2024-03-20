@@ -99,7 +99,7 @@ public final class Constants
   }
     
   public static class Shooter {
-    public static final double shootInAmpMultiplier = 0.4;
+    public static final double shootInAmpMultiplier = 0.5;
     public static final int shooterStartDegree = 18;
     public static final int shooterEndDegree = 72;
     public static final double encoderStartRevolutions = 0.0;
@@ -137,7 +137,7 @@ public final class Constants
     }
     public static class amp {
       public static final double angleToshoot = 64;
-      public static final double speedToShoot = 15; // needs tuning
+      public static final double speedToShoot = 14; // needs tuning
     }
   }
 }
