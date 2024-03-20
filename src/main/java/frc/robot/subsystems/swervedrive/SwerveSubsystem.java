@@ -47,6 +47,7 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 public class SwerveSubsystem extends SubsystemBase
 {
   boolean alignToSpeaker = false;
+  boolean alignToAmp = false;
   boolean alignToNote = false;
   boolean fieldRelative = true;
 
@@ -159,15 +160,6 @@ public class SwerveSubsystem extends SubsystemBase
                               0,
                               Rotation2d.fromDegrees(LimelightHelpers.getTX("") * -1.1))); // Not sure if this will work, more math may be required.
       }
-    });
-  }
-
-  public Command alignToAmp()
-  {
-    return run(() -> {
-      drive(getTargetSpeeds(-0.5,
-                            LimelightHelpers.getTX("") / 20,
-                            Rotation2d.fromDegrees(-90)));
     });
   }
 
@@ -323,6 +315,7 @@ public class SwerveSubsystem extends SubsystemBase
   {
     return run(() -> {
       Double rotation;
+      Double transX;
       if (alignToSpeaker) {
         rotation = getOffsetLeftRight();
       } else if (alignToNote) {
@@ -330,8 +323,13 @@ public class SwerveSubsystem extends SubsystemBase
       } else {
         rotation = Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumAngularVelocity();
       }
+      if (alignToAmp) {
+        transX = LimelightHelpers.getTX("") * 0.01;
+      } else {
+        transX = translationX.getAsDouble();
+      }
       // Make the robot move
-      swerveDrive.drive(new Translation2d(Math.pow(translationX.getAsDouble(), 3) * swerveDrive.getMaximumVelocity(),
+      swerveDrive.drive(new Translation2d(Math.pow(transX, 3) * swerveDrive.getMaximumVelocity(),
                                           Math.pow(translationY.getAsDouble(), 3) * swerveDrive.getMaximumVelocity()),
                         rotation,
                         fieldRelative,
@@ -596,6 +594,10 @@ public class SwerveSubsystem extends SubsystemBase
 
   public void alignToSpeaker(boolean value) {
     alignToSpeaker = value;
+  }
+
+  public void alignToAmp(boolean value) {
+    alignToAmp = value;
   }
 
   public void alignToNote(boolean value) {
