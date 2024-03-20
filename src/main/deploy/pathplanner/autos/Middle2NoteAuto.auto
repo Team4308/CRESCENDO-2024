@@ -30,7 +30,7 @@
                                 {
                                   "type": "wait",
                                   "data": {
-                                    "waitTime": 5.0
+                                    "waitTime": 4.0
                                   }
                                 },
                                 {
@@ -116,6 +116,12 @@
                       }
                     },
                     {
+                      "type": "path",
+                      "data": {
+                        "pathName": "NoteToMiddle"
+                      }
+                    },
+                    {
                       "type": "parallel",
                       "data": {
                         "commands": [
@@ -126,13 +132,13 @@
                                 {
                                   "type": "wait",
                                   "data": {
-                                    "waitTime": 5.0
+                                    "waitTime": 4.0
                                   }
                                 },
                                 {
                                   "type": "named",
                                   "data": {
-                                    "name": "MiddleNoteAngle"
+                                    "name": "SubwooferAngle"
                                   }
                                 }
                               ]
@@ -171,6 +177,12 @@
                             }
                           }
                         ]
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "MiddleEnd"
                       }
                     }
                   ]

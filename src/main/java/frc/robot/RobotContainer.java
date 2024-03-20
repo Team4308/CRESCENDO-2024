@@ -116,7 +116,7 @@ public class RobotContainer
 
     NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(m_intakeSystem, () -> -1.0));
     NamedCommands.registerCommand("IndexCommand", new IndexCommand(m_indexSystem, () -> -1.0));
-    NamedCommands.registerCommand("ShooterCommand", new ShooterCommand(m_shooterSubsystem, () -> 80.0));
+    NamedCommands.registerCommand("ShooterCommand", new ShooterCommand(m_shooterSubsystem, () -> 65.0));
     //NamedCommands.registerCommand("SpeakerAlignTrue", new InstantCommand(() -> drivebase.alignToSpeaker(true)));
     //NamedCommands.registerCommand("SpeakerAlignFalse", new InstantCommand(() -> drivebase.alignToSpeaker(false)));
     NamedCommands.registerCommand("SpeakerAlign", new InstantCommand(() -> drivebase.speakerAlignCommand()));
@@ -124,7 +124,7 @@ public class RobotContainer
     NamedCommands.registerCommand("AutoAlignShooter", new RotateShooterCommand(m_rotateShooterSystem, () -> m_rotateShooterSystem.autoAlignShooter()));
     NamedCommands.registerCommand("BeambreakCommand", new BeambreakCommand(() -> getBeambreakControl()));
     NamedCommands.registerCommand("SubwooferAngle", new RotateShooterCommand(m_rotateShooterSystem, () -> Constants.GamePieces.speaker.angle));
-    NamedCommands.registerCommand("MiddleNoteAngle", new RotateShooterCommand(m_rotateShooterSystem, () -> 36.0));
+    NamedCommands.registerCommand("MiddleNoteAngle", new RotateShooterCommand(m_rotateShooterSystem, () -> 33.5));
     
     //Command Instantiations
     intakeCommand = new IntakeCommand(m_intakeSystem, () -> getIntakeControl());
@@ -318,7 +318,7 @@ public class RobotContainer
   }
   
   public double getShooterControl() {
-    return stick1.getRightTrigger() * 80;  //converting into RPS
+    return stick1.getRightTrigger() * 65;  //converting into RPS
   }
 
   public boolean getBeambreakControl() {
