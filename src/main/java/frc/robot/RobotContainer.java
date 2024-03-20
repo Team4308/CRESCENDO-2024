@@ -341,6 +341,8 @@ public class RobotContainer
   }
 
   public void setSpeaker() {
+    if (DriverStation.getAlliance().isEmpty()) return;
+
     if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
       LimelightHelpers.setPipelineIndex("", 0);
     } else {
@@ -356,6 +358,10 @@ public class RobotContainer
     }
   }
   
+
+  public void disabledActions() {
+    setSpeaker();
+  }
   // Gets rid of the yellow errors in Robot.java
   public void ewyellowerrors() {}
 }
