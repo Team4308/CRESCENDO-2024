@@ -80,7 +80,7 @@ public class RobotContainer
   private Double prev = 0.0;
   
   private DigitalInput shooterBeambrake;
-  public double shooterDegree = 57.5;
+  public double shooterDegree = 18;
   
   // State Machines
   private boolean shooterAutonTriggered = false;
