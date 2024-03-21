@@ -105,7 +105,7 @@ public final class Constants
     public static final double encoderStartRevolutions = 0.0;
     public static final double encoderEndRevolutions = -0.26;
     public static final double shooterMaxVelocity = 7;
-    public static final double shooterMaxRPS = 100;
+    public static final double shooterRPS = 53.1666666667;
 
     public static final class AngleControl {
       public static final double kP = 0.009;
