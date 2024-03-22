@@ -45,8 +45,8 @@ public final class Constants
   public static class Mapping {
     public static class Intake {
       public static final int intakeMotor = 11;
-      public static final int leftBeamBreak = 4;
-      public static final int rightBeamBreak = 5;
+      public static final int leftBeamBreak = 9;
+      public static final int rightBeamBreak = 8;
     }
     public static class Shooter {
       public static final int motor = 13;

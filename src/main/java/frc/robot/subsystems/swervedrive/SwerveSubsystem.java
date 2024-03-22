@@ -328,9 +328,9 @@ public class SwerveSubsystem extends SubsystemBase
         rotation = getOffsetAngleLeftRight();
       } else if (alignToNote) {
         if (leftBeambreak.get() && !rightBeambreak.get()) {
-          rotation = Math.PI;
+          rotation = Math.PI / 2;
         } else if (!leftBeambreak.get() && rightBeambreak.get()) {
-          rotation = -Math.PI;
+          rotation = -Math.PI / 2;
         } else {
           rotation = 0.0;
         }
