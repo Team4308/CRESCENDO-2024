@@ -206,8 +206,8 @@ public class RobotContainer
     stick.A.onFalse(new InstantCommand(() -> drivebase.alignToSpeaker(false)));
     stick.X.onTrue(new InstantCommand(() -> drivebase.alignToNote(true)));
     stick.X.onFalse(new InstantCommand(() -> drivebase.alignToNote(false)));
-    stick.B.onTrue(new InstantCommand(() -> drivebase.alignToAmp(true)));
     stick.B.onTrue(new InstantCommand(() -> setAmp()));
+    stick.B.onTrue(new InstantCommand(() -> drivebase.alignToAmp(true)));
     stick.B.onFalse(new InstantCommand(() -> drivebase.alignToAmp(false)));
     stick.B.onFalse(new InstantCommand(() -> setSpeaker()));
     stick.Start.onTrue(new InstantCommand(() -> m_rotateShooterSystem.changeGoalHeight(1.0)));

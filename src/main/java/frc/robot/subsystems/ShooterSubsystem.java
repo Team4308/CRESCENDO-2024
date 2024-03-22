@@ -62,7 +62,7 @@ public class ShooterSubsystem extends LogSubsystem {
         right.getConfigurator().apply(slot0Configs, Constants.Generic.timeoutMs);
         left.getConfigurator().apply(slot0Configs, Constants.Generic.timeoutMs);
 
-        maxSpeed = 10000;
+        maxSpeed = 100;
         topMultiplier = 1;
         bottomMultiplier = 1;
         

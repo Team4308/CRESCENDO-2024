@@ -24,7 +24,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
@@ -54,6 +53,8 @@ public class SwerveSubsystem extends SubsystemBase
   private final Pigeon2 gyro = new Pigeon2(Constants.Mapping.Pigeon2.gyro);
   private final PIDController angle_controller = new PIDController(Constants.Config.Drive.AngleControl.kP,
             Constants.Config.Drive.AngleControl.kI, Constants.Config.Drive.AngleControl.kD);
+  private final PIDController translation_controller = new PIDController(Constants.Config.Drive.TranslationControl.kP,
+            Constants.Config.Drive.TranslationControl.kI, Constants.Config.Drive.TranslationControl.kD);
 
   /**
    * Swerve drive object.
@@ -271,7 +272,7 @@ public class SwerveSubsystem extends SubsystemBase
     3.0, 5.0, 3.0);
 }
 
-  public double getOffsetLeftRight() {
+  public double getOffsetAngleLeftRight() {
     double targetOffsetAngle_Vertical = LimelightHelpers.getTY("");
     double targetOffsetAngle_Horizontal = LimelightHelpers.getTX("");
     double limelightMountAngleDegrees = Constants.Limelight.Measurements.limelightMountAngleDegrees; 
@@ -297,10 +298,11 @@ public class SwerveSubsystem extends SubsystemBase
       botAngle = botAngle + 360;
     }
 
-    SmartDashboard.putNumber("botAngle", botAngle);
-    SmartDashboard.putNumber("desiredAngle", 2*Math.atan(fracTop/fracBottom) * (180.0 / 3.14159));
-
     return -DoubleUtils.clamp(angle_controller.calculate(botAngle, 2*Math.atan(fracTop/fracBottom) * (180.0 / 3.14159)), -3*Math.PI, 3*Math.PI);
+  }
+
+  public double getOffsetTranslationLeftRight() {
+    return DoubleUtils.clamp(translation_controller.calculate(LimelightHelpers.getTX(""), 0), -3, 3);
   }
 
   /**
@@ -317,21 +319,21 @@ public class SwerveSubsystem extends SubsystemBase
       Double rotation;
       Double transX;
       if (alignToSpeaker) {
-        rotation = getOffsetLeftRight();
+        rotation = getOffsetAngleLeftRight();
       } else if (alignToNote) {
         rotation = Math.round(PixySystem.getTargetX(PixySystem.getClosestTarget()) / 20) * 20 * -0.1;
       } else {
-        rotation = Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumAngularVelocity();
+        rotation = angularRotationX.getAsDouble();
       }
       if (alignToAmp) {
-        transX = LimelightHelpers.getTX("") * 0.01;
+        transX = getOffsetTranslationLeftRight();
       } else {
         transX = translationX.getAsDouble();
       }
       // Make the robot move
       swerveDrive.drive(new Translation2d(Math.pow(transX, 3) * swerveDrive.getMaximumVelocity(),
                                           Math.pow(translationY.getAsDouble(), 3) * swerveDrive.getMaximumVelocity()),
-                        rotation,
+                        Math.pow(rotation, 3) * swerveDrive.getMaximumAngularVelocity(),
                         fieldRelative,
                         false);
     });
@@ -340,7 +342,7 @@ public class SwerveSubsystem extends SubsystemBase
   public Command speakerAlignCommand()
   {
     return run(() -> {
-      Double rotation = getOffsetLeftRight();
+      Double rotation = getOffsetAngleLeftRight();
       // Make the robot move
       swerveDrive.drive(new Translation2d(0,
                                           0),
@@ -395,7 +397,6 @@ public class SwerveSubsystem extends SubsystemBase
   @Override
   public void periodic()
   {
-    getOffsetLeftRight();
   }
 
   @Override
