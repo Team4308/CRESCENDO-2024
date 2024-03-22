@@ -22,6 +22,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,7 +30,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
-import frc.robot.subsystems.PixySystem;
 import java.io.File;
 import java.util.function.DoubleSupplier;
 import org.photonvision.PhotonCamera;
@@ -55,6 +55,8 @@ public class SwerveSubsystem extends SubsystemBase
             Constants.Config.Drive.AngleControl.kI, Constants.Config.Drive.AngleControl.kD);
   private final PIDController translation_controller = new PIDController(Constants.Config.Drive.TranslationControl.kP,
             Constants.Config.Drive.TranslationControl.kI, Constants.Config.Drive.TranslationControl.kD);
+  private final DigitalInput leftBeambreak;
+  private final DigitalInput rightBeambreak;
 
   /**
    * Swerve drive object.
@@ -72,6 +74,8 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public SwerveSubsystem(File directory)
   {
+    leftBeambreak = new DigitalInput(Constants.Mapping.Intake.leftBeamBreak);
+    rightBeambreak = new DigitalInput(Constants.Mapping.Intake.rightBeamBreak);
     // Angle conversion factor is 360 / (GEAR RATIO * ENCODER RESOLUTION)
     //  In this case the gear ratio is 12.8 motor revolutions per wheel rotation.
     //  The encoder resolution per motor revolution is 1 per motor revolution.
@@ -110,6 +114,8 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public SwerveSubsystem(SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg)
   {
+    leftBeambreak = new DigitalInput(Constants.Mapping.Intake.leftBeamBreak);
+    rightBeambreak = new DigitalInput(Constants.Mapping.Intake.rightBeamBreak);
     swerveDrive = new SwerveDrive(driveCfg, controllerCfg, maximumSpeed);
   }
 
@@ -321,7 +327,13 @@ public class SwerveSubsystem extends SubsystemBase
       if (alignToSpeaker) {
         rotation = getOffsetAngleLeftRight();
       } else if (alignToNote) {
-        rotation = Math.round(PixySystem.getTargetX(PixySystem.getClosestTarget()) / 20) * 20 * -0.1;
+        if (leftBeambreak.get() && !rightBeambreak.get()) {
+          rotation = Math.PI;
+        } else if (!leftBeambreak.get() && rightBeambreak.get()) {
+          rotation = -Math.PI;
+        } else {
+          rotation = 0.0;
+        }
       } else {
         rotation = angularRotationX.getAsDouble();
       }
