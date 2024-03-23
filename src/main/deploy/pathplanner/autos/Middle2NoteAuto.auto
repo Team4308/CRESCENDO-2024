@@ -86,9 +86,9 @@
                             "data": {
                               "commands": [
                                 {
-                                  "type": "named",
+                                  "type": "wait",
                                   "data": {
-                                    "name": "BeambreakCommand"
+                                    "waitTime": 0.3
                                   }
                                 },
                                 {
