@@ -115,8 +115,7 @@ public class RobotContainer
     subsystems.add(m_pixySystem);
 
     NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(m_intakeSystem, () -> -1.0));
-    NamedCommands.registerCommand("IndexCommand", new IndexCommand(m_indexSystem, () -> -1.0));
-    NamedCommands.registerCommand("IndexReverse", new IndexCommand(m_indexSystem, () -> 0.5));
+    NamedCommands.registerCommand("IndexCommand", new IndexCommand(m_indexSystem, () -> -0.2));
     NamedCommands.registerCommand("ShooterCommand", new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS));
     NamedCommands.registerCommand("ShooterStop", new ShooterCommand(m_shooterSubsystem, () -> 0.0));
     //NamedCommands.registerCommand("SpeakerAlignTrue", new InstantCommand(() -> drivebase.alignToSpeaker(true)));
