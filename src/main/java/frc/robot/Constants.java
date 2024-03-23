@@ -140,7 +140,7 @@ public final class Constants
   public static class GamePieces {
     public static class speaker {
       public static final double speakerAprilTagHeightCM = 145.0975;
-      public static final double speakerOpeningHeightCM = 205;
+      public static final double speakerOpeningHeightCM = 206;
       public static final double angle = 57.5;
     }
     public static class amp {
