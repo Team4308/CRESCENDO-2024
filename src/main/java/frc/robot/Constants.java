@@ -16,7 +16,7 @@ import swervelib.math.Matter;
  */
 public final class Constants
 {
-  public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
+  public static final double ROBOT_MASS = 110 * 0.453592; // 32lbs * kg per pound
   public static final Matter CHASSIS    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
   public static final double LOOP_TIME  = 0.13; //s, 20ms + 110ms sprk max velocity lag
 
@@ -86,7 +86,7 @@ public final class Constants
       }
 
       public static class AngleControl {
-        public static double kP = 0.04;
+        public static double kP = 0.03;
         public static double kI = 0.0;
         public static double kD = 0.0;
       }
