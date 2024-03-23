@@ -218,6 +218,7 @@ public class RobotContainer
 
     //auto align shooter
     stick1.X.whileTrue(new RotateShooterCommand(m_rotateShooterSystem, () -> m_rotateShooterSystem.autoAlignShooter()));
+    stick1.X.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS));
     stick1.X.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
     stick1.X.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
 
@@ -305,7 +306,7 @@ public class RobotContainer
     
   public double getRotateShooterControl(){
     if (shooterAutonTriggered == false) {
-      var newVal = stick1.getRightY();
+      var newVal = -stick1.getRightY();
       if (-0.06 <= newVal && newVal <= 0.06) {  //deadband; too lazy to code properly
         newVal = 0;
       }

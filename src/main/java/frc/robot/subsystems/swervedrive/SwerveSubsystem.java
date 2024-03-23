@@ -25,6 +25,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
@@ -328,10 +329,8 @@ public class SwerveSubsystem extends SubsystemBase
         rotation = getOffsetAngleLeftRight();
       } else if (alignToNote) {
         if (leftBeambreak.get() && !rightBeambreak.get()) {
-          rotation = Math.PI / 2;
-        } else if (!leftBeambreak.get() && rightBeambreak.get()) {
-          rotation = -Math.PI / 2;
-        } else {
+          rotation = -Math.PI / 6;
+        }  else {
           rotation = 0.0;
         }
       } else {
@@ -409,6 +408,8 @@ public class SwerveSubsystem extends SubsystemBase
   @Override
   public void periodic()
   {
+    SmartDashboard.putBoolean("leftBeambreak", leftBeambreak.get());
+    SmartDashboard.putBoolean("rightBeambreak", rightBeambreak.get());
   }
 
   @Override
