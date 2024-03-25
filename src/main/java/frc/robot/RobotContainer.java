@@ -115,7 +115,7 @@ public class RobotContainer
     subsystems.add(m_pixySystem);
 
     NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(m_intakeSystem, () -> -1.0));
-    NamedCommands.registerCommand("IndexCommand", new IndexCommand(m_indexSystem, () -> -0.2));
+    NamedCommands.registerCommand("IndexCommand", new IndexCommand(m_indexSystem, () -> -0.15));
     NamedCommands.registerCommand("IndexShootCommand", new IndexCommand(m_indexSystem, () -> -1.0));
     NamedCommands.registerCommand("ShooterCommand", new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS));
     NamedCommands.registerCommand("ShooterStop", new ShooterCommand(m_shooterSubsystem, () -> 0.0));
