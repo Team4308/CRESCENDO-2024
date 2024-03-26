@@ -3,7 +3,7 @@
   "startingPose": {
     "position": {
       "x": 0.56,
-      "y": 7.0
+      "y": 4.08
     },
     "rotation": 0
   },
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftWallDriveBack"
+            "pathName": "RightWallDriveBack"
           }
         },
         {
@@ -113,7 +113,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LeftWallToLNote"
+                  "pathName": "RightWallToRNote"
                 }
               }
             ]
@@ -122,7 +122,115 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftNoteSpeakerAlign"
+            "pathName": "RightNoteSpeakerAlign"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "deadline",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 2.0
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "AutoAlignShooter"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "ShooterCommand"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 1.5
+                      }
+                    },
+                    {
+                      "type": "deadline",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "wait",
+                            "data": {
+                              "waitTime": 0.5
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "IndexShootCommand"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "deadline",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "BeambreakCommand"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IntakeCommand"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IndexCommand"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RightWallToNote5"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note5ToRightWall"
           }
         },
         {
@@ -192,7 +300,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftWallEnd"
+            "pathName": "RightWallEnd"
           }
         }
       ]
