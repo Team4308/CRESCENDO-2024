@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
@@ -14,6 +15,8 @@ public class IndexSystem extends MotoredSubsystem {
     public IndexSystem() {
         // Setup Controllers
         motor = new TalonSRX(Constants.Mapping.Index.indexMotor);
+        
+        motor.setNeutralMode(NeutralMode.Brake);
 
         stopControllers();
     }
