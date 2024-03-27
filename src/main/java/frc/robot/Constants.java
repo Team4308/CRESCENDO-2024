@@ -45,8 +45,8 @@ public final class Constants
   public static class Mapping {
     public static class Intake {
       public static final int intakeMotor = 11;
-      public static final int leftBeamBreak = 7;
-      public static final int rightBeamBreak = 8;
+      public static final int leftBeamBreak = 5;
+      public static final int rightBeamBreak = 4;
     }
     public static class Shooter {
       public static final int motor = 13;
@@ -88,7 +88,7 @@ public final class Constants
       public static class AngleControl {
         public static double kP = 0.03;
         public static double kI = 0.0;
-        public static double kD = 0.0;
+        public static double kD = 0.01;
       }
 
       public static class TranslationControl {
@@ -113,10 +113,10 @@ public final class Constants
     public static final double encoderStartRevolutions = 0.0;
     public static final double encoderEndRevolutions = -0.26;
     public static final double shooterMaxVelocity = 7;
-    public static final double shooterRPS = 60;
+    public static final double shooterRPS = 100;
 
     public static final class AngleControl {
-      public static final double kP = 0.008;
+      public static final double kP = 0.01;
       public static final double kI = 0;
       public static final double kD = 0;
     }
@@ -140,7 +140,7 @@ public final class Constants
   public static class GamePieces {
     public static class speaker {
       public static final double speakerAprilTagHeightCM = 145.0975;
-      public static final double speakerOpeningHeightCM = 206;
+      public static final double speakerOpeningHeightCM = 220;
       public static final double angle = 57.5;
     }
     public static class amp {

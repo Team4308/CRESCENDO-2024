@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
@@ -16,6 +17,8 @@ public class IntakeSystem extends MotoredSubsystem {
 
         //change later
         motor = new TalonSRX(Constants.Mapping.Intake.intakeMotor);
+
+        motor.setNeutralMode(NeutralMode.Brake);
 
         stopControllers();
     }
