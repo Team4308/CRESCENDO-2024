@@ -326,10 +326,10 @@ public class SwerveSubsystem extends SubsystemBase
       Double rotation;
       Double transX;
       if (alignToSpeaker) {
-        if (LimelightHelpers.getTX("") > 1) {
-          rotation = Math.PI / 6;
-        } else if (LimelightHelpers.getTX("") < -1) {
+        if (LimelightHelpers.getTX("") > 3) {
           rotation = -Math.PI / 6;
+        } else if (LimelightHelpers.getTX("") < -3) {
+          rotation = Math.PI / 6;
         } else {
           rotation = 0.0;
         }
