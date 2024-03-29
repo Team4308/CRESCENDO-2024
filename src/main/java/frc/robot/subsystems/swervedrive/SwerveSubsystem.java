@@ -305,7 +305,7 @@ public class SwerveSubsystem extends SubsystemBase
       botAngle = botAngle + 360;
     }
 
-    return DoubleUtils.clamp(angle_controller.calculate(LimelightHelpers.getTX(""), 0), -3*Math.PI, 3*Math.PI);
+    return -DoubleUtils.clamp(angle_controller.calculate(botAngle, 2*Math.atan(fracTop/fracBottom) * (180.0 / 3.14159)), -3*Math.PI, 3*Math.PI);
   }
 
   public double getOffsetTranslationLeftRight() {
@@ -326,12 +326,18 @@ public class SwerveSubsystem extends SubsystemBase
       Double rotation;
       Double transX;
       if (alignToSpeaker) {
-        rotation = getOffsetAngleLeftRight();
+        if (LimelightHelpers.getTX("") > 3) {
+          rotation = -Math.PI / 6;
+        } else if (LimelightHelpers.getTX("") < -3) {
+          rotation = Math.PI / 6;
+        } else {
+          rotation = 0.0;
+        }
       } else if (alignToNote) {
         if (leftBeambreak.get() && !rightBeambreak.get()) {
-          rotation = -Math.PI / 5.5;
+          rotation = -Math.PI / 6;
         } else if (!leftBeambreak.get() && rightBeambreak.get()) {
-          rotation = Math.PI / 5.5;
+          rotation = Math.PI / 6;
         } else {
           rotation = 0.0;
         }
