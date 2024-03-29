@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.5513504360342054,
-      "y": 2.2782998899331135
+      "x": 0.5398639686168262,
+      "y": 2.1978946180114582
     },
     "rotation": 0
   },
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "New Path"
+            "pathName": "RightFarMob"
           }
         }
       ]
