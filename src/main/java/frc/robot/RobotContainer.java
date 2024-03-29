@@ -217,7 +217,7 @@ public class RobotContainer
     stick.Back.onTrue(new InstantCommand(() -> m_rotateShooterSystem.changeGoalHeight(-1.0)));
     stick.RB.onTrue(new InstantCommand(() -> drivebase.fieldRelative(false)));
     stick.RB.onFalse(new InstantCommand(() -> drivebase.fieldRelative(true)));
-    stick1.Y.whileTrue(new LEDCommand(m_ledSystem, () -> 0.69)); // yellow
+    // stick1.Y.whileTrue(new LEDCommand(m_ledSystem, () -> 0.69)); // yellow
 
     //auto align shooter
     stick1.X.whileTrue(new RotateShooterCommand(m_rotateShooterSystem, () -> m_rotateShooterSystem.autoAlignShooter()));
@@ -243,6 +243,8 @@ public class RobotContainer
 
     stick1.A.whileTrue(new RotateShooterCommand(m_rotateShooterSystem, () -> Constants.GamePieces.speaker.angle));
     stick1.A.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS));
+
+    stick1.Y.whileTrue(new IndexCommand(m_indexSystem, () -> -0.1));
   }
 
   public Command getAutonomousCommand()
@@ -267,7 +269,7 @@ public class RobotContainer
     if (shooterBeambrake.get() == false) {
       return trig;
     } else {
-      return joy * 0.4;
+      return joy * 0.2;
     }
   }
 
