@@ -13,7 +13,9 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import ca.team4308.absolutelib.control.JoystickHelper;
 import ca.team4308.absolutelib.math.DoubleUtils;
+import ca.team4308.absolutelib.math.Vector2;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -25,6 +27,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.simulation.JoystickSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -354,8 +357,10 @@ public class SwerveSubsystem extends SubsystemBase
         }
       }
       // Make the robot move
-      swerveDrive.drive(new Translation2d(Math.pow(translationX.getAsDouble(), 3) * swerveDrive.getMaximumVelocity(),
-                                          Math.pow(transY, 3) * swerveDrive.getMaximumVelocity()),
+      Vector2 driveInput = new Vector2(translationX.getAsDouble(), translationY.getAsDouble());
+      driveInput = JoystickHelper.scaleStick(driveInput, 2);
+      swerveDrive.drive(new Translation2d(driveInput.x * swerveDrive.getMaximumVelocity(),
+                                          driveInput.y * swerveDrive.getMaximumVelocity()),
                         Math.pow(rotation, 3) * swerveDrive.getMaximumAngularVelocity(),
                         true,
                         false);
