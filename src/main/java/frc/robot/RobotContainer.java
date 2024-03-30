@@ -127,6 +127,7 @@ public class RobotContainer
     NamedCommands.registerCommand("AutoAlignShooter", new RotateShooterCommand(m_rotateShooterSystem, () -> m_rotateShooterSystem.autoAlignShooter()));
     NamedCommands.registerCommand("BeambreakCommand", new BeambreakCommand(() -> getBeambreakControl()));
     NamedCommands.registerCommand("SubwooferAngle", new RotateShooterCommand(m_rotateShooterSystem, () -> Constants.GamePieces.speaker.angle));
+    NamedCommands.registerCommand("SubwooferSideAngle", new RotateShooterCommand(m_rotateShooterSystem, () -> 60.0));
     NamedCommands.registerCommand("AmpAngle", new RotateShooterCommand(m_rotateShooterSystem, () -> Constants.GamePieces.amp.angleToshoot));  
     //Command Instantiations
     intakeCommand = new IntakeCommand(m_intakeSystem, () -> getIntakeControl());
