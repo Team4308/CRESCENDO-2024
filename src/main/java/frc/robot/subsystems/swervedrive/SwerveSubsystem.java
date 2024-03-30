@@ -312,7 +312,7 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   public double getOffsetTranslationLeftRight() {
-    return DoubleUtils.clamp(translation_controller.calculate(LimelightHelpers.getTX(""), 0), -3, 3);
+    return -DoubleUtils.clamp(translation_controller.calculate(LimelightHelpers.getTX(""), 0), -1, 1);
   }
 
   /**
@@ -354,13 +354,7 @@ public class SwerveSubsystem extends SubsystemBase
         rotation = rotationInput.x;
       }
       if (alignToAmp) {
-        if (LimelightHelpers.getTX("") > 3) {
-          transY = -0.3;
-        } else if (LimelightHelpers.getTX("") < -3) {
-          transY = 0.3;
-        } else {
-          transY = 0.0;
-        }
+        transY = getOffsetTranslationLeftRight();
       } else {
         transY = driveInput.y;
       }
