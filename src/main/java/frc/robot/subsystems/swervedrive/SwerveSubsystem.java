@@ -223,10 +223,10 @@ public class SwerveSubsystem extends SubsystemBase
   {
     // swerveDrive.setHeadingCorrection(true); // Normally you would want heading correction for this kind of control.
     return run(() -> {
-      double xInput = Math.pow(translationX.getAsDouble(), 3); // Smooth controll out
-      double yInput = Math.pow(translationY.getAsDouble(), 3); // Smooth controll out
+      Vector2 driveInput = new Vector2(translationX.getAsDouble(), translationY.getAsDouble());
+      driveInput = JoystickHelper.scaleStick(driveInput, 2);
       // Make the robot move
-      driveFieldOriented(swerveDrive.swerveController.getTargetSpeeds(xInput, yInput,
+      driveFieldOriented(swerveDrive.swerveController.getTargetSpeeds(driveInput.x, driveInput.y,
                                                                       headingX.getAsDouble(),
                                                                       headingY.getAsDouble(),
                                                                       swerveDrive.getOdometryHeading().getRadians(),
@@ -326,8 +326,14 @@ public class SwerveSubsystem extends SubsystemBase
   public Command driveCommand(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier angularRotationX)
   {
     return run(() -> {
+      Double transY;
       Double rotation;
-      Double transY = translationY.getAsDouble();;
+
+      Vector2 driveInput = new Vector2(translationX.getAsDouble(), translationY.getAsDouble());
+      driveInput = JoystickHelper.scaleStick(driveInput, 2);
+      Vector2 rotationInput = new Vector2(angularRotationX.getAsDouble(), 0);
+      rotationInput = JoystickHelper.scaleStick(rotationInput, 2);
+
       if (alignToSpeaker) {
         if (LimelightHelpers.getTX("") > 3) {
           rotation = -Math.PI / 8;
@@ -345,7 +351,7 @@ public class SwerveSubsystem extends SubsystemBase
           rotation = 0.0;
         }
       } else {
-        rotation = angularRotationX.getAsDouble();
+        rotation = rotationInput.x;
       }
       if (alignToAmp) {
         if (LimelightHelpers.getTX("") > 3) {
@@ -355,13 +361,14 @@ public class SwerveSubsystem extends SubsystemBase
         } else {
           transY = 0.0;
         }
+      } else {
+        transY = driveInput.y;
       }
+
       // Make the robot move
-      Vector2 driveInput = new Vector2(translationX.getAsDouble(), translationY.getAsDouble());
-      driveInput = JoystickHelper.scaleStick(driveInput, 2);
       swerveDrive.drive(new Translation2d(driveInput.x * swerveDrive.getMaximumVelocity(),
-                                          driveInput.y * swerveDrive.getMaximumVelocity()),
-                        Math.pow(rotation, 3) * swerveDrive.getMaximumAngularVelocity(),
+                                          transY * swerveDrive.getMaximumVelocity()),
+                        rotation * swerveDrive.getMaximumAngularVelocity(),
                         true,
                         false);
     });
