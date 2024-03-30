@@ -324,7 +324,7 @@ public class SwerveSubsystem extends SubsystemBase
   {
     return run(() -> {
       Double rotation;
-      Double transX;
+      Double transY = translationY.getAsDouble();;
       if (alignToSpeaker) {
         if (LimelightHelpers.getTX("") > 3) {
           rotation = -Math.PI / 8;
@@ -345,15 +345,19 @@ public class SwerveSubsystem extends SubsystemBase
         rotation = angularRotationX.getAsDouble();
       }
       if (alignToAmp) {
-        transX = getOffsetTranslationLeftRight();
-      } else {
-        transX = translationX.getAsDouble();
+        if (LimelightHelpers.getTX("") > 3) {
+          transY = -0.3;
+        } else if (LimelightHelpers.getTX("") < -3) {
+          transY = 0.3;
+        } else {
+          transY = 0.0;
+        }
       }
       // Make the robot move
-      swerveDrive.drive(new Translation2d(Math.pow(transX, 3) * swerveDrive.getMaximumVelocity(),
-                                          Math.pow(translationY.getAsDouble(), 3) * swerveDrive.getMaximumVelocity()),
+      swerveDrive.drive(new Translation2d(Math.pow(translationX.getAsDouble(), 3) * swerveDrive.getMaximumVelocity(),
+                                          Math.pow(transY, 3) * swerveDrive.getMaximumVelocity()),
                         Math.pow(rotation, 3) * swerveDrive.getMaximumAngularVelocity(),
-                        fieldRelative,
+                        true,
                         false);
     });
   }
