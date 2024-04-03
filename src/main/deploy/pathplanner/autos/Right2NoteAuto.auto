@@ -2,21 +2,15 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.56,
-      "y": 4.08
+      "x": 0.7581068495470326,
+      "y": 4.36
     },
-    "rotation": 0
+    "rotation": -60.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
-        {
-          "type": "path",
-          "data": {
-            "pathName": "RightWallDriveBack"
-          }
-        },
         {
           "type": "parallel",
           "data": {
@@ -34,7 +28,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "AutoAlignShooter"
+                        "name": "SubwooferSideAngle"
                       }
                     },
                     {
@@ -113,7 +107,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "RightWallToRNote"
+                  "pathName": "RightSubToRNote"
                 }
               }
             ]
@@ -122,7 +116,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RightNoteSpeakerAlign"
+            "pathName": "RNoteToRightSub"
           }
         },
         {
@@ -192,7 +186,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RightWallEnd"
+            "pathName": "RightSubEnd"
           }
         }
       ]
