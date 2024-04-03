@@ -136,7 +136,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "AutoAlignShooter"
+                        "name": "SubwooferSideAngle"
                       }
                     },
                     {
