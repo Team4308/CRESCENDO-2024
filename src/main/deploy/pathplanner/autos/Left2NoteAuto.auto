@@ -2,21 +2,15 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.56,
-      "y": 7.0
+      "x": 0.7646141006567733,
+      "y": 6.728691171668058
     },
-    "rotation": 0
+    "rotation": 60.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
-        {
-          "type": "path",
-          "data": {
-            "pathName": "LeftWallDriveBack"
-          }
-        },
         {
           "type": "parallel",
           "data": {
@@ -113,7 +107,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LeftWallToLNote"
+                  "pathName": "LeftSubToLNote"
                 }
               }
             ]
@@ -122,7 +116,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftNoteSpeakerAlign"
+            "pathName": "LNoteToLeftSub"
           }
         },
         {
@@ -192,7 +186,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftWallEnd"
+            "pathName": "LeftSubEnd"
           }
         }
       ]

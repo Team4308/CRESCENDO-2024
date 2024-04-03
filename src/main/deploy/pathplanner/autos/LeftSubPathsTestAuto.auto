@@ -14,7 +14,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftSubwooferMob"
+            "pathName": "LeftSubToLNote"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LNoteToLeftSub"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeftSubEnd"
           }
         }
       ]
