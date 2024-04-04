@@ -1,8 +1,9 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import ca.team4308.absolutelib.wrapper.LogSubsystem;
 import edu.wpi.first.util.sendable.Sendable;
@@ -31,7 +32,12 @@ public class ClimbSubsystem extends LogSubsystem {
         // but in most cases, they will be used
         motor1.setNeutralMode(NeutralMode.Brake);
         motor2.setNeutralMode(NeutralMode.Brake);
+
+        motor1.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 35.0, 40.0, 0.5));
+        motor2.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 35.0, 40.0, 0.5));
+
         motor1.setInverted(true);
+
         // Reset
         stopControllers();
         resetSensors();

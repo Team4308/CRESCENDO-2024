@@ -43,6 +43,8 @@ import frc.robot.subsystems.IndexSystem;
  */
 public class RobotContainer
 {
+  Double modifier = 1.0;
+
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                          "swerve")); 
@@ -186,9 +188,9 @@ public class RobotContainer
     // left stick controls translation
     // right stick controls the angular velocity of the robot
     Command driveFieldOrientedAnglularVelocity = drivebase.driveCommand(
-        () -> -MathUtil.applyDeadband(stick.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-        () -> -MathUtil.applyDeadband(stick.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-        () -> -stick.getRightX());
+        () -> -MathUtil.applyDeadband(stick.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND) * modifier,
+        () -> -MathUtil.applyDeadband(stick.getLeftX(), OperatorConstants.LEFT_X_DEADBAND) * modifier,
+        () -> -stick.getRightX() * modifier);
 
     Command driveFieldOrientedDirectAngleSim = drivebase.simDriveCommand(
         () -> MathUtil.applyDeadband(stick.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
@@ -204,7 +206,6 @@ public class RobotContainer
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
  
     stick.Y.onTrue((Commands.runOnce(drivebase::zeroGyro)));
-    stick.LB.whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
     stick.A.onTrue(new InstantCommand(() -> drivebase.alignToSpeaker(true)));
     stick.A.onFalse(new InstantCommand(() -> drivebase.alignToSpeaker(false)));
     stick.X.onTrue(new InstantCommand(() -> drivebase.alignToNote(true)));
@@ -213,10 +214,10 @@ public class RobotContainer
     stick.B.onTrue(new InstantCommand(() -> drivebase.alignToAmp(true)));
     stick.B.onFalse(new InstantCommand(() -> drivebase.alignToAmp(false)));
     stick.B.onFalse(new InstantCommand(() -> setSpeaker()));
-    stick.Start.onTrue(new InstantCommand(() -> m_rotateShooterSystem.changeGoalHeight(1.0)));
-    stick.Back.onTrue(new InstantCommand(() -> m_rotateShooterSystem.changeGoalHeight(-1.0)));
     stick.RB.onTrue(new InstantCommand(() -> drivebase.fieldRelative(false)));
     stick.RB.onFalse(new InstantCommand(() -> drivebase.fieldRelative(true)));
+    stick.LB.onTrue(new InstantCommand(() -> setModifer(0.2)));
+    stick.LB.onFalse(new InstantCommand(() -> setModifer(1.0)));
     // stick1.Y.whileTrue(new LEDCommand(m_ledSystem, () -> 0.69)); // yellow
 
     //auto align shooter
@@ -226,8 +227,8 @@ public class RobotContainer
     stick1.X.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
 
     //climb
-    stick1.RB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> 0.5));
-    stick1.LB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> -0.5));
+    stick1.RB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> 1.0));
+    stick1.LB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> -1.0));
     stick1.RB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
     stick1.LB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
 
@@ -367,6 +368,9 @@ public class RobotContainer
     }
   }
   
+  public void setModifer(Double value) {
+    modifier = value;
+  }
 
   public void disabledActions() {
     setSpeaker();
