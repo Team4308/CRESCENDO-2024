@@ -33,8 +33,8 @@ public class ClimbSubsystem extends LogSubsystem {
         motor1.setNeutralMode(NeutralMode.Brake);
         motor2.setNeutralMode(NeutralMode.Brake);
 
-        motor1.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 35.0, 40.0, 0.5));
-        motor2.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 35.0, 40.0, 0.5));
+        motor1.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 18.0, 20.0, 0.5));
+        motor2.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 18.0, 20.0, 0.5));
 
         motor1.setInverted(true);
 

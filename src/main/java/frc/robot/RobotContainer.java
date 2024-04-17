@@ -20,14 +20,14 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.LEDCommand;
+// import frc.robot.commands.LEDCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.RotateShooterCommand;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.BeambreakCommand;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.IndexCommand;
-import frc.robot.subsystems.LEDSystem;
+// import frc.robot.subsystems.LEDSystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.IntakeSystem;
 import frc.robot.subsystems.PixySystem;
@@ -46,23 +46,22 @@ public class RobotContainer
   Double modifier = 1.0;
 
   // The robot's subsystems and commands are defined here...
-  private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
-                                                                         "swerve")); 
+  private final SwerveSubsystem drivebase;
                                                                          
   public final ArrayList<LogSubsystem> subsystems = new ArrayList<LogSubsystem>();
   
   // Subsystems
   private final IntakeSystem m_intakeSystem;
-  private final LEDSystem m_ledSystem;
+  // private final LEDSystem m_ledSystem;
   private final RotateShooterSystem m_rotateShooterSystem;
   private final ShooterSubsystem m_shooterSubsystem;
   private final ClimbSubsystem m_climbSubsystem;
   private final IndexSystem m_indexSystem;
-  private final PixySystem m_pixySystem;
+  // private final PixySystem m_pixySystem;
 
   // Commands
   private final IntakeCommand intakeCommand;
-  private final LEDCommand ledCommand;
+  // private final LEDCommand ledCommand;
   private final RotateShooterCommand rotateShooterCommand;
   private final ShooterCommand ShooterCommand;
   private final ClimbCommand climbCommand;
@@ -95,11 +94,15 @@ public class RobotContainer
     setSpeaker();
 
     //Subsystem Instantiations
+    drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
+                                                                         "swerve"));
+                                                                         subsystems.add(drivebase);
+
     m_intakeSystem = new IntakeSystem();
     subsystems.add(m_intakeSystem);
 
-    m_ledSystem = new LEDSystem();
-    subsystems.add(m_ledSystem);
+    // m_ledSystem = new LEDSystem();
+    // subsystems.add(m_ledSystem);
     
     m_rotateShooterSystem = new RotateShooterSystem();
     subsystems.add(m_rotateShooterSystem);
@@ -113,8 +116,8 @@ public class RobotContainer
     m_indexSystem = new IndexSystem();
     subsystems.add(m_indexSystem);
 
-    m_pixySystem = new PixySystem();
-    subsystems.add(m_pixySystem);
+    // m_pixySystem = new PixySystem();
+    // subsystems.add(m_pixySystem);
 
     NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(m_intakeSystem, () -> -1.0));
     NamedCommands.registerCommand("IndexCommand", new IndexCommand(m_indexSystem, () -> -0.15));
@@ -135,8 +138,8 @@ public class RobotContainer
     intakeCommand = new IntakeCommand(m_intakeSystem, () -> getIntakeControl());
     m_intakeSystem.setDefaultCommand(intakeCommand);
     
-    ledCommand = new LEDCommand(m_ledSystem, () -> getLEDCommand());
-    m_ledSystem.setDefaultCommand(ledCommand);
+    // ledCommand = new LEDCommand(m_ledSystem, () -> getLEDCommand());
+    // m_ledSystem.setDefaultCommand(ledCommand);
     
     rotateShooterCommand = new RotateShooterCommand(m_rotateShooterSystem, () -> getRotateShooterControl());
     m_rotateShooterSystem.setDefaultCommand(rotateShooterCommand);
@@ -231,8 +234,6 @@ public class RobotContainer
     stick1.LB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> -1.0));
     stick1.RB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
     stick1.LB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
-
-    // stick1.A.onTrue(new InstantCommand(() -> m_rotateShooterSystem.resetSensors()));  // debugging
 
     //shoot in amp
     stick1.B.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));

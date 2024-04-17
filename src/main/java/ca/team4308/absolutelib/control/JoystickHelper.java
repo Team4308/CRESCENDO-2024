@@ -84,12 +84,19 @@ public class JoystickHelper {
 
     public static Vector2 alternateScaleStick(Vector2 stickInput, double scale) {
         double mag = stickInput.magnitude();
-        if (mag == 0) {
-            return new Vector2();
+
+        double cos, sin;
+        if (mag > 1e-6) {
+            sin = Math.abs(stickInput.y / mag);
+            cos = Math.abs(stickInput.x / mag);
         } else {
-            Vector2 norm = new Vector2(stickInput.x / mag, stickInput.y / mag);
-            return new Vector2(norm.x * Math.pow(mag, scale), norm.y * Math.pow(mag, scale));
+            sin = 0.0;
+            cos = 1.0;
         }
+
+        double curvedMag = Math.pow(mag, scale);
+
+        return new Vector2(stickInput.x * cos * curvedMag, stickInput.y * sin * curvedMag);
     }
 
     public static Vector2 precisionScaleStick(Vector2 stickInput, double scale, double precision) {

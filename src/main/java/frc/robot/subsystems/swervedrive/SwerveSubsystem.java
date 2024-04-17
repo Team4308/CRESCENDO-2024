@@ -16,6 +16,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import ca.team4308.absolutelib.control.JoystickHelper;
 import ca.team4308.absolutelib.math.DoubleUtils;
 import ca.team4308.absolutelib.math.Vector2;
+import ca.team4308.absolutelib.wrapper.LogSubsystem;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -23,10 +24,12 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilderImpl;
 // import edu.wpi.first.wpilibj.simulation.JoystickSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -46,7 +49,7 @@ import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
-public class SwerveSubsystem extends SubsystemBase
+public class SwerveSubsystem extends LogSubsystem
 {
   boolean alignToSpeaker = false;
   boolean alignToAmp = false;
@@ -133,9 +136,9 @@ public class SwerveSubsystem extends SubsystemBase
         this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
         this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
         new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                                         new PIDConstants(20.0, 0.0, 0.0),
+                                         new PIDConstants(10.0, 0.0, 0.0),
                                          // Translation PID constants (DO NOT TOUCH THESE)
-                                         new PIDConstants(20.0, 0.0, 0.0),
+                                         new PIDConstants(10.0, 0.0, 0.0),
                                          // Rotation PID constants (DO NOT TOUCH THESE)
                                          4.6,
                                          // Max module speed, in m/s
@@ -329,7 +332,7 @@ public class SwerveSubsystem extends SubsystemBase
       Double rotation;
 
       Vector2 driveInput = new Vector2(translationX.getAsDouble(), translationY.getAsDouble());
-      driveInput = JoystickHelper.scaleStick(driveInput, 2);
+      driveInput = JoystickHelper.alternateScaleStick(driveInput, 2);
       Vector2 rotationInput = new Vector2(angularRotationX.getAsDouble(), 0);
       rotationInput = JoystickHelper.scaleStick(rotationInput, 2);
 
@@ -637,5 +640,11 @@ public class SwerveSubsystem extends SubsystemBase
 
   public void fieldRelative(boolean value) {
     fieldRelative = value;
+  }
+
+  @Override
+  public Sendable log() {
+    SmartDashboard.putString("SwerveDriveVelocity", getRobotVelocity().toString());
+    return this;
   }
 }
