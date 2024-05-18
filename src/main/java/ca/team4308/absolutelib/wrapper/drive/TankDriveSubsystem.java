@@ -20,5 +20,5 @@ public abstract class TankDriveSubsystem extends MotoredSubsystem {
 
     public abstract double getRightSensorVelocity();
 
-    public abstract AHRS getAhrs();
+    //public abstract AHRS getAhrs();
 }
