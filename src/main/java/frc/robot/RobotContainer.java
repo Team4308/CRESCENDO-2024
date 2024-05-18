@@ -30,7 +30,6 @@ import frc.robot.commands.IndexCommand;
 // import frc.robot.subsystems.LEDSystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.IntakeSystem;
-import frc.robot.subsystems.PixySystem;
 import frc.robot.subsystems.RotateShooterSystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
@@ -283,18 +282,6 @@ public class RobotContainer
     if (getShooterControl() != 0.0){
       prev = getShooterControl();
       return getShooterControl(); // trigger colourOutputShooter
-    }
-    if(PixySystem.getClosestTarget() != null) {
-      // target in range
-      debounce++;
-      if(debounce == 5) debounce = 2;
-      prev = -0.09; // strobe blue
-      return -0.09;
-    }
-    if(PixySystem.getClosestTarget() == null) {
-      // no target
-      debounce--;
-      if(debounce <= 0) debounce = 0;
     }
     if(debounce == 0) {
       prev = -0.39;
