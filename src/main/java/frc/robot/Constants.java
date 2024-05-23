@@ -3,10 +3,10 @@ package frc.robot;
 public final class Constants {
     public static class Mapping {
         public static class Drive { // change
-            public static int frontLeft = 0;
+            public static int frontLeft = 1;
             public static int backLeft = 2;
-            public static int frontRight = 1;
-            public static int backRight = 3;
+            public static int frontRight = 3;
+            public static int backRight = 4;
         }
     }
 

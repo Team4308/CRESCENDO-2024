@@ -5,13 +5,10 @@ import java.util.ArrayList;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
-import com.ctre.phoenix.motorcontrol.TalonSRXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.kauailabs.navx.frc.AHRS;
 
 import ca.team4308.absolutelib.wrapper.drive.TankDriveSubsystem;
 import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.Constants;
 
 public class DriveSystem extends TankDriveSubsystem {
@@ -23,9 +20,6 @@ public class DriveSystem extends TankDriveSubsystem {
 
         // Controllers
         private ArrayList<TalonSRX> controllersSRX = new ArrayList<TalonSRX>();
-
-        // Gyro
-        public final AHRS gyro = new AHRS();
 
         // Init
         public DriveSystem() {
@@ -152,7 +146,6 @@ public class DriveSystem extends TankDriveSubsystem {
         }
 
         public void resetAngle() {
-                gyro.reset();
         }
 
         public void stopControllers() {
@@ -168,7 +161,6 @@ public class DriveSystem extends TankDriveSubsystem {
 
         @Override
         public Sendable log() {
-                Shuffleboard.getTab("Log").addDouble("Angle", () -> gyro.getYaw());
                 return this;
         }
 }
