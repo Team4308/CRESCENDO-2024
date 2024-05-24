@@ -41,8 +41,8 @@ public class DriveSystem extends TankDriveSubsystem {
                 // Set Invert Mode
                 masterLeft.setInverted(false);
                 masterRight.setInverted(true);
-                slaveLeft.follow(masterLeft);
-                slaveRight.follow(masterRight);
+                slaveLeft.setInverted(false);
+                slaveRight.setInverted(false);
 
                 // Change Config For All Controllers
                 for (TalonSRX talon : controllersSRX) {
@@ -138,6 +138,8 @@ public class DriveSystem extends TankDriveSubsystem {
         public void setMotorOutput(ControlMode mode, double left, double right) {
                 masterLeft.set(mode, left);
                 masterRight.set(mode, right);
+                slaveLeft.set(mode, left);
+                slaveRight.set(mode, right);
         }
 
         public void selectProfileSlot(int slot) {

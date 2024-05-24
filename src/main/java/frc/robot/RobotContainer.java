@@ -57,6 +57,9 @@ public class RobotContainer {
 
     double turn = DoubleUtils.normalize(stick1.getRightX());
 
+    throttle *= 0.7;
+    turn *= 0.7;
+
     if(stick1.RB.getAsBoolean()){
       throttle /= 1.5;
       turn /= 2;
