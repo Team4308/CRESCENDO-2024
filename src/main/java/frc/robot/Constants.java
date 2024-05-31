@@ -111,14 +111,21 @@ public final class Constants
     public static final int shooterStartDegree = 18;
     public static final int shooterEndDegree = 72;
     public static final double encoderStartRevolutions = 0.0;
-    public static final double encoderEndRevolutions = -0.26;
+    public static final double encoderEndRevolutions = -0.69;
+     ;
     public static final double shooterMaxVelocity = 7;
     public static final double shooterRPS = 100;
 
     public static final class AngleControl {
       public static final double kP = 0.01;
       public static final double kI = 0;
-      public static final double kD = 0;
+      public static final double kD = 0.0001;
+    }
+
+    public static final class MovingAngleControl {
+      public static final double kP = 0.0175;
+      public static final double kI = 0;
+      public static final double kD = 0.0001;
     }
 
     public static final class ShooterControl {
@@ -140,7 +147,7 @@ public final class Constants
   public static class GamePieces {
     public static class speaker {
       public static final double speakerAprilTagHeightCM = 145.0975;
-      public static final double speakerOpeningHeightCM = 220;
+      public static final double speakerOpeningHeightCM = 205;
       public static final double angle = 60.0;
     }
     public static class amp {
