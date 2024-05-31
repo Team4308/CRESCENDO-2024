@@ -23,7 +23,6 @@ import frc.robot.Constants.OperatorConstants;
 // import frc.robot.commands.LEDCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.RotateShooterCommand;
-import frc.robot.commands.RotateMovingShooterCommand;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.BeambreakCommand;
 import frc.robot.commands.ClimbCommand;
@@ -63,7 +62,6 @@ public class RobotContainer
   private final IntakeCommand intakeCommand;
   // private final LEDCommand ledCommand;
   private final RotateShooterCommand rotateShooterCommand;
-  private final RotateMovingShooterCommand rotateMovingShooterCommand;
   private final ShooterCommand ShooterCommand;
   private final ClimbCommand climbCommand;
   private final IndexCommand indexCommand;
@@ -144,9 +142,7 @@ public class RobotContainer
     
     rotateShooterCommand = new RotateShooterCommand(m_rotateShooterSystem, () -> getRotateShooterControl());
     m_rotateShooterSystem.setDefaultCommand(rotateShooterCommand);
-
-    rotateMovingShooterCommand = new RotateMovingShooterCommand(m_rotateShooterSystem, () -> getRotateShooterControl());
-    
+        
     ShooterCommand = new ShooterCommand(m_shooterSubsystem, () -> getShooterControl());
     m_shooterSubsystem.setDefaultCommand(ShooterCommand);
     
@@ -249,8 +245,8 @@ public class RobotContainer
     stick1.A.whileTrue(new RotateShooterCommand(m_rotateShooterSystem, () -> Constants.GamePieces.speaker.angle));
     stick1.A.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS));
 
-    stick1.Y.whileTrue(new RotateMovingShooterCommand(m_rotateShooterSystem, () -> m_rotateShooterSystem.autoAlignShooter()));
-    stick1.Y.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS));
+    stick1.Y.whileTrue(new RotateShooterCommand(m_rotateShooterSystem, () -> m_rotateShooterSystem.autoAlignShooter()));
+    stick1.Y.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> 20.0));
   }
 
   public Command getAutonomousCommand()

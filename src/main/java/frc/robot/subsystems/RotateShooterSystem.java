@@ -21,7 +21,6 @@ import frc.robot.LimelightHelpers;
 public class RotateShooterSystem extends LogSubsystem {
     public final TalonFX motor;
     public final PIDController pidController;
-    public final PIDController pidController2;
     public final DigitalInput limitSwitch1;
     public final DigitalInput limitSwitch2;
     private final DutyCycleEncoder revEncoder; 
@@ -42,7 +41,6 @@ public class RotateShooterSystem extends LogSubsystem {
         motor.setNeutralMode(NeutralModeValue.Brake);
 
         pidController = new PIDController(Constants.Shooter.AngleControl.kP, Constants.Shooter.AngleControl.kI, Constants.Shooter.AngleControl.kD);//pid not tuned
-        pidController2 = new PIDController(Constants.Shooter.MovingAngleControl.kP, Constants.Shooter.MovingAngleControl.kI, Constants.Shooter.MovingAngleControl.kD);//pid not tuned
     }
 
     public void setMotorOutput(double percent){
@@ -73,18 +71,6 @@ public class RotateShooterSystem extends LogSubsystem {
         SmartDashboard.putNumber("shooterDegree", shooterDegree);
         SmartDashboard.putNumber("wantedDegree", wantedDegree);
         SmartDashboard.putNumber("motorOutput", motorOutput);
-
-        setMotorOutput(motorOutput);
-    }
-
-    public void setMotorMovingPosition(double degree) { 
-        SmartDashboard.putNumber("encoderDegree", revEncoder.getDistance());
-        
-        double wantedDegree = DoubleUtils.clamp(degree, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree);
-
-        double shooterDegree = DoubleUtils.mapRangeNew(getMotorPosition(), Constants.Shooter.encoderStartRevolutions, Constants.Shooter.encoderEndRevolutions, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree);
-
-        double motorOutput = -DoubleUtils.clamp(pidController2.calculate(shooterDegree, wantedDegree), -1.0, 1.0);
 
         setMotorOutput(motorOutput);
     }
