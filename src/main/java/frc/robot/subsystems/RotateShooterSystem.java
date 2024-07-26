@@ -59,8 +59,8 @@ public class RotateShooterSystem extends LogSubsystem {
                                           Constants.Shooter.AngleControl.kD);
     }
 
-    public void setMotorOutput(double percent){
-        motor.set(percent);
+    public void setMotorOutput(double voltage){
+        motor.setVoltage(voltage);
     }
 
     public double getMotorPosition() {
@@ -84,7 +84,7 @@ public class RotateShooterSystem extends LogSubsystem {
 
         // double motorOutput = -DoubleUtils.clamp(pidController.calculate(shooterDegree, wantedDegree) + feedforward.calculate(Math.toRadians(wantedDegree), pidController.getSetpoint().velocity), -1.0, 1.0);
         double motorOutput = -DoubleUtils.clamp(pidController.calculate(shooterDegree, wantedDegree) + Math.cos(wantedDegree) * Constants.Shooter.FeedforwardControl.kG, -1.0, 1.0);
-        
+
         SmartDashboard.putNumber("shooterDegree", shooterDegree);
         SmartDashboard.putNumber("wantedDegree", wantedDegree);
         SmartDashboard.putNumber("motorOutput", motorOutput);
