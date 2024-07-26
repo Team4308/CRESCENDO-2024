@@ -7,20 +7,26 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.wpilibj.DigitalInput;
 
 import ca.team4308.absolutelib.math.DoubleUtils;
 import ca.team4308.absolutelib.wrapper.LogSubsystem;
+
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.util.sendable.Sendable;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 
 public class RotateShooterSystem extends LogSubsystem {
     public final TalonFX motor;
+    //public final ProfiledPIDController pidController;
     public final PIDController pidController;
+    //public final ArmFeedforward feedforward;
     public final DigitalInput limitSwitch1;
     public final DigitalInput limitSwitch2;
     private final DutyCycleEncoder revEncoder; 
@@ -40,7 +46,17 @@ public class RotateShooterSystem extends LogSubsystem {
 
         motor.setNeutralMode(NeutralModeValue.Brake);
 
-        pidController = new PIDController(Constants.Shooter.AngleControl.kP, Constants.Shooter.AngleControl.kI, Constants.Shooter.AngleControl.kD);//pid not tuned
+        // pidController = new ProfiledPIDController(
+        //                     Constants.Shooter.AngleControl.kP, 
+        //                     Constants.Shooter.AngleControl.kI, 
+        //                     Constants.Shooter.AngleControl.kD,
+        //                     new TrapezoidProfile.Constraints(Constants.Shooter.TrapezoidProfile.kMaxVelocity, 
+        //                                                      Constants.Shooter.TrapezoidProfile.kMaxAcceleration));
+        // feedforward = new ArmFeedforward(Constants.Shooter.FeedforwardControl.kS, Constants.Shooter.FeedforwardControl.kG, Constants.Shooter.FeedforwardControl.kV);
+
+        pidController = new PIDController(Constants.Shooter.AngleControl.kP, 
+                                          Constants.Shooter.AngleControl.kI, 
+                                          Constants.Shooter.AngleControl.kD);
     }
 
     public void setMotorOutput(double percent){
@@ -66,8 +82,9 @@ public class RotateShooterSystem extends LogSubsystem {
 
         double shooterDegree = DoubleUtils.mapRangeNew(getMotorPosition(), Constants.Shooter.encoderStartRevolutions, Constants.Shooter.encoderEndRevolutions, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree);
 
-        double motorOutput = -DoubleUtils.clamp(pidController.calculate(shooterDegree, wantedDegree), -1.0, 1.0);
-
+        // double motorOutput = -DoubleUtils.clamp(pidController.calculate(shooterDegree, wantedDegree) + feedforward.calculate(Math.toRadians(wantedDegree), pidController.getSetpoint().velocity), -1.0, 1.0);
+        double motorOutput = -DoubleUtils.clamp(pidController.calculate(shooterDegree, wantedDegree) + Math.cos(wantedDegree) * Constants.Shooter.FeedforwardControl.kG, -1.0, 1.0);
+        
         SmartDashboard.putNumber("shooterDegree", shooterDegree);
         SmartDashboard.putNumber("wantedDegree", wantedDegree);
         SmartDashboard.putNumber("motorOutput", motorOutput);

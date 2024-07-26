@@ -130,6 +130,21 @@ public final class Constants {
       public static final double kI = 0.48;
       public static final double kD = 0.01;
     }
+
+    public static final class FeedforwardControl {
+      public static final double kS = 0;
+      // Getting kS requires system identification (SysId)
+      public static final double kG = 0.43;
+      public static final double kV = 2.25;
+      public static final double kA = 0.01;
+      // Values from ReCalc
+    }
+
+    public static final class TrapezoidProfile {
+      public static final double kMaxVelocity = 4.475; // in radians / seconds
+      public static final double kMaxAcceleration = 10; //in radians / seconds ^ 2
+      // "made up" values, needs to be tuned
+    }
   }
 
   public static class Limelight {

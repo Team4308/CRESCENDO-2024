@@ -95,9 +95,6 @@ public class RobotContainer {
     m_intakeSystem = new IntakeSystem();
     subsystems.add(m_intakeSystem);
 
-    // m_ledSystem = new LEDSystem();
-    // subsystems.add(m_ledSystem);
-
     m_rotateShooterSystem = new RotateShooterSystem();
     subsystems.add(m_rotateShooterSystem);
 
@@ -109,9 +106,6 @@ public class RobotContainer {
 
     m_indexSystem = new IndexSystem();
     subsystems.add(m_indexSystem);
-
-    // m_pixySystem = new PixySystem();
-    // subsystems.add(m_pixySystem);
 
     NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(m_intakeSystem, () -> -1.0));
     NamedCommands.registerCommand("IndexCommand", new IndexCommand(m_indexSystem, () -> -0.15));
