@@ -54,6 +54,13 @@ public class JoystickHelper {
         return newStickInput;
     }
 
+    public static double SimpleAxialDeadzone(double stickInput, double deadzone) {
+        if (Math.abs(stickInput) < deadzone) {
+            stickInput = 0.0;
+        }
+        return stickInput;
+    }
+
     public static Vector2 ScaledAxialDeadzone(Vector2 stickInput, double deadzone) {
         Vector2 result = new Vector2(0.0, 0.0);
         Vector2 sign = new Vector2(Math.signum(stickInput.x), Math.signum(stickInput.y));
