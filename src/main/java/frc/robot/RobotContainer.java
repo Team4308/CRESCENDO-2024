@@ -75,7 +75,7 @@ public class RobotContainer {
   // Auto
   private final SendableChooser<Command> autonomousChooser;
 
-  private DigitalInput shooterBeambrake;
+  private DigitalInput shooterBeambreak;
   public double currentShooterDegree = 18;
 
   // State Machines
@@ -124,7 +124,6 @@ public class RobotContainer {
     // drivebase.alignToSpeaker(true)));
     // NamedCommands.registerCommand("SpeakerAlignFalse", new InstantCommand(() ->
     // drivebase.alignToSpeaker(false)));
-    NamedCommands.registerCommand("SpeakerAlign", new InstantCommand(() -> drivebase.speakerAlignCommand()));
     NamedCommands.registerCommand("ResetGyro", new InstantCommand(drivebase::zeroGyro));
     NamedCommands.registerCommand("AutoAlignShooter",
         new RotateShooterCommand(m_rotateShooterSystem, () -> m_rotateShooterSystem.autoAlignShooter()));
@@ -157,7 +156,7 @@ public class RobotContainer {
 
     SmartDashboard.putData("Auto Chooser", autonomousChooser);
 
-    shooterBeambrake = new DigitalInput(Constants.Mapping.Shooter.beambrake);
+    shooterBeambreak = new DigitalInput(Constants.Mapping.Shooter.beambreak);
 
     // Configure the trigger bindings
     configureBindings();
@@ -263,12 +262,12 @@ public class RobotContainer {
 
   public double getIndexControl() {
     double leftTrigger = DoubleUtils.normalize(-stick1.getLeftTrigger());
-    leftTrigger = JoystickHelper.SimpleAxialDeadzone(leftTrigger, 0.06);
+    leftTrigger = JoystickHelper.SimpleAxialDeadzone(leftTrigger, Constants.Input.kTriggerDeadband);
 
     double leftJoystick = DoubleUtils.normalize(-stick1.getLeftY());
-    leftJoystick = JoystickHelper.SimpleAxialDeadzone(leftTrigger, 0.06);
+    leftJoystick = JoystickHelper.SimpleAxialDeadzone(leftJoystick, Constants.Input.kJoystickDeadband);
 
-    if (shooterBeambrake.get() == false) {
+    if (shooterBeambreak.get() == false) {
       return leftTrigger;
     } else {
       return leftJoystick * 0.2;
@@ -277,9 +276,9 @@ public class RobotContainer {
 
   public double getIntakeControl() {
     double leftJoystick = DoubleUtils.normalize(-stick1.getLeftY());
-    leftJoystick = JoystickHelper.SimpleAxialDeadzone(leftJoystick, 0.06);
+    leftJoystick = JoystickHelper.SimpleAxialDeadzone(leftJoystick, Constants.Input.kJoystickDeadband);
 
-    if (shooterBeambrake.get() == true) {
+    if (shooterBeambreak.get() == true) {
       return leftJoystick;
     }
     return 0.0;
@@ -288,7 +287,7 @@ public class RobotContainer {
   public double getRotateShooterControl() {
     if (shooterAutonTriggered == false) {
       double newRightJoystickValue = DoubleUtils.normalize(-stick1.getRightY());
-      newRightJoystickValue = JoystickHelper.SimpleAxialDeadzone(newRightJoystickValue, 0.06);
+      newRightJoystickValue = JoystickHelper.SimpleAxialDeadzone(newRightJoystickValue, Constants.Input.kJoystickDeadband);
 
       double newShooterDegree = currentShooterDegree + newRightJoystickValue;
       currentShooterDegree = DoubleUtils.clamp(newShooterDegree, Constants.Shooter.shooterStartDegree,
@@ -299,14 +298,14 @@ public class RobotContainer {
 
   public double getShooterControl() {
     double right_trigger = DoubleUtils.normalize(stick1.getRightTrigger());
-    right_trigger = JoystickHelper.SimpleAxialDeadzone(right_trigger, 0.06);
+    right_trigger = JoystickHelper.SimpleAxialDeadzone(right_trigger, Constants.Input.kTriggerDeadband);
 
     double control = right_trigger * Constants.Shooter.shooterRPS; // converting into RPS
     return control;
   }
 
   public boolean getBeambreakControl() {
-    return shooterBeambrake.get();
+    return shooterBeambreak.get();
   }
 
   public void zeroGyroOnTeleop() {
