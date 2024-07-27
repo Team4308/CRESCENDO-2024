@@ -24,9 +24,9 @@ import frc.robot.LimelightHelpers;
 
 public class RotateShooterSystem extends LogSubsystem {
     public final TalonFX motor;
-    //public final ProfiledPIDController pidController;
-    public final PIDController pidController;
-    //public final ArmFeedforward feedforward;
+    public final ProfiledPIDController pidController;
+    //public final PIDController pidController;
+    public final ArmFeedforward feedforward;
     public final DigitalInput limitSwitch1;
     public final DigitalInput limitSwitch2;
     private final DutyCycleEncoder revEncoder; 
@@ -46,21 +46,21 @@ public class RotateShooterSystem extends LogSubsystem {
 
         motor.setNeutralMode(NeutralModeValue.Brake);
 
-        // pidController = new ProfiledPIDController(
-        //                     Constants.Shooter.AngleControl.kP, 
-        //                     Constants.Shooter.AngleControl.kI, 
-        //                     Constants.Shooter.AngleControl.kD,
-        //                     new TrapezoidProfile.Constraints(Constants.Shooter.TrapezoidProfile.kMaxVelocity, 
-        //                                                      Constants.Shooter.TrapezoidProfile.kMaxAcceleration));
-        // feedforward = new ArmFeedforward(Constants.Shooter.FeedforwardControl.kS, Constants.Shooter.FeedforwardControl.kG, Constants.Shooter.FeedforwardControl.kV);
+        pidController = new ProfiledPIDController(
+                            Constants.Shooter.AngleControl.kP, 
+                            Constants.Shooter.AngleControl.kI, 
+                            Constants.Shooter.AngleControl.kD,
+                            new TrapezoidProfile.Constraints(Constants.Shooter.TrapezoidProfile.kMaxVelocity, 
+                                                             Constants.Shooter.TrapezoidProfile.kMaxAcceleration));
+        feedforward = new ArmFeedforward(Constants.Shooter.FeedforwardControl.kS, Constants.Shooter.FeedforwardControl.kG, Constants.Shooter.FeedforwardControl.kV);
 
-        pidController = new PIDController(Constants.Shooter.AngleControl.kP, 
-                                          Constants.Shooter.AngleControl.kI, 
-                                          Constants.Shooter.AngleControl.kD);
+        // pidController = new PIDController(Constants.Shooter.AngleControl.kP, 
+        //                                   Constants.Shooter.AngleControl.kI, 
+        //                                   Constants.Shooter.AngleControl.kD);
     }
 
-    public void setMotorOutput(double voltage){
-        motor.setVoltage(voltage);
+    public void setMotorOutput(double percent){
+        motor.set(percent);
     }
 
     public double getMotorPosition() {
@@ -82,8 +82,13 @@ public class RotateShooterSystem extends LogSubsystem {
 
         double shooterDegree = DoubleUtils.mapRangeNew(getMotorPosition(), Constants.Shooter.encoderStartRevolutions, Constants.Shooter.encoderEndRevolutions, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree);
 
-        // double motorOutput = -DoubleUtils.clamp(pidController.calculate(shooterDegree, wantedDegree) + feedforward.calculate(Math.toRadians(wantedDegree), pidController.getSetpoint().velocity), -1.0, 1.0);
-        double motorOutput = -DoubleUtils.clamp(pidController.calculate(shooterDegree, wantedDegree) + Math.cos(wantedDegree) * Constants.Shooter.FeedforwardControl.kG, -1.0, 1.0);
+        //double ffGravity = Math.cos(wantedDegree) * Constants.Shooter.FeedforwardControl.kG;
+
+        double motorOutput = -DoubleUtils.clamp(
+            pidController.calculate(shooterDegree, wantedDegree)
+            + feedforward.calculate(Math.toRadians(pidController.getSetpoint().position), 
+                                    Math.toRadians(pidController.getSetpoint().velocity)), -1.0, 1.0);
+        //double motorOutput = -DoubleUtils.clamp(pidController.calculate(shooterDegree, wantedDegree) + ffGravity, -1.0, 1.0);
 
         SmartDashboard.putNumber("shooterDegree", shooterDegree);
         SmartDashboard.putNumber("wantedDegree", wantedDegree);

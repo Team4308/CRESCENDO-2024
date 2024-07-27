@@ -132,8 +132,9 @@ public final class Constants {
     }
 
     public static final class FeedforwardControl {
-      public static final double kS = 0;
+      public static final double kS = 1.43;
       // Getting kS requires system identification (SysId)
+      // Theoratical kS gain using stall torque and moment of inertia
       public static final double kG = 0.43;
       public static final double kV = 2.25;
       public static final double kA = 0.01;
@@ -141,9 +142,9 @@ public final class Constants {
     }
 
     public static final class TrapezoidProfile {
-      public static final double kMaxVelocity = 4.475; // in radians / seconds
-      public static final double kMaxAcceleration = 10; //in radians / seconds ^ 2
-      // "made up" values, needs to be tuned
+      public static final double kMaxVelocity = 4.45; // in radians / seconds
+      public static final double kMaxAcceleration = 27.11; //in radians / seconds ^ 2
+      // theoretical values using math, needs to be tuned further
     }
   }
 
