@@ -10,9 +10,11 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import ca.team4308.absolutelib.math.DoubleUtils;
 import ca.team4308.absolutelib.wrapper.LogSubsystem;
+import ca.team4308.absolutelib.wrapper.LoggedTunableNumber;
 
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -26,15 +28,37 @@ public class RotateShooterSystem extends LogSubsystem {
     public final TalonFX motor;
     public final ProfiledPIDController pidController;
     //public final PIDController pidController;
-    public final ArmFeedforward feedforward;
+    public ArmFeedforward feedforward;
     public final DigitalInput limitSwitch1;
     public final DigitalInput limitSwitch2;
     private final DutyCycleEncoder revEncoder; 
-
-    public static double shooterDegree;
+    
     public static double encoderDegree;
+    public static double shooterDegree;
+    public static double wantedDegree;
+    public static double motorOutput;
+
     public static double offset;
     public static double x = 0.0;
+
+    private static final LoggedTunableNumber kP = 
+        new LoggedTunableNumber("Pivot/Gains/kP", Constants.Shooter.AngleControl.kP);
+    private static final LoggedTunableNumber kI = 
+        new LoggedTunableNumber("Pivot/Gains/kI", Constants.Shooter.AngleControl.kI);
+    private static final LoggedTunableNumber kD = 
+        new LoggedTunableNumber("Pivot/Gains/kD", Constants.Shooter.AngleControl.kD);
+    private static final LoggedTunableNumber kS =
+        new LoggedTunableNumber("Arm/Gains/kS", Constants.Shooter.FeedforwardControl.kS);
+    private static final LoggedTunableNumber kV =
+        new LoggedTunableNumber("Arm/Gains/kV", Constants.Shooter.FeedforwardControl.kV);
+    private static final LoggedTunableNumber kA =
+        new LoggedTunableNumber("Arm/Gains/kA", Constants.Shooter.FeedforwardControl.kA);
+    private static final LoggedTunableNumber kG =
+        new LoggedTunableNumber("Arm/Gains/kG", Constants.Shooter.FeedforwardControl.kG);
+    private static final LoggedTunableNumber maxVelocity =
+        new LoggedTunableNumber("Arm/Velocity", Constants.Shooter.TrapezoidProfile.kMaxVelocity);
+    private static final LoggedTunableNumber maxAcceleration =
+        new LoggedTunableNumber("Arm/Acceleration", Constants.Shooter.TrapezoidProfile.kMaxAcceleration);
 
     public RotateShooterSystem() {
         motor = new TalonFX(Constants.Mapping.Shooter.motor);
@@ -47,12 +71,12 @@ public class RotateShooterSystem extends LogSubsystem {
         motor.setNeutralMode(NeutralModeValue.Brake);
 
         pidController = new ProfiledPIDController(
-                            Constants.Shooter.AngleControl.kP, 
-                            Constants.Shooter.AngleControl.kI, 
-                            Constants.Shooter.AngleControl.kD,
-                            new TrapezoidProfile.Constraints(Constants.Shooter.TrapezoidProfile.kMaxVelocity, 
-                                                             Constants.Shooter.TrapezoidProfile.kMaxAcceleration));
-        feedforward = new ArmFeedforward(Constants.Shooter.FeedforwardControl.kS, Constants.Shooter.FeedforwardControl.kG, Constants.Shooter.FeedforwardControl.kV);
+                            kP.get(), 
+                            kI.get(), 
+                            kD.get(),
+                            new TrapezoidProfile.Constraints(maxVelocity.get(), 
+                                                             maxAcceleration.get()));
+        feedforward = new ArmFeedforward(kS.get(), kG.get(), kV.get(), kA.get());
 
         // pidController = new PIDController(Constants.Shooter.AngleControl.kP, 
         //                                   Constants.Shooter.AngleControl.kI, 
@@ -76,23 +100,14 @@ public class RotateShooterSystem extends LogSubsystem {
     }
 
     public void setMotorPosition(double degree) { 
-        SmartDashboard.putNumber("encoderDegree", revEncoder.getDistance());
-        
-        double wantedDegree = DoubleUtils.clamp(degree, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree);
+        wantedDegree = DoubleUtils.clamp(degree, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree);
 
-        double shooterDegree = DoubleUtils.mapRangeNew(getMotorPosition(), Constants.Shooter.encoderStartRevolutions, Constants.Shooter.encoderEndRevolutions, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree);
+        shooterDegree = DoubleUtils.mapRangeNew(getMotorPosition(), Constants.Shooter.encoderStartRevolutions, Constants.Shooter.encoderEndRevolutions, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree);
 
-        //double ffGravity = Math.cos(wantedDegree) * Constants.Shooter.FeedforwardControl.kG;
-
-        double motorOutput = -DoubleUtils.clamp(
+        motorOutput = -DoubleUtils.clamp(
             pidController.calculate(shooterDegree, wantedDegree)
             + feedforward.calculate(Math.toRadians(pidController.getSetpoint().position), 
                                     Math.toRadians(pidController.getSetpoint().velocity)), -1.0, 1.0);
-        //double motorOutput = -DoubleUtils.clamp(pidController.calculate(shooterDegree, wantedDegree) + ffGravity, -1.0, 1.0);
-
-        SmartDashboard.putNumber("shooterDegree", shooterDegree);
-        SmartDashboard.putNumber("wantedDegree", wantedDegree);
-        SmartDashboard.putNumber("motorOutput", motorOutput);
 
         setMotorOutput(motorOutput);
     }
@@ -123,6 +138,17 @@ public class RotateShooterSystem extends LogSubsystem {
         return shooterAngle;
     }
 
+    // Only updates values when the robot is enabled
+    public void periodic() {
+        if (DriverStation.isEnabled()) {
+            LoggedTunableNumber.ifChanged(
+                hashCode(), () -> pidController.setPID(kP.get(), kI.get(), kD.get()), kP, kI, kD);
+            LoggedTunableNumber.ifChanged(
+                hashCode(), () -> feedforward = new ArmFeedforward(kS.get(), kG.get(), kV.get(), kA.get()),
+            kS, kG, kV, kA);
+        }
+    }
+
     public void changeGoalHeight(Double value) {
         x = x + value;
     }
@@ -142,6 +168,11 @@ public class RotateShooterSystem extends LogSubsystem {
 
     @Override
     public Sendable log() {
+        SmartDashboard.putNumber("pivot/rawEncoderDegree", revEncoder.getDistance());
+        SmartDashboard.putNumber("pivot/updatedEncoderDegree", getMotorPosition());
+        SmartDashboard.putNumber("pivot/shooterDegree", shooterDegree);
+        SmartDashboard.putNumber("pivot/wantedDegree", wantedDegree);
+        SmartDashboard.putNumber("pivot/motorOutput", motorOutput);
         return this;
     }
 }

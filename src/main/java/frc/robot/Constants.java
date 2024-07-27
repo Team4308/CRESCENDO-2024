@@ -28,6 +28,9 @@ public final class Constants {
     public static final PIDConstants ANGLE_PID = new PIDConstants(10, 0, 0.01);
   }
 
+  public static final class LoggedDashboard{
+    public static final boolean tuningMode = true; 
+  }
   public static final class DrivebaseConstants {
     // Hold time on motor brakes when disabled
     public static final double WHEEL_LOCK_TIME = 10; // seconds

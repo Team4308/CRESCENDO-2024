@@ -444,8 +444,7 @@ public class SwerveSubsystem extends LogSubsystem {
 
   @Override
   public void periodic() {
-    SmartDashboard.putBoolean("leftBeambreak", leftBeambreak.get());
-    SmartDashboard.putBoolean("rightBeambreak", rightBeambreak.get());
+    
   }
 
   @Override
