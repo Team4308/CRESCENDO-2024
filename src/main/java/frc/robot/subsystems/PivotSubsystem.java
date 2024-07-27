@@ -24,7 +24,7 @@ import edu.wpi.first.util.sendable.Sendable;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 
-public class RotateShooterSystem extends LogSubsystem {
+public class PivotSubsystem extends LogSubsystem {
     public final TalonFX motor;
     public final ProfiledPIDController pidController;
     //public final PIDController pidController;
@@ -60,7 +60,7 @@ public class RotateShooterSystem extends LogSubsystem {
     private static final LoggedTunableNumber maxAcceleration =
         new LoggedTunableNumber("Arm/Acceleration", Constants.Shooter.TrapezoidProfile.kMaxAcceleration);
 
-    public RotateShooterSystem() {
+    public PivotSubsystem() {
         motor = new TalonFX(Constants.Mapping.Shooter.motor);
         
         revEncoder = new DutyCycleEncoder(Constants.Mapping.Shooter.encoder);

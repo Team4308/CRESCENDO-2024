@@ -2,15 +2,15 @@ package frc.robot.commands;
 
 import java.util.function.Supplier;
 
-import frc.robot.subsystems.RotateShooterSystem;
+import frc.robot.subsystems.PivotSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class RotateShooterCommand extends Command {
+public class PivotCommand extends Command {
 
-    private final RotateShooterSystem m_subsystem;
+    private final PivotSubsystem m_subsystem;
     private final Supplier<Double> control;
 
-    public RotateShooterCommand(RotateShooterSystem subsystem, Supplier<Double> control) {
+    public PivotCommand(PivotSubsystem subsystem, Supplier<Double> control) {
         m_subsystem = subsystem;
         this.control = control;
 

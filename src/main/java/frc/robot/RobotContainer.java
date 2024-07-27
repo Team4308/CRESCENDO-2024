@@ -23,14 +23,14 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.RotateShooterCommand;
+import frc.robot.commands.PivotCommand;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.BeambreakCommand;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.IndexCommand;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.IntakeSystem;
-import frc.robot.subsystems.RotateShooterSystem;
+import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.IndexSystem;
@@ -52,8 +52,8 @@ public class RobotContainer {
   public final ArrayList<LogSubsystem> subsystems = new ArrayList<LogSubsystem>();
 
   // Subsystems
-  private final IntakeSystem m_intakeSystem;
-  private final RotateShooterSystem m_rotateShooterSystem;
+  private final IntakeSystem m_intakeSubsystem;
+  private final PivotSubsystem m_pivotSubsystem;
   private final ShooterSubsystem m_shooterSubsystem;
   private final ClimbSubsystem m_climbSubsystem;
   private final IndexSystem m_indexSystem;
@@ -61,7 +61,7 @@ public class RobotContainer {
 
   // Commands
   private final IntakeCommand intakeCommand;
-  private final RotateShooterCommand rotateShooterCommand;
+  private final PivotCommand pivotCommand;
   private final ShooterCommand ShooterCommand;
   private final ClimbCommand climbCommand;
   private final IndexCommand indexCommand;
@@ -92,11 +92,11 @@ public class RobotContainer {
         "swerve"));
     subsystems.add(drivebase);
 
-    m_intakeSystem = new IntakeSystem();
-    subsystems.add(m_intakeSystem);
+    m_intakeSubsystem = new IntakeSystem();
+    subsystems.add(m_intakeSubsystem);
 
-    m_rotateShooterSystem = new RotateShooterSystem();
-    subsystems.add(m_rotateShooterSystem);
+    m_pivotSubsystem = new PivotSubsystem();
+    subsystems.add(m_pivotSubsystem);
 
     m_shooterSubsystem = new ShooterSubsystem();
     subsystems.add(m_shooterSubsystem);
@@ -107,7 +107,7 @@ public class RobotContainer {
     m_indexSystem = new IndexSystem();
     subsystems.add(m_indexSystem);
 
-    NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(m_intakeSystem, () -> -1.0));
+    NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(m_intakeSubsystem, () -> -1.0));
     NamedCommands.registerCommand("IndexCommand", new IndexCommand(m_indexSystem, () -> -0.15));
     NamedCommands.registerCommand("IndexShootCommand", new IndexCommand(m_indexSystem, () -> -1.0));
     NamedCommands.registerCommand("ShooterCommand",
@@ -120,22 +120,20 @@ public class RobotContainer {
     // drivebase.alignToSpeaker(false)));
     NamedCommands.registerCommand("ResetGyro", new InstantCommand(drivebase::zeroGyro));
     NamedCommands.registerCommand("AutoAlignShooter",
-        new RotateShooterCommand(m_rotateShooterSystem, () -> m_rotateShooterSystem.autoAlignShooter()));
+        new PivotCommand(m_pivotSubsystem, () -> m_pivotSubsystem.autoAlignShooter()));
     NamedCommands.registerCommand("BeambreakCommand", new BeambreakCommand(() -> getBeambreakControl()));
     NamedCommands.registerCommand("SubwooferAngle",
-        new RotateShooterCommand(m_rotateShooterSystem, () -> Constants.GamePieces.speaker.angle));
-    NamedCommands.registerCommand("SubwooferSideAngle", new RotateShooterCommand(m_rotateShooterSystem, () -> 60.0));
+        new PivotCommand(m_pivotSubsystem, () -> Constants.GamePieces.speaker.angle));
+    NamedCommands.registerCommand("SubwooferSideAngle", new PivotCommand(m_pivotSubsystem, () -> 60.0));
     NamedCommands.registerCommand("AmpAngle",
-        new RotateShooterCommand(m_rotateShooterSystem, () -> Constants.GamePieces.amp.angleToshoot));
-    // Command Instantiations
-    intakeCommand = new IntakeCommand(m_intakeSystem, () -> getIntakeControl());
-    m_intakeSystem.setDefaultCommand(intakeCommand);
+        new PivotCommand(m_pivotSubsystem, () -> Constants.GamePieces.amp.angleToshoot));
+    
+        // Command Instantiations
+    intakeCommand = new IntakeCommand(m_intakeSubsystem, () -> getIntakeControl());
+    m_intakeSubsystem.setDefaultCommand(intakeCommand);
 
-    // ledCommand = new LEDCommand(m_ledSystem, () -> getLEDCommand());
-    // m_ledSystem.setDefaultCommand(ledCommand);
-
-    rotateShooterCommand = new RotateShooterCommand(m_rotateShooterSystem, () -> getRotateShooterControl());
-    m_rotateShooterSystem.setDefaultCommand(rotateShooterCommand);
+    pivotCommand = new PivotCommand(m_pivotSubsystem, () -> getPivotControl());
+    m_pivotSubsystem.setDefaultCommand(pivotCommand);
 
     ShooterCommand = new ShooterCommand(m_shooterSubsystem, () -> getShooterControl());
     m_shooterSubsystem.setDefaultCommand(ShooterCommand);
@@ -200,8 +198,6 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-
     stick.Y.onTrue((Commands.runOnce(drivebase::zeroGyro)));
     stick.A.onTrue(new InstantCommand(() -> drivebase.alignToSpeaker(true)));
     stick.A.onFalse(new InstantCommand(() -> drivebase.alignToSpeaker(false)));
@@ -215,34 +211,33 @@ public class RobotContainer {
     stick.RB.onFalse(new InstantCommand(() -> drivebase.fieldRelative(true)));
     stick.LB.onTrue(new InstantCommand(() -> setModifer(0.2)));
     stick.LB.onFalse(new InstantCommand(() -> setModifer(1.0)));
-    // stick1.Y.whileTrue(new LEDCommand(m_ledSystem, () -> 0.69)); // yellow
 
-    // auto align shooter
-    stick1.X.whileTrue(new RotateShooterCommand(m_rotateShooterSystem, () -> m_rotateShooterSystem.autoAlignShooter()));
+    // Auto Align Shooter to AprilTag
+    stick1.X.whileTrue(new PivotCommand(m_pivotSubsystem, () -> m_pivotSubsystem.autoAlignShooter()));
     stick1.X.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS));
     stick1.X.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
     stick1.X.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
 
-    // climb
+    // Climb
     stick1.RB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> 1.0));
     stick1.LB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> -1.0));
     stick1.RB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
     stick1.LB.onFalse(new InstantCommand(() -> m_climbSubsystem.stopControllers()));
 
-    // shoot in amp
+    // Shoot in Amp 
     stick1.B.onTrue(new InstantCommand(() -> setShooterAutonTriggered(true)));
     stick1.B.onTrue(
         new InstantCommand(() -> m_shooterSubsystem.changeTopMultiplier(Constants.Shooter.shootInAmpMultiplier)));
     stick1.B.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.GamePieces.amp.speedToShoot));
-    stick1.B.whileTrue(new RotateShooterCommand(m_rotateShooterSystem, () -> Constants.GamePieces.amp.angleToshoot));
+    stick1.B.whileTrue(new PivotCommand(m_pivotSubsystem, () -> Constants.GamePieces.amp.angleToshoot));
     stick1.B.onFalse(new InstantCommand(() -> setShooterAutonTriggered(false)));
     stick1.B.onFalse(new InstantCommand(() -> m_shooterSubsystem.changeTopMultiplier(1)));
 
-    stick1.A.whileTrue(new RotateShooterCommand(m_rotateShooterSystem, () -> Constants.GamePieces.speaker.angle));
+    stick1.A.whileTrue(new PivotCommand(m_pivotSubsystem, () -> Constants.GamePieces.speaker.angle));
     stick1.A.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS));
 
-    stick1.Y.whileTrue(new RotateShooterCommand(m_rotateShooterSystem, () -> m_rotateShooterSystem.autoAlignShooter()));
-    stick1.Y.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> 20.0));
+    // stick1.Y.whileTrue(new PivotCommand(m_pivotSubsystem, () -> m_pivotSubsystem.autoAlignShooter()));
+    // stick1.Y.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> 20.0));
   }
 
   public Command getAutonomousCommand() {
@@ -278,7 +273,7 @@ public class RobotContainer {
     return 0.0;
   }
 
-  public double getRotateShooterControl() {
+  public double getPivotControl() {
     if (shooterAutonTriggered == false) {
       double newRightJoystickValue = DoubleUtils.normalize(-stick1.getRightY());
       newRightJoystickValue = JoystickHelper.SimpleAxialDeadzone(newRightJoystickValue, Constants.Input.kJoystickDeadband);
