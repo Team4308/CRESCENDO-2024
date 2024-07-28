@@ -108,7 +108,7 @@ public class PivotSubsystem extends LogSubsystem {
         motorOutput = -DoubleUtils.clamp(
             pidController.calculate(shooterDegree, wantedDegree)
             + feedforward.calculate(Math.toRadians(pidController.getSetpoint().position), 
-                                    Math.toRadians(pidController.getSetpoint().velocity) / 12), -1.0, 1.0);
+                                    Math.toRadians(pidController.getSetpoint().velocity)) / 12, -1.0, 1.0);
 
         setMotorOutput(motorOutput);
     }
