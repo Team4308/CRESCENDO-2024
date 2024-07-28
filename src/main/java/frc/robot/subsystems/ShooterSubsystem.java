@@ -10,6 +10,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import ca.team4308.absolutelib.wrapper.LogSubsystem;
 import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 
 
@@ -77,6 +78,10 @@ public class ShooterSubsystem extends LogSubsystem {
 
     public void changeBottomMultiplier(double newValue) {
         bottomMultiplier = newValue;
+    }
+
+    public Command changeAmpTopMultiplierCommand() {
+        return this.startEnd(() -> changeTopMultiplier(Constants.Shooter.shootInAmpMultiplier), () -> changeTopMultiplier(1.0));
     }
 
     /**

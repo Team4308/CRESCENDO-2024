@@ -61,6 +61,7 @@ public class SwerveSubsystem extends LogSubsystem {
   boolean alignToAmp = false;
   boolean alignToNote = false;
   boolean fieldRelative = true;
+  double modifier = 1.0;
 
   private static final LoggedTunableNumber kAngleP = 
         new LoggedTunableNumber("Swerve/Align/kAngleP", Constants.Config.Drive.AngleControl.kP);
@@ -264,9 +265,9 @@ public class SwerveSubsystem extends LogSubsystem {
         transY = driveInput.y;
       }
       // Make the robot move
-      swerveDrive.drive(new Translation2d(driveInput.x * swerveDrive.getMaximumVelocity(),
-          transY * swerveDrive.getMaximumVelocity()),
-          rotation * swerveDrive.getMaximumAngularVelocity(),
+      swerveDrive.drive(new Translation2d(driveInput.x * swerveDrive.getMaximumVelocity() * modifier,
+          transY * swerveDrive.getMaximumVelocity() * modifier),
+          rotation * swerveDrive.getMaximumAngularVelocity() * modifier,
           fieldRelative,
           false);
     });
@@ -663,6 +664,53 @@ public class SwerveSubsystem extends LogSubsystem {
 
   public void fieldRelative(boolean value) {
     fieldRelative = value;
+  }
+
+  public void setModifier(Double value) {
+    modifier = value;
+  }
+
+  public void setSpeaker() {
+    if (DriverStation.getAlliance().isEmpty())
+      return;
+
+    if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
+      LimelightHelpers.setPipelineIndex("", 0);
+    } else {
+      LimelightHelpers.setPipelineIndex("", 2);
+    }
+  }
+
+  public void setAmp() {
+    if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
+      LimelightHelpers.setPipelineIndex("", 1);
+    } else {
+      LimelightHelpers.setPipelineIndex("", 3);
+    }
+  }
+
+  public Command alignToSpeaker() {
+    return this.startEnd(() -> alignToSpeaker(true), () -> alignToSpeaker(false));
+  }
+
+  public Command alignToNote() {
+    return this.startEnd(() -> alignToNote(true), () -> alignToNote(false));
+  }
+
+  public Command alignToAmp() {
+    return this.startEnd(() -> alignToAmp(true), () -> alignToAmp(false));
+  }
+
+  public Command fieldRelative() {
+    return this.startEnd(() -> fieldRelative(true), () -> fieldRelative(false));
+  }
+
+  public Command setAmpFinallySpeaker() {
+    return this.startEnd(() -> setAmp(), () -> setSpeaker());
+  }
+
+  public Command setModifierCommand() {
+    return this.startEnd(() -> setModifier(1.0), () -> setModifier(0.2));
   }
 
   @Override

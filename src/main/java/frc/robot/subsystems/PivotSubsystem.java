@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -41,6 +42,7 @@ public class PivotSubsystem extends LogSubsystem {
 
     public static double offset;
     public static double x = 0.0;
+    public static boolean shooterAutonTriggered = false;
 
     private static final LoggedTunableNumber kP = 
         new LoggedTunableNumber("Pivot/Gains/kP", Constants.Shooter.AngleControl.kP);
@@ -154,10 +156,10 @@ public class PivotSubsystem extends LogSubsystem {
         x = x + value;
     }
 
-    public void controlWithController(Double controllerValue) {
-        shooterDegree = DoubleUtils.clamp(shooterDegree + controllerValue, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree);
-        setMotorPosition(shooterDegree);
-    }
+    // public void controlWithController(Double controllerValue) {
+    //     shooterDegree = DoubleUtils.clamp(shooterDegree + controllerValue, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree);
+    //     setMotorPosition(shooterDegree);
+    // }
 
     public void resetSensors() {
         motor.setPosition(0);
@@ -165,6 +167,18 @@ public class PivotSubsystem extends LogSubsystem {
 
     public void stopControllers(){
         motor.set(0);
+    }
+
+    public void setShooterAutonTriggered(boolean value) {
+        shooterAutonTriggered = value;
+    }
+
+    public boolean getShooterAutonTriggered() {
+        return shooterAutonTriggered;
+    }
+
+    public Command setShooterAutonCommand() {
+        return this.startEnd(() -> setShooterAutonTriggered(true), () -> setShooterAutonTriggered(false));
     }
 
     @Override

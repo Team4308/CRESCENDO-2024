@@ -6,17 +6,20 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import ca.team4308.absolutelib.wrapper.MotoredSubsystem;
 import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
 
 public class IndexSystem extends MotoredSubsystem {
     public final TalonSRX motor;
+    public final DigitalInput shooterBeambreak;
     public boolean state;
 
     public IndexSystem() {
         // Setup Controllers
         motor = new TalonSRX(Constants.Mapping.Index.indexMotor);
-        
         motor.setNeutralMode(NeutralMode.Brake);
+
+        shooterBeambreak = new DigitalInput(Constants.Mapping.Shooter.beambreak);
 
         stopControllers();
     }
@@ -27,6 +30,10 @@ public class IndexSystem extends MotoredSubsystem {
 
     public void stopControllers() {
         motor.set(TalonSRXControlMode.PercentOutput, 0.0);
+    }
+
+    public boolean getBeambreak() {
+        return shooterBeambreak.get();
     }
 
     @Override
