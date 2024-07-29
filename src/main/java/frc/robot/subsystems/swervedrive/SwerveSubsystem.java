@@ -42,6 +42,8 @@ import frc.robot.LimelightHelpers;
 import frc.robot.Constants.AutonConstants;
 
 import java.io.File;
+import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import org.photonvision.PhotonCamera;
@@ -62,6 +64,8 @@ public class SwerveSubsystem extends LogSubsystem {
   boolean alignToNote = false;
   boolean fieldRelative = true;
   double modifier = 1.0;
+  
+  boolean presetMode = false;
 
   private static final LoggedTunableNumber kAngleP = 
         new LoggedTunableNumber("Swerve/Align/kAngleP", Constants.Config.Drive.AngleControl.kP);
@@ -270,6 +274,99 @@ public class SwerveSubsystem extends LogSubsystem {
           rotation * swerveDrive.getMaximumAngularVelocity() * modifier,
           fieldRelative,
           false);
+    });
+  }
+
+  public Command driveAdvCommand(DoubleSupplier translationX, DoubleSupplier translationY, 
+                                DoubleSupplier angularRotationX, BooleanSupplier lookAway, BooleanSupplier lookTowards, 
+                                BooleanSupplier lookLeft, BooleanSupplier lookRight) {
+    return run(() -> {
+      double headingX = 0;
+      double headingY = 0;
+      Double transY;
+      Double rotation;
+
+      Vector2 driveInput = new Vector2(translationX.getAsDouble(), translationY.getAsDouble());
+      driveInput = JoystickHelper.alternateScaleStick(driveInput, 2);
+
+      Vector2 rotationInput = new Vector2(angularRotationX.getAsDouble(), 0);
+      rotationInput = JoystickHelper.scaleStick(rotationInput, 2);
+
+
+      // These are written to allow combinations for 45 angles
+      // Face Away from Drivers
+      if (lookAway.getAsBoolean())
+      {
+        headingY = -1;
+      }
+      // Face Right
+      if (lookRight.getAsBoolean())
+      {
+        headingX = 1;
+      }
+      // Face Left
+      if (lookLeft.getAsBoolean())
+      {
+        headingX = -1;
+      }
+      // Face Towards the Drivers
+      if (lookTowards.getAsBoolean())
+      {
+        headingY = 1;
+      }
+
+      // Prevent Movement After Auto
+      if (presetMode == true)
+      {
+        if (headingX == 0 && headingY == 0 && Math.abs(angularRotationX.getAsDouble()) == 0)
+        {
+          // Get the curret Heading
+          Rotation2d currentHeading = getHeading();
+
+          // Set the Current Heading to the desired Heading
+          headingX = currentHeading.getSin();
+          headingY = currentHeading.getCos();
+        }
+        //Dont reset Heading Again
+        presetMode = false;
+      }
+
+      if (alignToSpeaker) {
+        rotation = getOffsetAngleLeftRight();
+      } else if (alignToNote) {
+        rotation = 0.0; // not used
+      } else {
+        rotation = rotationInput.x;
+      }
+
+      if (alignToAmp) {
+        transY = getOffsetTranslationLeftRight();
+      } else {
+        transY = driveInput.y;
+      }
+      
+      ChassisSpeeds desiredSpeeds = getTargetSpeeds(translationX.getAsDouble(), translationY.getAsDouble(), headingX, headingY);
+
+      // Limit velocity to prevent tippy
+      Translation2d translation = SwerveController.getTranslation2d(desiredSpeeds);
+
+      translation = SwerveMath.limitVelocity(translation, getFieldVelocity(), getPose(),
+                                            Constants.LOOP_TIME, Constants.ROBOT_MASS, List.of(Constants.CHASSIS),
+                                            getSwerveDriveConfiguration());
+
+      // Make the robot move
+      if (headingX == 0 && headingY == 0 && Math.abs(angularRotationX.getAsDouble()) > 0)
+      {
+        presetMode = true;
+        drive(translation, (Constants.OperatorConstants.TURN_CONSTANT * -angularRotationX.getAsDouble()), true);
+      } else
+      {
+        swerveDrive.drive(new Translation2d(driveInput.x * swerveDrive.getMaximumVelocity() * modifier,
+          transY * swerveDrive.getMaximumVelocity() * modifier),
+          rotation * swerveDrive.getMaximumAngularVelocity() * modifier,
+          fieldRelative,
+          false);
+      }
     });
   }
 
@@ -702,7 +799,7 @@ public class SwerveSubsystem extends LogSubsystem {
   }
 
   public Command fieldRelative() {
-    return this.startEnd(() -> fieldRelative(true), () -> fieldRelative(false));
+    return this.startEnd(() -> fieldRelative(false), () -> fieldRelative(true));
   }
 
   public Command setAmpFinallySpeaker() {

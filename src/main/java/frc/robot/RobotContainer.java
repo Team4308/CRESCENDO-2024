@@ -179,13 +179,18 @@ public class RobotContainer {
         () -> -MathUtil.applyDeadband(stick.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
         () -> -stick.getRightX());
 
+    Command driveAdvAngularVelocity = drivebase.driveAdvCommand(
+        () -> -MathUtil.applyDeadband(stick.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+        () -> -MathUtil.applyDeadband(stick.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+        () -> -stick.getRightX(), stick.pov0, stick.pov180, stick.pov270, stick.pov90);
+
     Command driveFieldOrientedDirectAngleSim = drivebase.simDriveCommand(
         () -> MathUtil.applyDeadband(stick.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
         () -> MathUtil.applyDeadband(stick.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
         () -> stick.getLeftTrigger());
 
     drivebase.setDefaultCommand(
-        !RobotBase.isSimulation() ? driveFieldOrientedAnglularVelocity : driveFieldOrientedDirectAngleSim);
+        !RobotBase.isSimulation() ? driveAdvAngularVelocity : driveFieldOrientedDirectAngleSim);
   }
 
   private void configureBindings() {

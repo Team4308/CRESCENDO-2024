@@ -38,10 +38,14 @@ public class XBoxWrapper {
     public final JoystickButton LeftStickButton;
     public final JoystickButton RightStickButton;
 
-    public final POVButton povUp;
-    public final POVButton povRight;
-    public final POVButton povDown;
-    public final POVButton povLeft;
+    public final POVButton pov0;
+    public final POVButton pov45;
+    public final POVButton pov90;
+    public final POVButton pov135;
+    public final POVButton pov180;
+    public final POVButton pov225;
+    public final POVButton pov270;
+    public final POVButton pov315;
 
     public XBoxWrapper(int port) {
         this.joystick = new Joystick(port);
@@ -59,10 +63,14 @@ public class XBoxWrapper {
         this.Start = new JoystickButton(joystick, XBoxMapping.Start);
         this.Back = new JoystickButton(joystick, XBoxMapping.Back);
 
-        this.povUp = new POVButton(joystick, 0);
-        this.povRight = new POVButton(joystick, 90);
-        this.povDown = new POVButton(joystick, 180);
-        this.povLeft = new POVButton(joystick, 270);
+        this.pov0 = new POVButton(joystick, 0);
+        this.pov45 = new POVButton(joystick, 45);
+        this.pov90 = new POVButton(joystick, 90);
+        this.pov135 = new POVButton(joystick, 135);
+        this.pov180 = new POVButton(joystick, 180);
+        this.pov225 = new POVButton(joystick, 225);
+        this.pov270 = new POVButton(joystick, 270);
+        this.pov315 = new POVButton(joystick, 315);
     }
 
     public double getLeftX() {
