@@ -35,7 +35,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableBuilderImpl;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
-// import edu.wpi.first.wpilibj.simulation.JoystickSim;
+import edu.wpi.first.wpilibj.simulation.JoystickSim;
 
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
@@ -738,6 +738,15 @@ public class SwerveSubsystem extends LogSubsystem {
    */
   public Rotation2d getPitch() {
     return swerveDrive.getPitch();
+  }
+
+  // Resets swerve modules to 0 when the robot starts up before autonomous
+  public void zeroModulesTrue() {
+      swerveDrive.setAutoCenteringModules(true);
+  }
+
+  public void zeroModulesFalse() {
+    swerveDrive.setAutoCenteringModules(false);
   }
 
   /**

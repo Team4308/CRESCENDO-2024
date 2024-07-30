@@ -61,6 +61,9 @@ public class Robot extends TimedRobot
       Shuffleboard.getTab("Log").add(subsystem.log());
     }
     disabledTimer = new Timer();
+
+    // Enables zeroing of swerve modules before autonomous
+    m_robotContainer.zeroSwerveModulesTrue();
   }
 
   /**
@@ -109,6 +112,9 @@ public class Robot extends TimedRobot
   @Override
   public void autonomousInit()
   {
+    // Disables zeroing of swerve modules after it has corrected to 0
+    m_robotContainer.zeroSwerveModulesFalse();
+
     m_robotContainer.setMotorBrake(true);
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
@@ -138,6 +144,7 @@ public class Robot extends TimedRobot
     {
       m_autonomousCommand.cancel();
     }
+    m_robotContainer.zeroSwerveModulesFalse();
     m_robotContainer.zeroGyroOnTeleop();
     m_robotContainer.setMotorBrake(true);
   }

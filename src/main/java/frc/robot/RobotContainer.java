@@ -58,7 +58,7 @@ public class RobotContainer {
   // Commands
   private final IntakeCommand intakeCommand;
   private final PivotCommand pivotCommand;
-  private final ShooterCommand ShooterCommand;
+  private final ShooterCommand shooterCommand;
   private final ClimbCommand climbCommand;
   private final IndexCommand indexCommand;
 
@@ -126,8 +126,8 @@ public class RobotContainer {
     pivotCommand = new PivotCommand(m_pivotSubsystem, () -> getPivotControl());
     m_pivotSubsystem.setDefaultCommand(pivotCommand);
 
-    ShooterCommand = new ShooterCommand(m_shooterSubsystem, () -> getShooterControl());
-    m_shooterSubsystem.setDefaultCommand(ShooterCommand);
+    shooterCommand = new ShooterCommand(m_shooterSubsystem, () -> getShooterControl());
+    m_shooterSubsystem.setDefaultCommand(shooterCommand);
 
     climbCommand = new ClimbCommand(m_climbSubsystem, () -> 0.0);
     m_climbSubsystem.setDefaultCommand(climbCommand);
@@ -292,6 +292,14 @@ public class RobotContainer {
 
   public void disabledActions() {
     drivebase.setSpeaker();
+  }
+
+  public void zeroSwerveModulesTrue() {
+    drivebase.zeroModulesTrue();
+  }
+
+  public void zeroSwerveModulesFalse() {
+    drivebase.zeroModulesFalse();
   }
 
   // Gets rid of the yellow errors in Robot.java

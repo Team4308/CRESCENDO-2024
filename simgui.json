@@ -69,9 +69,11 @@
       "/Shuffleboard/Log/IndexSystem": "Subsystem",
       "/Shuffleboard/Log/IntakeSystem": "Subsystem",
       "/Shuffleboard/Log/LEDSystem": "Subsystem",
+      "/Shuffleboard/Log/PivotSubsystem": "Subsystem",
       "/Shuffleboard/Log/PixySystem": "Subsystem",
       "/Shuffleboard/Log/RotateShooterSystem": "Subsystem",
       "/Shuffleboard/Log/ShooterSubsystem": "Subsystem",
+      "/Shuffleboard/Log/SwerveSubsystem": "Subsystem",
       "/SmartDashboard/Auto Chooser": "String Chooser",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Pigeon 2 (v6) [0]": "Gyro",
@@ -83,6 +85,11 @@
     },
     "windows": {
       "/FMSInfo": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/Shuffleboard/Log/ClimbSubsystem": {
         "window": {
           "visible": true
         }
@@ -105,6 +112,11 @@
         "right": 2961,
         "top": 79,
         "width": 16.541748046875,
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Pigeon 2 (v6) [0]": {
         "window": {
           "visible": true
         }
