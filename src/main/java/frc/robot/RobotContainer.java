@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.PivotCommand;
@@ -67,6 +68,7 @@ public class RobotContainer {
   // final CommandXboxController driverXbox = new CommandXboxController(0);
   public final XBoxWrapper stick = new XBoxWrapper(Constants.Mapping.Controllers.kStick);
   public final XBoxWrapper stick1 = new XBoxWrapper(Constants.Mapping.Controllers.kStick1);
+  public final CommandXboxController driverXbox = new CommandXboxController(3);
 
   // Auto
   private final SendableChooser<Command> autonomousChooser;
@@ -81,7 +83,6 @@ public class RobotContainer {
     // Subsystem Instantiations
     drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
         "swerve"));
-    subsystems.add(drivebase);
 
     m_intakeSubsystem = new IntakeSystem();
     subsystems.add(m_intakeSubsystem);
@@ -144,17 +145,17 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
 
-    // AbsoluteDriveAdv closedAbsoluteDriveAdv = new AbsoluteDriveAdv(drivebase,
-    // () -> -MathUtil.applyDeadband(driverXbox.getLeftY(),
-    // OperatorConstants.LEFT_Y_DEADBAND),
-    // () -> -MathUtil.applyDeadband(driverXbox.getLeftX(),
-    // OperatorConstants.LEFT_X_DEADBAND),
-    // () -> -MathUtil.applyDeadband(driverXbox.getRightX(),
-    // OperatorConstants.RIGHT_X_DEADBAND),
-    // driverXbox.getHID()::getYButtonPressed,
-    // driverXbox.getHID()::getAButtonPressed,
-    // driverXbox.getHID()::getXButtonPressed,
-    // driverXbox.getHID()::getBButtonPressed);
+    Command driveFieldOrientedAdv = drivebase.driveAdvCommand(
+    () -> -MathUtil.applyDeadband(driverXbox.getLeftY(),
+    OperatorConstants.LEFT_Y_DEADBAND),
+    () -> -MathUtil.applyDeadband(driverXbox.getLeftX(),
+    OperatorConstants.LEFT_X_DEADBAND),
+    () -> -MathUtil.applyDeadband(driverXbox.getRightX(),
+    OperatorConstants.RIGHT_X_DEADBAND),
+    driverXbox.getHID()::getYButtonPressed,
+    driverXbox.getHID()::getAButtonPressed,
+    driverXbox.getHID()::getXButtonPressed,
+    driverXbox.getHID()::getBButtonPressed);
 
     // Applies deadbands and inverts controls because joysticks
     // are back-right positive while robot
@@ -190,7 +191,7 @@ public class RobotContainer {
         () -> stick.getLeftTrigger());
 
     drivebase.setDefaultCommand(
-        !RobotBase.isSimulation() ? driveAdvAngularVelocity : driveFieldOrientedDirectAngleSim);
+        !RobotBase.isSimulation() ? driveAdvAngularVelocity : driveFieldOrientedAdv);
   }
 
   private void configureBindings() {

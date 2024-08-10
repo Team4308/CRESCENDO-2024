@@ -89,11 +89,6 @@
           "visible": true
         }
       },
-      "/Shuffleboard/Log/ClimbSubsystem": {
-        "window": {
-          "visible": true
-        }
-      },
       "/SmartDashboard/Field": {
         "XModules": {
           "arrowColor": [
@@ -115,11 +110,6 @@
         "window": {
           "visible": true
         }
-      },
-      "/SmartDashboard/Pigeon 2 (v6) [0]": {
-        "window": {
-          "visible": true
-        }
       }
     }
   },
@@ -127,6 +117,9 @@
     "transitory": {
       "SmartDashboard": {
         "Field": {
+          "open": true
+        },
+        "TunableNumbers": {
           "open": true
         },
         "open": true,
