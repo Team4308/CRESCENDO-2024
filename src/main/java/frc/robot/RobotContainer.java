@@ -295,14 +295,6 @@ public class RobotContainer {
     drivebase.setSpeaker();
   }
 
-  public void zeroSwerveModulesTrue() {
-    drivebase.zeroModulesTrue();
-  }
-
-  public void zeroSwerveModulesFalse() {
-    drivebase.zeroModulesFalse();
-  }
-
   // Gets rid of the yellow errors in Robot.java
   public void ewyellowerrors() {
   }
