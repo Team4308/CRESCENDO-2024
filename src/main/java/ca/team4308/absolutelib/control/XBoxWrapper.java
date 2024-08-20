@@ -2,8 +2,10 @@ package ca.team4308.absolutelib.control;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import java.util.function.BooleanSupplier;
 
 public class XBoxWrapper {
     public static class XBoxMapping {
@@ -18,90 +20,106 @@ public class XBoxWrapper {
         public static int Start = 7;
         public static int Back = 8;
 
-        public static int LeftStickButton = 9;
-        public static int RightStickButton = 10;
+        public static int LSButton = 9;
+        public static int RSButton = 10;
     }
 
-    public final Joystick joystick;
+    public final CommandXboxController controller;
 
-    public final JoystickButton A;
-    public final JoystickButton B;
-    public final JoystickButton X;
-    public final JoystickButton Y;
+    public final Trigger A;
+    public final Trigger B;
+    public final Trigger X;
+    public final Trigger Y;
 
-    public final JoystickButton LB;
-    public final JoystickButton RB;
+    public final Trigger LB;
+    public final Trigger RB;
 
-    public final JoystickButton Start;
-    public final JoystickButton Back;
+    public final Trigger Start;
+    public final Trigger Back;
 
-    public final JoystickButton LeftStickButton;
-    public final JoystickButton RightStickButton;
+    public final Trigger LSButton;
+    public final Trigger RSButton;
 
-    public final POVButton pov0;
-    public final POVButton pov45;
-    public final POVButton pov90;
-    public final POVButton pov135;
-    public final POVButton pov180;
-    public final POVButton pov225;
-    public final POVButton pov270;
-    public final POVButton pov315;
+    public final POVButton PovUp;
+    public final Trigger PovUpRight;
+    public final Trigger PovRight;
+    public final Trigger PovDownRight;
+    public final Trigger PovDown;
+    public final Trigger PovDownLeft;
+    public final Trigger PovLeft;
+    public final Trigger PovUpLeft;
 
     public XBoxWrapper(int port) {
-        this.joystick = new Joystick(port);
+        this.controller = new CommandXboxController(port);
 
-        this.A = new JoystickButton(joystick, XBoxMapping.A);
-        this.B = new JoystickButton(joystick, XBoxMapping.B);
-        this.X = new JoystickButton(joystick, XBoxMapping.X);
-        this.Y = new JoystickButton(joystick, XBoxMapping.Y);
+        this.A = controller.a(); 
+        this.B = controller.b();
+        this.X = controller.x();
+        this.Y = controller.y();
         
-        this.LB = new JoystickButton(joystick, XBoxMapping.LB);
-        this.RB = new JoystickButton(joystick, XBoxMapping.RB);
-        this.LeftStickButton = new JoystickButton(joystick, XBoxMapping.LeftStickButton);
-        this.RightStickButton = new JoystickButton(joystick, XBoxMapping.RightStickButton);
+        this.LB = controller.leftBumper();
+        this.RB = controller.rightBumper();
+        this.LSButton = controller.leftStick();
+        this.RSButton = controller.rightStick();
 
-        this.Start = new JoystickButton(joystick, XBoxMapping.Start);
-        this.Back = new JoystickButton(joystick, XBoxMapping.Back);
+        this.Start = controller.start();
+        this.Back = controller.back();
 
-        this.pov0 = new POVButton(joystick, 0);
-        this.pov45 = new POVButton(joystick, 45);
-        this.pov90 = new POVButton(joystick, 90);
-        this.pov135 = new POVButton(joystick, 135);
-        this.pov180 = new POVButton(joystick, 180);
-        this.pov225 = new POVButton(joystick, 225);
-        this.pov270 = new POVButton(joystick, 270);
-        this.pov315 = new POVButton(joystick, 315);
+        this.PovUp = new POVButton(controller.getHID(), 0);
+        this.PovUpRight = new POVButton(controller.getHID(), 45);
+        this.PovRight = new POVButton(controller.getHID(), 90);
+        this.PovDownRight = new POVButton(controller.getHID(), 135);
+        this.PovDown = new POVButton(controller.getHID(), 180);
+        this.PovDownLeft = new POVButton(controller.getHID(), 225);
+        this.PovLeft = new POVButton(controller.getHID(), 270);
+        this.PovUpLeft = new POVButton(controller.getHID(), 315);
     }
 
     public double getLeftX() {
-        return joystick.getRawAxis(0);
+        return controller.getLeftX(); // 0
     }
 
     public double getLeftY() {
-        return joystick.getRawAxis(1);
+        return controller.getLeftY(); // 1
     }
 
     public double getRightX() {
-        return joystick.getRawAxis(4);
+        return controller.getRightX(); // 4
     }
 
     public double getRightY() {
-        return joystick.getRawAxis(5);
+        return controller.getRightY(); // 5
     }
 
     public double getLeftTrigger() {
-        return joystick.getRawAxis(2);
+        return controller.getLeftTriggerAxis(); // 2
     }
 
     public double getRightTrigger() {
-        return joystick.getRawAxis(3);
+        return controller.getRightTriggerAxis(); // 3
+    }
+
+    public BooleanSupplier getAButtonPressed() {
+        return () -> controller.getHID().getAButtonPressed();
+    }
+
+    public BooleanSupplier getBButtonPressed() {
+        return () -> controller.getHID().getBButtonPressed();
+    }
+
+    public BooleanSupplier getXButtonPressed() {
+        return () -> controller.getHID().getXButtonPressed();
+    }
+
+    public BooleanSupplier getYButtonPressed() {
+        return () -> controller.getHID().getYButtonPressed();
     }
 
     public void setLeftRumble(Double value) {
-        joystick.setRumble(RumbleType.kLeftRumble, value);
+        controller.getHID().setRumble(RumbleType.kLeftRumble, value);
     }
 
     public void setRightRumble(Double value) {
-        joystick.setRumble(RumbleType.kRightRumble, value);
+        controller.getHID().setRumble(RumbleType.kLeftRumble, value);
     }
 }

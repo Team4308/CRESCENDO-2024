@@ -29,9 +29,9 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import java.util.Optional;
 
 public class PhotonVisionSubsystem {
-    private PhotonCamera poseCam1 = new PhotonCamera("Arduck OV9281 USB"); // rename later
-    private PhotonCamera poseCam2 = new PhotonCamera("Argoose OV9281 USB"); // rename later
-    private PhotonCamera pieceCam = new PhotonCamera("pieceCamera"); // rename later
+    public PhotonCamera poseCam1 = new PhotonCamera(Constants.Vision.cam1Name); // rename later
+    public PhotonCamera poseCam2 = new PhotonCamera(Constants.Vision.cam2Name); // rename later
+    public PhotonCamera pieceCam = new PhotonCamera(Constants.Vision.cam3Name); // rename later
     public PhotonPoseEstimator cam1PoseEstimator;
     public PhotonPoseEstimator cam2PoseEstimator;
 
@@ -41,8 +41,7 @@ public class PhotonVisionSubsystem {
     
     public PhotonVisionSubsystem() {
         // Example camera mounted facing forward (pitch), half a meter forward of center (x), half a meter up from center (z)
-        Transform3d robotToCam1 = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0,0,0));
-        Transform3d robotToCam2 = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0,0,0));
+        Transform3d robotToSimCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0,0,0));
 
         cam1PoseEstimator = new PhotonPoseEstimator(
             Constants.Vision.kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, poseCam1, Constants.Vision.kRobotToCam1);
@@ -69,14 +68,14 @@ public class PhotonVisionSubsystem {
             // targets.
             cameraSim = new PhotonCameraSim(poseCam1, cameraProp);
             // Add the simulated camera to view the targets on this simulated field.
-            visionSim.addCamera(cameraSim, robotToCam1);
+            visionSim.addCamera(cameraSim, robotToSimCam);
 
             cameraSim.enableDrawWireframe(true);
         }
     }
 
-    public PhotonPipelineResult getLatestResult() {
-        return poseCam1.getLatestResult();
+    public PhotonPipelineResult getLatestResult(PhotonCamera photonCamera) {
+        return photonCamera.getLatestResult();
     }
 
     /**
@@ -110,9 +109,10 @@ public class PhotonVisionSubsystem {
      *
      * @param estimatedPose The estimated pose to guess standard deviations for.
      */
-    public Matrix<N3, N1> getEstimationStdDevs(Pose2d estimatedPose, PhotonPoseEstimator photonPoseEstimator) {
+    public Matrix<N3, N1> getEstimationStdDevs(Pose2d estimatedPose, PhotonPoseEstimator photonPoseEstimator, 
+                                               PhotonCamera photonCamera) {
         var estStdDevs = Constants.Vision.kSingleTagStdDevs;
-        var targets = getLatestResult().getTargets();
+        var targets = getLatestResult(photonCamera).getTargets();
         int numTags = 0;
         double avgDist = 0;
         for (var tgt : targets) {

@@ -27,13 +27,13 @@ import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 
 public class PivotSubsystem extends LogSubsystem {
-    public final TalonFX motor;
-    public final ProfiledPIDController pidController;
+    private final TalonFX motor;
+    private final ProfiledPIDController pidController;
     //public final PIDController pidController;
-    public ArmFeedforward feedforward;
+    private ArmFeedforward feedforward;
+    private final DutyCycleEncoder revEncoder; 
     public final DigitalInput limitSwitch1;
     public final DigitalInput limitSwitch2;
-    private final DutyCycleEncoder revEncoder; 
     
     public static double encoderDegree;
     public static double shooterDegree;
@@ -43,6 +43,7 @@ public class PivotSubsystem extends LogSubsystem {
     public static double offset;
     public static double x = 0.0;
     public static boolean shooterAutonTriggered = false;
+    public double currentShooterDegree = Constants.Shooter.shooterStartDegree;
 
     private static final LoggedTunableNumber kP = 
         new LoggedTunableNumber("Pivot/Gains/kP", Constants.Shooter.AngleControl.kP);
