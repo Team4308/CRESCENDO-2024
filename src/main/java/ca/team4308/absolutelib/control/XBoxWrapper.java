@@ -33,6 +33,8 @@ public class XBoxWrapper {
 
     public final Trigger LB;
     public final Trigger RB;
+    public final Trigger LeftTrigger;
+    public final Trigger RightTrigger;
 
     public final Trigger Start;
     public final Trigger Back;
@@ -40,14 +42,14 @@ public class XBoxWrapper {
     public final Trigger LSButton;
     public final Trigger RSButton;
 
-    public final POVButton PovUp;
-    public final Trigger PovUpRight;
-    public final Trigger PovRight;
-    public final Trigger PovDownRight;
-    public final Trigger PovDown;
-    public final Trigger PovDownLeft;
-    public final Trigger PovLeft;
-    public final Trigger PovUpLeft;
+    public final Trigger Up;
+    public final Trigger UpRight;
+    public final Trigger Right;
+    public final Trigger DownRight;
+    public final Trigger Down;
+    public final Trigger DownLeft;
+    public final Trigger Left;
+    public final Trigger UpLeft;
 
     public XBoxWrapper(int port) {
         this.controller = new CommandXboxController(port);
@@ -59,20 +61,24 @@ public class XBoxWrapper {
         
         this.LB = controller.leftBumper();
         this.RB = controller.rightBumper();
+
+        this.LeftTrigger = controller.leftTrigger(0.2);
+        this.RightTrigger = controller.rightTrigger(0.2);
+
         this.LSButton = controller.leftStick();
         this.RSButton = controller.rightStick();
 
         this.Start = controller.start();
         this.Back = controller.back();
 
-        this.PovUp = new POVButton(controller.getHID(), 0);
-        this.PovUpRight = new POVButton(controller.getHID(), 45);
-        this.PovRight = new POVButton(controller.getHID(), 90);
-        this.PovDownRight = new POVButton(controller.getHID(), 135);
-        this.PovDown = new POVButton(controller.getHID(), 180);
-        this.PovDownLeft = new POVButton(controller.getHID(), 225);
-        this.PovLeft = new POVButton(controller.getHID(), 270);
-        this.PovUpLeft = new POVButton(controller.getHID(), 315);
+        this.Up = new POVButton(controller.getHID(), 0);
+        this.UpRight = new POVButton(controller.getHID(), 45);
+        this.Right = new POVButton(controller.getHID(), 90);
+        this.DownRight = new POVButton(controller.getHID(), 135);
+        this.Down = new POVButton(controller.getHID(), 180);
+        this.DownLeft = new POVButton(controller.getHID(), 225);
+        this.Left = new POVButton(controller.getHID(), 270);
+        this.UpLeft = new POVButton(controller.getHID(), 315);
     }
 
     public double getLeftX() {

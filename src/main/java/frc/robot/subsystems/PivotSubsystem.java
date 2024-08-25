@@ -126,8 +126,8 @@ public class PivotSubsystem extends LogSubsystem {
         double limelightLensHeightCM = Constants.Limelight.Measurements.limelightLensHeightCM;
 
         // distance from the target to the floor
-        double goalHeightCM = Constants.GamePieces.speaker.speakerAprilTagHeightCM + x;
-        double speakerOpeningHeightCM = Constants.GamePieces.speaker.speakerOpeningHeightCM;
+        double goalHeightCM = Constants.GamePieces.Speaker.speakerAprilTagHeightCM + x;
+        double speakerOpeningHeightCM = Constants.GamePieces.Speaker.speakerOpeningHeightCM;
 
         double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
         double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);

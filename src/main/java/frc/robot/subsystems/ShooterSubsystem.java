@@ -44,10 +44,10 @@ public class ShooterSubsystem extends LogSubsystem {
         leftVelocity = new VelocityVoltage(0);
 
         var slot0Configs = new Slot0Configs();
-        slot0Configs.kV = Constants.Shooter.ShooterControl.kV;
-        slot0Configs.kP = Constants.Shooter.ShooterControl.kP;
-        slot0Configs.kI = Constants.Shooter.ShooterControl.kI;
-        slot0Configs.kD = Constants.Shooter.ShooterControl.kD;
+        slot0Configs.kV = Constants.Shooter.FlywheelControl.kV;
+        slot0Configs.kP = Constants.Shooter.FlywheelControl.kP;
+        slot0Configs.kI = Constants.Shooter.FlywheelControl.kI;
+        slot0Configs.kD = Constants.Shooter.FlywheelControl.kD;
 
         rightConfiguration = new TalonFXConfiguration();
         leftConfiguration = new TalonFXConfiguration();

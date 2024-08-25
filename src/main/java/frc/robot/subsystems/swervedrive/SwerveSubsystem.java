@@ -7,7 +7,9 @@ package frc.robot.subsystems.swervedrive;
 import java.io.File;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+import java.util.Optional;
 
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
@@ -44,10 +46,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
-import frc.robot.Constants.AutonConstants;
 import frc.robot.LimelightHelpers;
 import frc.robot.Robot;
 import frc.robot.subsystems.PhotonVisionSubsystem;
+import frc.robot.subsystems.PhotonVisionSubsystem.Cameras;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -63,9 +65,7 @@ public class SwerveSubsystem extends LogSubsystem {
   private final Pigeon2 gyro = new Pigeon2(Constants.Mapping.Pigeon2.gyro);
   private final PhotonVisionSubsystem vision = new PhotonVisionSubsystem();
   
-  
   private double modifier = 1.0;
-  private boolean fieldRelative = true;
   private boolean resetHeading = false;
   public DriveMode driveMode = DriveMode.TELEOP;
 
@@ -75,18 +75,18 @@ public class SwerveSubsystem extends LogSubsystem {
   public double maximumSpeed = Units.feetToMeters(15.1);
 
   private static final LoggedTunableNumber kAngleP = new LoggedTunableNumber("Swerve/Align/kAngleP",
-      Constants.Config.Drive.AngleControl.kP);
+      Constants.Swerve.AngleControl.kP);
   private static final LoggedTunableNumber kAngleI = new LoggedTunableNumber("Swerve/Align/kAngleI",
-      Constants.Config.Drive.AngleControl.kI);
+      Constants.Swerve.AngleControl.kI);
   private static final LoggedTunableNumber kAngleD = new LoggedTunableNumber("Swerve/Align/kAngleD",
-      Constants.Config.Drive.AngleControl.kD);
+      Constants.Swerve.AngleControl.kD);
 
   private static final LoggedTunableNumber kTranslationP = new LoggedTunableNumber("Swerve/Align/kTranslationP",
-      Constants.Config.Drive.TranslationControl.kP);
+      Constants.Swerve.TranslationControl.kP);
   private static final LoggedTunableNumber kTranslationI = new LoggedTunableNumber("Swerve/Align/kTranslationI",
-      Constants.Config.Drive.TranslationControl.kI);
+      Constants.Swerve.TranslationControl.kI);
   private static final LoggedTunableNumber kTranslationD = new LoggedTunableNumber("Swerve/Align/kTranslationD",
-      Constants.Config.Drive.TranslationControl.kD);
+      Constants.Swerve.TranslationControl.kD);
 
   private final PIDController angle_controller = new PIDController(kAngleP.get(),
       kAngleI.get(), kAngleD.get());
@@ -103,37 +103,28 @@ public class SwerveSubsystem extends LogSubsystem {
     NOTE
   }
 
-  // Initialize SwerveDrive with file directory
   public SwerveSubsystem(File directory) {
     double angleConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(12.8);
     double driveConversionFactor = SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4), 6.75);
 
-    // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary
-    // objects being created.
+    // Change Telemetry to reduce Shuffleboard vomit.
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     try {
-      swerveDrive = new SwerveParser(directory).createSwerveDrive(Constants.MAX_SPEED);
+      swerveDrive = new SwerveParser(directory).createSwerveDrive(Constants.Swerve.MAX_SPEED);
       // Alternative method if you don't want to supply the conversion factor via JSON files.
       // swerveDrive = new SwerveParser(directory).createSwerveDrive(Constants.MAX_SPEED, angleConversionFactor, driveConversionFactor);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
-    swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling
-                                                   // the robot via angle.
+    swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via angle.
     swerveDrive.setCosineCompensator(!SwerveDriveTelemetry.isSimulation); // Disables cosine compensation for
                                                                           // simulations since it causes discrepancies
                                                                           // not seen in real life.
     setupPathPlanner();
   }
 
-  /**
-   * Construct the swerve drive.
-   *
-   * @param driveCfg      SwerveDriveConfiguration for the swerve.
-   * @param controllerCfg Swerve Controller.
-   */
   public SwerveSubsystem(SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg) {
-    swerveDrive = new SwerveDrive(driveCfg, controllerCfg, Constants.MAX_SPEED);
+    swerveDrive = new SwerveDrive(driveCfg, controllerCfg, Constants.Swerve.MAX_SPEED);
   }
 
   /**
@@ -146,9 +137,9 @@ public class SwerveSubsystem extends LogSubsystem {
         this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
         this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
         new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-            AutonConstants.TRANSLATION_PID,
+            Constants.Swerve.Auton.TRANSLATION_PID,
             // Translation PID constants
-            AutonConstants.ANGLE_PID,
+            Constants.Swerve.Auton.ANGLE_PID,
             // Rotation PID constants
             4.5,
             // Max module speed, in m/s
@@ -169,23 +160,18 @@ public class SwerveSubsystem extends LogSubsystem {
     );
   }
 
-  public double getDistanceToSpeaker() {
-    int allianceAprilTag = DriverStation.getAlliance().get() == Alliance.Blue ? 7 : 4;
-    // Taken from PhotonUtils.getDistanceToPose
-    Pose3d speakerAprilTagPose = aprilTagFieldLayout.getTagPose(allianceAprilTag).get();
-    return getPose().getTranslation().getDistance(speakerAprilTagPose.toPose2d().getTranslation());
-  }
-
-  /**
-   * Add a fake vision reading for testing purposes.
-   */
   public void addFakeVisionReading() {
     swerveDrive.addVisionMeasurement(new Pose2d(3, 3, Rotation2d.fromDegrees(65)), Timer.getFPGATimestamp());
   }
 
+  public double getDistanceToSpeaker() {
+    int allianceAprilTag = DriverStation.getAlliance().get() == Alliance.Blue ? 7 : 4;
+    Pose3d speakerAprilTagPose = aprilTagFieldLayout.getTagPose(allianceAprilTag).get();
+    return getPose().getTranslation().getDistance(speakerAprilTagPose.toPose2d().getTranslation());
+  }
+
   public Rotation2d getSpeakerYaw() {
     int allianceAprilTag = DriverStation.getAlliance().get() == Alliance.Blue ? 7 : 4;
-    // Taken from PhotonUtils.getYawToPose()
     Pose3d speakerAprilTagPose = aprilTagFieldLayout.getTagPose(allianceAprilTag).get();
     Translation2d relativeTrl = speakerAprilTagPose.toPose2d().relativeTo(getPose()).getTranslation();
     return new Rotation2d(relativeTrl.getX(), relativeTrl.getY()).plus(swerveDrive.getOdometryHeading());
@@ -193,14 +179,13 @@ public class SwerveSubsystem extends LogSubsystem {
 
   public Rotation2d getAmpYaw() {
     int allianceAprilTag = DriverStation.getAlliance().get() == Alliance.Blue ? 6 : 5;
-    // Taken from PhotonUtils.getYawToPose()
     Pose3d ampAprilTagPose = aprilTagFieldLayout.getTagPose(allianceAprilTag).get();
     Translation2d relativeTrl = ampAprilTagPose.toPose2d().relativeTo(getPose()).getTranslation();
     return new Rotation2d(relativeTrl.getX(), relativeTrl.getY()).plus(swerveDrive.getOdometryHeading());
   }
 
   public Rotation2d getNoteYaw(){
-    PhotonPipelineResult latestResult = vision.pieceCam.getLatestResult();
+    PhotonPipelineResult latestResult = vision.noteCam.getLatestResult();
     Rotation2d noteYaw;
     if (latestResult.hasTargets() && latestResult.getBestTarget() != null) {
       noteYaw = new Rotation2d(latestResult.getBestTarget().getYaw());
@@ -238,23 +223,14 @@ public class SwerveSubsystem extends LogSubsystem {
    * Update Pose Estimations from PhotonVision, should be called once every loop
    */
   public void updateVisionMeasurement() {
-    var estimatedPose1 = vision.getEstimatedGlobalPose(vision.cam1PoseEstimator);
-    var estimatedPose2 = vision.getEstimatedGlobalPose(vision.cam2PoseEstimator);
-    var pose1 = estimatedPose1.get();
-    var pose2 = estimatedPose2.get();
-
-    if (estimatedPose1.isPresent() || estimatedPose2.isPresent()) {
-      if (pose1.estimatedPose.toPose2d().getX() < 4) {
-        var estStdDevs = vision.getEstimationStdDevs(pose1.estimatedPose.toPose2d(), vision.cam1PoseEstimator, vision.poseCam1);
-        swerveDrive.addVisionMeasurement(pose1.estimatedPose.toPose2d(), pose1.timestampSeconds, estStdDevs);
-      }
-
-      if (pose2.estimatedPose.toPose2d().getX() < 4) {
-        var estStdDevs = vision.getEstimationStdDevs(pose2.estimatedPose.toPose2d(), vision.cam2PoseEstimator, vision.poseCam2);
-        swerveDrive.addVisionMeasurement(pose2.estimatedPose.toPose2d(), pose2.timestampSeconds, estStdDevs);
+    for (Cameras camera : Cameras.values()) {
+      Optional<EstimatedRobotPose> estPose = vision.getEstimatedGlobalPose(camera);
+      if (estPose.isPresent()) {
+        EstimatedRobotPose pose = estPose.get();
+        var estStdDevs = vision.getEstimationStdDevs(camera);
+        swerveDrive.addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds, estStdDevs);
       }
     }
-
   }
 
   /**
@@ -445,6 +421,7 @@ public class SwerveSubsystem extends LogSubsystem {
       // Dont reset Heading Again
       resetHeading = false;
     }
+
     ChassisSpeeds desiredSpeeds = getTargetSpeeds(translationX.getAsDouble(), translationY.getAsDouble(),
                                           headingX, headingY);
     Translation2d translation = SwerveController.getTranslation2d(desiredSpeeds);
@@ -468,7 +445,6 @@ public class SwerveSubsystem extends LogSubsystem {
     ChassisSpeeds desiredSpeeds = getTargetSpeeds(translationX.getAsDouble(), translationY.getAsDouble(), 
                                                           headingX.getAsDouble(), headingY.getAsDouble());
     Translation2d translation = SwerveController.getTranslation2d(desiredSpeeds);
-    
     swerveDrive.drive(SwerveMath.scaleTranslation(translation, modifier),
                             desiredSpeeds.omegaRadiansPerSecond * modifier,
                             fieldRelative, false);
@@ -632,7 +608,7 @@ public class SwerveSubsystem extends LogSubsystem {
   @Override
   public void periodic() {
     // Updates Photonvision Pose Estimation Measurements every loop
-    if (!Robot.isSimulation()) {
+    if (Robot.isReal()) {
       updateVisionMeasurement();
     }
 
@@ -766,7 +742,7 @@ public class SwerveSubsystem extends LogSubsystem {
         headingX,
         headingY,
         getHeading().getRadians(),
-        Constants.MAX_SPEED);
+        Constants.Swerve.MAX_SPEED);
   }
 
   /**
@@ -785,7 +761,7 @@ public class SwerveSubsystem extends LogSubsystem {
         scaledInputs.getY(),
         angle.getRadians(),
         getHeading().getRadians(),
-        Constants.MAX_SPEED);
+        Constants.Swerve.MAX_SPEED);
   }
 
   public ChassisSpeeds getFieldVelocity() {

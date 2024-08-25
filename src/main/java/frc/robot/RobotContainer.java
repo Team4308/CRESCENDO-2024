@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.Controller;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.PivotCommand;
 import frc.robot.commands.ShooterCommand;
@@ -98,10 +98,10 @@ public class RobotContainer {
         new PivotCommand(m_pivotSubsystem, () -> m_pivotSubsystem.autoAlignShooter()));
     NamedCommands.registerCommand("BeambreakCommand", new BeambreakCommand(() -> m_indexSystem.getBeambreak()));
     NamedCommands.registerCommand("SubwooferAngle",
-        new PivotCommand(m_pivotSubsystem, () -> Constants.GamePieces.speaker.angle));
+        new PivotCommand(m_pivotSubsystem, () -> Constants.GamePieces.Speaker.angle));
     NamedCommands.registerCommand("SubwooferSideAngle", new PivotCommand(m_pivotSubsystem, () -> 60.0));
     NamedCommands.registerCommand("AmpAngle",
-        new PivotCommand(m_pivotSubsystem, () -> Constants.GamePieces.amp.angleToshoot));
+        new PivotCommand(m_pivotSubsystem, () -> Constants.GamePieces.Amp.angleToshoot));
     
     // Command Instantiations
     intakeCommand = new IntakeCommand(m_intakeSubsystem, () -> getIntakeControl());
@@ -129,13 +129,13 @@ public class RobotContainer {
     configureBindings();
 
     Command driveAngularVelocity = drivebase.driveCommand(
-        () -> -MathUtil.applyDeadband(driver.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-        () -> -MathUtil.applyDeadband(driver.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-        () -> -driver.getRightX());
+        () -> MathUtil.applyDeadband(driver.getLeftY(), Controller.Driver.LEFT_Y_DEADBAND),
+        () -> MathUtil.applyDeadband(driver.getLeftX(), Controller.Driver.LEFT_X_DEADBAND),
+        () -> driver.getRightX());
     
     Command drivePresetAdvanced = drivebase.drivePresetAdvancedCommand(
-        () -> MathUtil.applyDeadband(driver.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-        () -> MathUtil.applyDeadband(driver.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+        () -> MathUtil.applyDeadband(driver.getLeftX(), Controller.Driver.LEFT_X_DEADBAND),
+        () -> MathUtil.applyDeadband(driver.getLeftY(), Controller.Driver.LEFT_Y_DEADBAND),
         () -> driver.getRightX(),
         () -> driver.getRightY(),
               driver.getYButtonPressed(), driver.getAButtonPressed(), 
@@ -146,20 +146,19 @@ public class RobotContainer {
 
   private void configureBindings() {
     driver.Start.onTrue(Commands.runOnce(drivebase::zeroGyro));
-    driver.PovUp.onTrue(drivebase.setModifierCommand(0.5))
+    driver.Left.onTrue(drivebase.setModifierCommand(0.5))
                 .onFalse(drivebase.setModifierCommand(1.0));
-    driver.PovRight.onTrue(drivebase.changeDriveMode(DriveMode.NOTE));
-    driver.PovDown.onTrue(drivebase.changeDriveMode(DriveMode.ROBOT_RELATIVE));
-    driver.PovLeft.onTrue(drivebase.changeDriveMode(DriveMode.ABSOLUTE));
-    driver.PovUpRight.onTrue(drivebase.changeDriveMode(DriveMode.TELEOP));
-    driver.LB.onTrue(drivebase.changeDriveMode(DriveMode.SPEAKER)); 
-    driver.RB.onTrue(drivebase.changeDriveMode(DriveMode.AMP));
+    driver.Down.onTrue(drivebase.changeDriveMode(DriveMode.ROBOT_RELATIVE));
+    driver.Up.onTrue(drivebase.changeDriveMode(DriveMode.ABSOLUTE));
+    driver.LB.onTrue(drivebase.changeDriveMode(DriveMode.NOTE)); 
+    driver.RB.onTrue(drivebase.changeDriveMode(DriveMode.TELEOP));
+    driver.LeftTrigger.onTrue(drivebase.changeDriveMode(DriveMode.AMP));
+    driver.RightTrigger.onTrue(drivebase.changeDriveMode(DriveMode.SPEAKER));
 
     // Auto Align Shooter + Rotate to Speaker
     operator.X.whileTrue(new PivotCommand(m_pivotSubsystem, () -> m_pivotSubsystem.autoAlignShooter()));
     operator.X.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS));
     operator.X.onTrue(m_pivotSubsystem.setShooterAutonCommand());
-    operator.X.onTrue(drivebase.changeDriveMode(DriveMode.SPEAKER));
 
     // Climb
     operator.RB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> 1.0));
@@ -168,11 +167,11 @@ public class RobotContainer {
     // Shoot In Amp 
     operator.B.onTrue(m_pivotSubsystem.setShooterAutonCommand());
     operator.B.onTrue(m_shooterSubsystem.changeAmpTopMultiplierCommand());
-    operator.B.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.GamePieces.amp.speedToShoot));
-    operator.B.whileTrue(new PivotCommand(m_pivotSubsystem, () -> Constants.GamePieces.amp.angleToshoot));
+    operator.B.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.GamePieces.Amp.speedToShoot));
+    operator.B.whileTrue(new PivotCommand(m_pivotSubsystem, () -> Constants.GamePieces.Amp.angleToshoot));
 
     // Shoot At Subwoofer
-    operator.A.whileTrue(new PivotCommand(m_pivotSubsystem, () -> Constants.GamePieces.speaker.angle));
+    operator.A.whileTrue(new PivotCommand(m_pivotSubsystem, () -> Constants.GamePieces.Speaker.angle));
     operator.A.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS));
 
     // operator.Y.whileTrue(new PivotCommand(m_pivotSubsystem, () -> m_pivotSubsystem.autoAlignShooter()));
@@ -185,10 +184,10 @@ public class RobotContainer {
 
   public double getIndexControl() {
     double leftTrigger = DoubleUtils.normalize(-operator.getLeftTrigger());
-    leftTrigger = JoystickHelper.SimpleAxialDeadzone(leftTrigger, Constants.Input.kTriggerDeadband);
+    leftTrigger = JoystickHelper.SimpleAxialDeadzone(leftTrigger, Controller.Operator.TRIGGER_DEADBAND);
 
     double leftJoystick = DoubleUtils.normalize(-operator.getLeftY());
-    leftJoystick = JoystickHelper.SimpleAxialDeadzone(leftJoystick, Constants.Input.kJoystickDeadband);
+    leftJoystick = JoystickHelper.SimpleAxialDeadzone(leftJoystick, Controller.Operator.JOYSTICK_DEADBAND);
 
     if (m_indexSystem.getBeambreak() == false) {
       return leftTrigger;
@@ -199,7 +198,7 @@ public class RobotContainer {
 
   public double getIntakeControl() {
     double leftJoystick = DoubleUtils.normalize(-operator.getLeftY());
-    leftJoystick = JoystickHelper.SimpleAxialDeadzone(leftJoystick, Constants.Input.kJoystickDeadband);
+    leftJoystick = JoystickHelper.SimpleAxialDeadzone(leftJoystick, Controller.Operator.JOYSTICK_DEADBAND);
 
     if (m_indexSystem.getBeambreak() == true) {
       return leftJoystick;
@@ -210,7 +209,7 @@ public class RobotContainer {
   public double getPivotControl() {
     if (m_pivotSubsystem.getShooterAutonTriggered() == false) {
       double newRightJoystickValue = DoubleUtils.normalize(-operator.getRightY());
-      newRightJoystickValue = JoystickHelper.SimpleAxialDeadzone(newRightJoystickValue, Constants.Input.kJoystickDeadband);
+      newRightJoystickValue = JoystickHelper.SimpleAxialDeadzone(newRightJoystickValue, Controller.Operator.JOYSTICK_DEADBAND);
       double newShooterDegree = m_pivotSubsystem.currentShooterDegree + newRightJoystickValue;
       m_pivotSubsystem.currentShooterDegree = DoubleUtils.clamp(newShooterDegree, Constants.Shooter.shooterStartDegree,
           Constants.Shooter.shooterEndDegree);
@@ -220,7 +219,7 @@ public class RobotContainer {
 
   public double getShooterControl() {
     double right_trigger = DoubleUtils.normalize(operator.getRightTrigger());
-    right_trigger = JoystickHelper.SimpleAxialDeadzone(right_trigger, Constants.Input.kTriggerDeadband);
+    right_trigger = JoystickHelper.SimpleAxialDeadzone(right_trigger, Controller.Operator.TRIGGER_DEADBAND);
 
     double control = right_trigger * Constants.Shooter.shooterRPS; // converting into RPS
     return control;

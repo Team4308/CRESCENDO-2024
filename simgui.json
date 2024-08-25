@@ -80,6 +80,7 @@
       "/SmartDashboard/Pigeon 2 (v6) [13]": "Gyro",
       "/SmartDashboard/Pigeon 2 [13]": "Gyro",
       "/SmartDashboard/SendableChooser[0]": "String Chooser",
+      "/SmartDashboard/Vision/Field": "Field2d",
       "/SmartDashboard/VisionSystemSim-main/Sim Field": "Field2d",
       "/SmartDashboard/navX-Sensor[1]": "Gyro",
       "/SmartDashboard/navX-Sensor[4]": "Gyro"
@@ -111,6 +112,14 @@
         "window": {
           "visible": true
         }
+      },
+      "/SmartDashboard/Vision/Field": {
+        "bottom": 1476,
+        "height": 8.210550308227539,
+        "left": 150,
+        "right": 2961,
+        "top": 79,
+        "width": 16.541748046875
       }
     }
   },
@@ -118,6 +127,9 @@
     "transitory": {
       "SmartDashboard": {
         "Field": {
+          "double[]##v_/SmartDashboard/Field/XModules": {
+            "open": true
+          },
           "open": true
         },
         "TunableNumbers": {
@@ -127,6 +139,18 @@
         "swerve": {
           "open": true
         }
+      },
+      "photonvision": {
+        "Ardeercam OV9782": {
+          "open": true
+        },
+        "Arduckcam OV9281": {
+          "open": true
+        },
+        "Argoosecam OV9281": {
+          "open": true
+        },
+        "open": true
       }
     }
   },
