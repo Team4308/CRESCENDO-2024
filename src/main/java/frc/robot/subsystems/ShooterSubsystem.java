@@ -80,8 +80,8 @@ public class ShooterSubsystem extends LogSubsystem {
         bottomMultiplier = newValue;
     }
 
-    public Command changeAmpTopMultiplierCommand() {
-        return this.startEnd(() -> changeTopMultiplier(Constants.Shooter.shootInAmpMultiplier), () -> changeTopMultiplier(1.0));
+    public Command changeAmpTopMultiplierCommand(double value) {
+        return this.runOnce(() -> changeTopMultiplier(value));
     }
 
     /**

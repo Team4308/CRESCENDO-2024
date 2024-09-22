@@ -178,8 +178,8 @@ public class PivotSubsystem extends LogSubsystem {
         return shooterAutonTriggered;
     }
 
-    public Command setShooterAutonCommand() {
-        return this.startEnd(() -> setShooterAutonTriggered(true), () -> setShooterAutonTriggered(false));
+    public Command setShooterAutonCommand(boolean value) {
+        return this.runOnce(() -> setShooterAutonTriggered(value));
     }
 
     @Override

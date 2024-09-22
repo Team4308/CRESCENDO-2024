@@ -128,7 +128,7 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
 
-    Command driveAngularVelocity = drivebase.driveCommand(
+    Command driveAngularVelocity = drivebase.driveVelocityCommand(
         () -> MathUtil.applyDeadband(driver.getLeftY(), Controller.Driver.LEFT_Y_DEADBAND),
         () -> MathUtil.applyDeadband(driver.getLeftX(), Controller.Driver.LEFT_X_DEADBAND),
         () -> driver.getRightX());
@@ -151,22 +151,25 @@ public class RobotContainer {
     driver.Down.onTrue(drivebase.changeDriveMode(DriveMode.ROBOT_RELATIVE));
     driver.Up.onTrue(drivebase.changeDriveMode(DriveMode.ABSOLUTE));
     driver.LB.onTrue(drivebase.changeDriveMode(DriveMode.NOTE)); 
-    driver.RB.onTrue(drivebase.changeDriveMode(DriveMode.TELEOP));
+    driver.RB.onTrue(drivebase.changeDriveMode(DriveMode.VELOCITY_ADV));
     driver.LeftTrigger.onTrue(drivebase.changeDriveMode(DriveMode.AMP));
     driver.RightTrigger.onTrue(drivebase.changeDriveMode(DriveMode.SPEAKER));
 
     // Auto Align Shooter + Rotate to Speaker
     operator.X.whileTrue(new PivotCommand(m_pivotSubsystem, () -> m_pivotSubsystem.autoAlignShooter()));
     operator.X.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS));
-    operator.X.onTrue(m_pivotSubsystem.setShooterAutonCommand());
+    operator.X.onTrue(m_pivotSubsystem.setShooterAutonCommand(true))
+              .onFalse(m_pivotSubsystem.setShooterAutonCommand(false));
 
     // Climb
     operator.RB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> 1.0));
     operator.LB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> -1.0));
 
     // Shoot In Amp 
-    operator.B.onTrue(m_pivotSubsystem.setShooterAutonCommand());
-    operator.B.onTrue(m_shooterSubsystem.changeAmpTopMultiplierCommand());
+    operator.B.onTrue(m_pivotSubsystem.setShooterAutonCommand(true))
+              .onFalse(m_pivotSubsystem.setShooterAutonCommand(false));
+    operator.B.onTrue(m_shooterSubsystem.changeAmpTopMultiplierCommand(Constants.Shooter.shootInAmpMultiplier))
+              .onFalse(m_shooterSubsystem.changeAmpTopMultiplierCommand(1.0));
     operator.B.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.GamePieces.Amp.speedToShoot));
     operator.B.whileTrue(new PivotCommand(m_pivotSubsystem, () -> Constants.GamePieces.Amp.angleToshoot));
 
