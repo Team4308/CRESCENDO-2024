@@ -310,7 +310,7 @@ public class SwerveSubsystem extends LogSubsystem {
    * @return Drive command.
    */
 
-  public Command drivePresetAdvancedCommand(DoubleSupplier translationX, DoubleSupplier translationY,
+  public Command drivePresetsCommand(DoubleSupplier translationX, DoubleSupplier translationY,
       DoubleSupplier rotationX, DoubleSupplier rotationY, BooleanSupplier lookAway, 
       BooleanSupplier lookTowards, BooleanSupplier lookLeft, BooleanSupplier lookRight) {
     return run(() -> {
@@ -411,7 +411,7 @@ public class SwerveSubsystem extends LogSubsystem {
   public void alignToSpeaker(DoubleSupplier translationX, DoubleSupplier translationY) {
     SwerveController controller = swerveDrive.getSwerveController();
     double rotation =  controller.headingCalculate(getHeading().getRadians(), getSpeakerYaw().getRadians());
-    if (getSpeakerYaw().minus(getHeading()).getDegrees() <= 1.0) {
+    if (Math.abs(getSpeakerYaw().minus(getHeading()).getDegrees()) <= 1.0) {
       rotation = 0;
     }
     swerveDrive.drive(SwerveMath.scaleTranslation(new Translation2d(
@@ -424,7 +424,7 @@ public class SwerveSubsystem extends LogSubsystem {
   public void alignToAmp(DoubleSupplier translationX, DoubleSupplier translationY) {
     SwerveController controller = swerveDrive.getSwerveController();
     double rotation =  controller.headingCalculate(getHeading().getRadians(), getAmpYaw().getRadians());
-    if (getAmpYaw().minus(getHeading()).getDegrees() <= 1.0) {
+    if (Math.abs(getAmpYaw().minus(getHeading()).getDegrees()) <= 1.0) {
       rotation = 0;
     }
     swerveDrive.drive(SwerveMath.scaleTranslation(new Translation2d(
@@ -437,7 +437,7 @@ public class SwerveSubsystem extends LogSubsystem {
   public void alignToNote(DoubleSupplier translationX, DoubleSupplier translationY) {
     SwerveController controller = swerveDrive.getSwerveController();
     double rotation =  controller.headingCalculate(getHeading().getRadians(), getNoteYaw().getRadians());
-    if (getNoteYaw().minus(getHeading()).getDegrees() <= 1.0) {
+    if (Math.abs(getNoteYaw().minus(getHeading()).getDegrees()) <= 1.0) {
       rotation = 0;
     }
     swerveDrive.drive(SwerveMath.scaleTranslation(new Translation2d(

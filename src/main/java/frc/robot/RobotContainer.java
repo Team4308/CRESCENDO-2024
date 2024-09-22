@@ -131,9 +131,9 @@ public class RobotContainer {
     Command driveAngularVelocity = drivebase.driveVelocityCommand(
         () -> MathUtil.applyDeadband(driver.getLeftY(), Controller.Driver.LEFT_Y_DEADBAND),
         () -> MathUtil.applyDeadband(driver.getLeftX(), Controller.Driver.LEFT_X_DEADBAND),
-        () -> driver.getRightX());
+        () -> MathUtil.applyDeadband(driver.getRightX(), Controller.Driver.RIGHT_X_DEADBAND));
     
-    Command drivePresetAdvanced = drivebase.drivePresetAdvancedCommand(
+    Command drivePresetAdvanced = drivebase.drivePresetsCommand(
         () -> MathUtil.applyDeadband(driver.getLeftX(), Controller.Driver.LEFT_X_DEADBAND),
         () -> MathUtil.applyDeadband(driver.getLeftY(), Controller.Driver.LEFT_Y_DEADBAND),
         () -> MathUtil.applyDeadband(driver.getRightX(), Controller.Driver.RIGHT_X_DEADBAND),
@@ -150,8 +150,8 @@ public class RobotContainer {
                 .onFalse(drivebase.setModifierCommand(1.0));
     driver.RightTrigger.onTrue(drivebase.changeDriveMode(DriveMode.VELOCITY_ADV));
     driver.LeftTrigger.onTrue(drivebase.changeDriveMode(DriveMode.ABSOLUTE));
-    driver.LB.onTrue(drivebase.changeDriveMode(DriveMode.AMP));
     driver.RB.onTrue(drivebase.changeDriveMode(DriveMode.SPEAKER));
+    driver.LB.onTrue(drivebase.changeDriveMode(DriveMode.AMP));
 
     // Auto Align Shooter + Rotate to Speaker
     operator.X.whileTrue(new PivotCommand(m_pivotSubsystem, () -> m_pivotSubsystem.autoAlignShooter()));
