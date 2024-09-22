@@ -44,6 +44,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
+import frc.robot.Robot;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -57,7 +58,7 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 public class SwerveSubsystem extends LogSubsystem {
   private final SwerveDrive swerveDrive;
   private final Pigeon2 gyro = new Pigeon2(Constants.Mapping.Pigeon2.gyro);
-  private final boolean visionDriveTest = false;
+  private final boolean visionDriveTest = true;
   
   private Vision vision;
   private double modifier = 1.0;
@@ -205,10 +206,12 @@ public class SwerveSubsystem extends LogSubsystem {
   }
 
   public Rotation2d getNoteYaw(){
-    PhotonPipelineResult latestResult = vision.getNoteCamLatestResult();
     Rotation2d noteYaw = new Rotation2d(0);
-    if (latestResult.hasTargets() && latestResult.getBestTarget() != null) {
+    if (Robot.isReal()) {
+      PhotonPipelineResult latestResult = vision.getNoteCamLatestResult();
+      if (latestResult.hasTargets() && latestResult.getBestTarget() != null) {
       noteYaw = new Rotation2d(latestResult.getBestTarget().getYaw());
+      }
     }
     return noteYaw.plus(swerveDrive.getOdometryHeading());
   }

@@ -165,7 +165,6 @@ public class Vision {
         // Optional<EstimatedRobotPose> poseEst = camera.poseEstimator.update();
 
         // Uncomment to enable outputting of vision targets in simulation
-
         // poseEst.ifPresent(estimatedRobotPose -> {
         //     field2d.getObject(camera + "/ Estimated Pose").setPose(estimatedRobotPose.estimatedPose.toPose2d());
         // });

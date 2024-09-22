@@ -136,8 +136,8 @@ public class RobotContainer {
     Command drivePresetAdvanced = drivebase.drivePresetAdvancedCommand(
         () -> MathUtil.applyDeadband(driver.getLeftX(), Controller.Driver.LEFT_X_DEADBAND),
         () -> MathUtil.applyDeadband(driver.getLeftY(), Controller.Driver.LEFT_Y_DEADBAND),
-        () -> driver.getRightX(),
-        () -> driver.getRightY(),
+        () -> MathUtil.applyDeadband(driver.getRightX(), Controller.Driver.RIGHT_X_DEADBAND),
+        () -> MathUtil.applyDeadband(driver.getRightY(), Controller.Driver.RIGHT_Y_DEADBAND),
               driver.getYButtonPressed(), driver.getAButtonPressed(), 
               driver.getXButtonPressed(), driver.getBButtonPressed());
 
@@ -145,15 +145,13 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    driver.Start.onTrue(Commands.runOnce(drivebase::zeroGyro));
+    driver.Up.onTrue(Commands.runOnce(drivebase::zeroGyro));
     driver.Left.onTrue(drivebase.setModifierCommand(0.5))
                 .onFalse(drivebase.setModifierCommand(1.0));
-    driver.Down.onTrue(drivebase.changeDriveMode(DriveMode.ROBOT_RELATIVE));
-    driver.Up.onTrue(drivebase.changeDriveMode(DriveMode.ABSOLUTE));
-    driver.LB.onTrue(drivebase.changeDriveMode(DriveMode.NOTE)); 
-    driver.RB.onTrue(drivebase.changeDriveMode(DriveMode.VELOCITY_ADV));
-    driver.LeftTrigger.onTrue(drivebase.changeDriveMode(DriveMode.AMP));
-    driver.RightTrigger.onTrue(drivebase.changeDriveMode(DriveMode.SPEAKER));
+    driver.RightTrigger.onTrue(drivebase.changeDriveMode(DriveMode.VELOCITY_ADV));
+    driver.LeftTrigger.onTrue(drivebase.changeDriveMode(DriveMode.ABSOLUTE));
+    driver.LB.onTrue(drivebase.changeDriveMode(DriveMode.AMP));
+    driver.RB.onTrue(drivebase.changeDriveMode(DriveMode.SPEAKER));
 
     // Auto Align Shooter + Rotate to Speaker
     operator.X.whileTrue(new PivotCommand(m_pivotSubsystem, () -> m_pivotSubsystem.autoAlignShooter()));
