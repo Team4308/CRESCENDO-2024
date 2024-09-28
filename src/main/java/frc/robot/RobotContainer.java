@@ -123,8 +123,6 @@ public class RobotContainer {
 
     SmartDashboard.putData("Auto Chooser", autonomousChooser);
 
-    drivebase.setSpeaker();
-
     // Configure the trigger bindings
     configureBindings();
 
@@ -146,12 +144,14 @@ public class RobotContainer {
 
   private void configureBindings() {
     driver.Up.onTrue(Commands.runOnce(drivebase::zeroGyro));
-    driver.Left.onTrue(drivebase.setModifierCommand(0.5))
-                .onFalse(drivebase.setModifierCommand(1.0));
-    driver.RightTrigger.onTrue(drivebase.changeDriveMode(DriveMode.VELOCITY_ADV));
-    driver.LeftTrigger.onTrue(drivebase.changeDriveMode(DriveMode.ABSOLUTE));
-    driver.RB.onTrue(drivebase.changeDriveMode(DriveMode.SPEAKER));
-    driver.LB.onTrue(drivebase.changeDriveMode(DriveMode.AMP));
+    driver.LeftTrigger.onTrue(drivebase.changeDriveMode(DriveMode.ROBOT_RELATIVE))
+                      .onFalse(drivebase.changeDriveMode(DriveMode.VELOCITY_ADV));
+
+    driver.RB.onTrue(drivebase.changeDriveMode(DriveMode.SPEAKER))
+             .onFalse(drivebase.changeDriveMode(DriveMode.VELOCITY_ADV));
+
+    driver.LB.onTrue(drivebase.changeDriveMode(DriveMode.AMP))
+             .onFalse(drivebase.changeDriveMode(DriveMode.VELOCITY_ADV));
 
     // Auto Align Shooter + Rotate to Speaker
     operator.X.whileTrue(new PivotCommand(m_pivotSubsystem, () -> m_pivotSubsystem.autoAlignShooter()));
@@ -242,7 +242,6 @@ public class RobotContainer {
   }
 
   public void disabledActions() {
-    drivebase.setSpeaker();
   }
 
   // Gets rid of the yellow errors in Robot.java

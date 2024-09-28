@@ -15,18 +15,16 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import ca.team4308.absolutelib.control.JoystickHelper;
-import ca.team4308.absolutelib.math.DoubleUtils;
 import ca.team4308.absolutelib.math.Vector2;
 import ca.team4308.absolutelib.wrapper.LogSubsystem;
 import ca.team4308.absolutelib.wrapper.LoggedTunableNumber;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -43,7 +41,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
-import frc.robot.LimelightHelpers;
 import frc.robot.Robot;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
@@ -84,10 +81,8 @@ public class SwerveSubsystem extends LogSubsystem {
   private static final LoggedTunableNumber kTranslationD = new LoggedTunableNumber("Swerve/Align/kTranslationD",
       Constants.Swerve.TranslationControl.kD);
 
-  private final PIDController angle_controller = new PIDController(kAngleP.get(),
-      kAngleI.get(), kAngleD.get());
-  private final PIDController translation_controller = new PIDController(kTranslationP.get(),
-      kTranslationI.get(), kTranslationD.get());
+  private PIDConstants ANGLE_CONTROLLER;
+  private PIDConstants TRANSLATION_CONTROLLER;
 
   public enum DriveMode {
     /** Driving with input from driver joysticks. (Default) */
@@ -122,6 +117,9 @@ public class SwerveSubsystem extends LogSubsystem {
       // Stop the odometry thread if we are using vision that way we can synchronize updates better.
       swerveDrive.stopOdometryThread();
     }
+    ANGLE_CONTROLLER = new PIDConstants(kAngleP.get(), kAngleI.get(), kAngleD.get());
+    TRANSLATION_CONTROLLER = new PIDConstants(kTranslationP.get(), kTranslationI.get(), kTranslationD.get());
+    
     setupPathPlanner();
   }
 
@@ -144,12 +142,12 @@ public class SwerveSubsystem extends LogSubsystem {
 
     if (DriverStation.isEnabled()) {
       LoggedTunableNumber.ifChanged(
-          hashCode(), () -> angle_controller.setPID(kAngleP.get(), kAngleI.get(), kAngleD.get()), kAngleP, kAngleI,
-          kAngleD);
+          hashCode(), () -> ANGLE_CONTROLLER = new PIDConstants(kAngleP.get(), kAngleI.get(), kAngleD.get()),
+                                                                kAngleP, kAngleI, kAngleD);
       LoggedTunableNumber.ifChanged(
           hashCode(),
-          () -> translation_controller.setPID(kTranslationP.get(), kTranslationI.get(), kTranslationD.get()),
-          kTranslationP, kTranslationI, kTranslationD);
+          () -> TRANSLATION_CONTROLLER = new PIDConstants(kTranslationP.get(), kTranslationI.get(), kTranslationD.get()), 
+                                                          kTranslationP, kTranslationI, kTranslationD);
     }
   }
 
@@ -165,8 +163,8 @@ public class SwerveSubsystem extends LogSubsystem {
         this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
         this::setChassisSpeeds, // Drive the robot given ROBOT RELATIVE ChassisSpeeds
         new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-            Constants.Swerve.Auton.TRANSLATION_PID,
-            Constants.Swerve.Auton.ANGLE_PID,
+            TRANSLATION_CONTROLLER,
+            ANGLE_CONTROLLER,
             4.5,
             // Note: in m/s
             swerveDrive.swerveDriveConfiguration.getDriveBaseRadiusMeters(),
@@ -186,9 +184,15 @@ public class SwerveSubsystem extends LogSubsystem {
   }
 
   public double getDistanceToSpeaker() {
-    int allianceAprilTag = DriverStation.getAlliance().get() == Alliance.Blue ? 7 : 4;
-    Pose3d speakerAprilTagPose = aprilTagFieldLayout.getTagPose(allianceAprilTag).get();
-    return getPose().getTranslation().getDistance(speakerAprilTagPose.toPose2d().getTranslation());
+    Pose3d speakerCenterPose = new Pose3d();
+    if (DriverStation.getAlliance().get() == Alliance.Blue) {
+      speakerCenterPose = Constants.GamePieces.Speaker.kSpeakerCenterBlue;
+    } else {
+      speakerCenterPose = Constants.GamePieces.Speaker.kSpeakerCenterRed;
+    }
+    //int allianceAprilTag = DriverStation.getAlliance().get() == Alliance.Blue ? 7 : 4;
+    //Pose3d speakerAprilTagPose = aprilTagFieldLayout.getTagPose(allianceAprilTag).get();
+    return getPose().getTranslation().getDistance(speakerCenterPose.toPose2d().getTranslation());
   }
 
   public Rotation2d getSpeakerYaw() {
@@ -240,35 +244,6 @@ public class SwerveSubsystem extends LogSubsystem {
 
   public void addFakeVisionReading() {
     swerveDrive.addVisionMeasurement(new Pose2d(3, 3, Rotation2d.fromDegrees(65)), Timer.getFPGATimestamp());
-  }
-
-  // Limelight Methods
-
-  public double getOffsetTranslationLeftRight() {
-    return -DoubleUtils.clamp(translation_controller.calculate(LimelightHelpers.getTX(""), 0), -1, 1);
-  }
-
-  public double getOffsetAngleLeftRight() {
-    return -DoubleUtils.clamp(angle_controller.calculate(LimelightHelpers.getTX(""), 0), -1, 1);
-  }
-  
-  public void setSpeaker() {
-    if (DriverStation.getAlliance().isEmpty())
-      return;
-
-    if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
-      LimelightHelpers.setPipelineIndex("", 0);
-    } else {
-      LimelightHelpers.setPipelineIndex("", 2);
-    }
-  }
-
-  public void setAmp() {
-    if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
-      LimelightHelpers.setPipelineIndex("", 1);
-    } else {
-      LimelightHelpers.setPipelineIndex("", 3);
-    }
   }
 
   // Create a path following command using AutoBuilder. This will also trigger event markers
@@ -422,15 +397,13 @@ public class SwerveSubsystem extends LogSubsystem {
 
   // Drive method with heading aligned to the amp
   public void alignToAmp(DoubleSupplier translationX, DoubleSupplier translationY) {
-    SwerveController controller = swerveDrive.getSwerveController();
-    double rotation =  controller.headingCalculate(getHeading().getRadians(), getAmpYaw().getRadians());
-    if (Math.abs(getAmpYaw().minus(getHeading()).getDegrees()) <= 1.0) {
-      rotation = 0;
-    }
-    swerveDrive.drive(SwerveMath.scaleTranslation(new Translation2d(
-                      translationX.getAsDouble() * swerveDrive.getMaximumVelocity(),
-                      translationY.getAsDouble() * swerveDrive.getMaximumVelocity()), modifier),
-                      rotation,true, false);
+    ChassisSpeeds desiredSpeeds = getTargetSpeeds(translationX.getAsDouble(), translationY.getAsDouble(),
+                                                  -1, 0);
+    Translation2d translation = SwerveController.getTranslation2d(desiredSpeeds);
+
+    swerveDrive.drive(SwerveMath.scaleTranslation(translation, modifier),
+                        desiredSpeeds.omegaRadiansPerSecond,
+                        true,false);
   }
 
   // Drive method with heading aligned to a note

@@ -5,6 +5,7 @@ import com.pathplanner.lib.util.PIDConstants;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -45,21 +46,12 @@ public final class Constants {
   }
   
   public static class Vision {
-        // Rename in PhotonVision Dashboard
-        public static final String cam1Name = "Arduckcam OV9281";
-        public static final String cam2Name = "Argoosecam OV9281";
-        public static final String cam3Name = "Ardeercam OV9782";
-        // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
-        public static final Transform3d kRobotToCam1 =
-                new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
-        public static final Transform3d kRobotToCam2 =
-                new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
-
         // The layout of the AprilTags on the field
         public static final AprilTagFieldLayout kTagLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
 
         // The standard deviations of our vision estimated poses, which affect correction rate
         // (Fake values. Experiment and determine estimation noise on an actual robot.)
+        // NOT USED CURRENTLY
         // https://www.chiefdelphi.com/t/photonvision-finding-standard-deviations-for-swervedriveposeestimator/467802/2
         public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
         public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
@@ -171,6 +163,8 @@ public final class Constants {
   public static class GamePieces {
     public static class Speaker {
       public static final double speakerAprilTagHeightCM = 145.0975;
+      public static final Pose3d kSpeakerCenterBlue = new Pose3d(0.2167, 5.549, 2.12, new Rotation3d());
+      public static final Pose3d kSpeakerCenterRed = new Pose3d(16.3, 5.549, 2.12, new Rotation3d());
       // Retune for STEMLEY
       public static final double speakerOpeningHeightCM = 205;
       public static final double angle = 60.0;

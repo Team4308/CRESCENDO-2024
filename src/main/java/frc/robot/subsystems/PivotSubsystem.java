@@ -22,7 +22,8 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.Sendable;
-
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 
@@ -44,6 +45,7 @@ public class PivotSubsystem extends LogSubsystem {
     public static double x = 0.0;
     public static boolean shooterAutonTriggered = false;
     public double currentShooterDegree = Constants.Shooter.shooterStartDegree;
+    private Debouncer debouncer;
 
     private static final LoggedTunableNumber kP = 
         new LoggedTunableNumber("Pivot/Gains/kP", Constants.Shooter.AngleControl.kP);
@@ -72,6 +74,8 @@ public class PivotSubsystem extends LogSubsystem {
         limitSwitch1 = new DigitalInput(Constants.Mapping.Shooter.limitSwitch1);
         limitSwitch2 = new DigitalInput(Constants.Mapping.Shooter.limitSwitch2);
 
+        debouncer = new Debouncer(0.1, DebounceType.kBoth);
+
         motor.setNeutralMode(NeutralModeValue.Brake);
 
         pidController = new ProfiledPIDController(
@@ -92,7 +96,7 @@ public class PivotSubsystem extends LogSubsystem {
     }
 
     public double getMotorPosition() {
-        if (limitSwitch1.get()){
+        if (!limitSwitch1.get()){
             revEncoder.reset();
             offset = Constants.Shooter.encoderStartRevolutions;
         } else if (limitSwitch2.get()) {
@@ -107,13 +111,19 @@ public class PivotSubsystem extends LogSubsystem {
         wantedDegree = DoubleUtils.clamp(degree, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree);
 
         shooterDegree = DoubleUtils.mapRangeNew(getMotorPosition(), Constants.Shooter.encoderStartRevolutions, Constants.Shooter.encoderEndRevolutions, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree);
-
+        // This code is wrong, needs to be fixed
         motorOutput = -DoubleUtils.clamp(
             pidController.calculate(shooterDegree, wantedDegree)
             + feedforward.calculate(Math.toRadians(pidController.getSetpoint().position), 
                                     Math.toRadians(pidController.getSetpoint().velocity)) / 12, -1.0, 1.0);
 
         setMotorOutput(motorOutput);
+    }
+
+    public double alignShooterToSpeaker(double distanceToSpeaker) {
+        double speakerOpeningHeight = Constants.GamePieces.Speaker.kSpeakerCenterBlue.getZ();
+        double shooterAngle = Math.atan(speakerOpeningHeight/distanceToSpeaker)  * (180.0 / 3.14159);
+        return shooterAngle;
     }
 
     public Double autoAlignShooter() {
@@ -184,6 +194,7 @@ public class PivotSubsystem extends LogSubsystem {
 
     @Override
     public Sendable log() {
+        SmartDashboard.putBoolean("pivot/lowerLimitSwitch1", !limitSwitch1.get());
         SmartDashboard.putNumber("pivot/rawEncoderDegree", revEncoder.getDistance());
         SmartDashboard.putNumber("pivot/updatedEncoderDegree", getMotorPosition());
         SmartDashboard.putNumber("pivot/shooterDegree", shooterDegree);

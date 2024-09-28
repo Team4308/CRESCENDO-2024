@@ -50,16 +50,16 @@ public class Vision {
 
     enum PoseCameras {
         LEFT_CAM("Arduckcam OV9281",
-                new Rotation3d(0, Math.toRadians(-24.094), Math.toRadians(30)),
-                new Translation3d(Units.inchesToMeters(12.056),
-                        Units.inchesToMeters(10.981),
-                        Units.inchesToMeters(8.44)),
+                new Rotation3d(0, Math.toRadians(-28.125), Math.toRadians(150)),
+                new Translation3d(Units.inchesToMeters(-10.507),
+                        Units.inchesToMeters(12.344),
+                        Units.inchesToMeters(8.453)),
                 VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5, 0.5, 1)),
         RIGHT_CAM("Argoosecam OV9281",
-                new Rotation3d(0, Math.toRadians(-24.094), Math.toRadians(-30)),
-                new Translation3d(Units.inchesToMeters(12.056),
-                        Units.inchesToMeters(-10.981),
-                        Units.inchesToMeters(8.44)),
+                new Rotation3d(0, Math.toRadians(-28.125), Math.toRadians(210)),
+                new Translation3d(Units.inchesToMeters(-10.507),
+                        Units.inchesToMeters(-12.344),
+                        Units.inchesToMeters(8.453)),
                 VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5, 0.5, 1));
 
         
@@ -165,9 +165,9 @@ public class Vision {
         // Optional<EstimatedRobotPose> poseEst = camera.poseEstimator.update();
 
         // Uncomment to enable outputting of vision targets in simulation
-        // poseEst.ifPresent(estimatedRobotPose -> {
-        //     field2d.getObject(camera + "/ Estimated Pose").setPose(estimatedRobotPose.estimatedPose.toPose2d());
-        // });
+        poseEst.ifPresent(estimatedRobotPose -> {
+            field2d.getObject(camera + "/ Estimated Pose").setPose(estimatedRobotPose.estimatedPose.toPose2d());
+        });
         return poseEst;
     }
 
