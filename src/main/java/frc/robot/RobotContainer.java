@@ -19,11 +19,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.Controller;
 import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.PivotCommand;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.BeambreakCommand;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.IndexCommand;
+import frc.robot.commands.Pivot.ManualPivot;
+import frc.robot.commands.Pivot.ToAngle;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem.DriveMode;
 import frc.robot.subsystems.IntakeSystem;
@@ -46,7 +47,7 @@ public class RobotContainer {
 
   // Commands
   private final IntakeCommand intakeCommand;
-  private final PivotCommand pivotCommand;
+  private final ManualPivot manualPivotCommand;
   private final ShooterCommand shooterCommand;
   private final ClimbCommand climbCommand;
   private final IndexCommand indexCommand;
@@ -94,21 +95,23 @@ public class RobotContainer {
     // NamedCommands.registerCommand("SpeakerAlignFalse", Commands.runOnce(() ->
     // drivebase.alignToSpeaker(false)));
     NamedCommands.registerCommand("ResetGyro", Commands.runOnce(drivebase::zeroGyro));
-    NamedCommands.registerCommand("AutoAlignShooter",
-        new PivotCommand(m_pivotSubsystem, () -> m_pivotSubsystem.autoAlignShooter()));
-    NamedCommands.registerCommand("BeambreakCommand", new BeambreakCommand(() -> m_indexSystem.getBeambreak()));
-    NamedCommands.registerCommand("SubwooferAngle",
-        new PivotCommand(m_pivotSubsystem, () -> Constants.GamePieces.Speaker.angle));
-    NamedCommands.registerCommand("SubwooferSideAngle", new PivotCommand(m_pivotSubsystem, () -> 60.0));
-    NamedCommands.registerCommand("AmpAngle",
-        new PivotCommand(m_pivotSubsystem, () -> Constants.GamePieces.Amp.angleToshoot));
+    // NamedCommands.registerCommand("AutoAlignShooter",
+    //     new PivotCommand(m_pivotSubsystem, () -> m_pivotSubsystem.autoAlignShooter()));
+    // NamedCommands.registerCommand("BeambreakCommand", new BeambreakCommand(() -> m_indexSystem.getBeambreak()));
+    // NamedCommands.registerCommand("SubwooferAngle",
+    //     new PivotCommand(m_pivotSubsystem, () -> Constants.GamePieces.Speaker.angle));
+    // NamedCommands.registerCommand("SubwooferSideAngle", new PivotCommand(m_pivotSubsystem, () -> 60.0));
+    // NamedCommands.registerCommand("AmpAngle",
+    //     new PivotCommand(m_pivotSubsystem, () -> Constants.GamePieces.Amp.angleToshoot));
+    
+    // fix these commands later ***
     
     // Command Instantiations
     intakeCommand = new IntakeCommand(m_intakeSubsystem, () -> getIntakeControl());
     m_intakeSubsystem.setDefaultCommand(intakeCommand);
 
-    pivotCommand = new PivotCommand(m_pivotSubsystem, () -> getPivotControl());
-    m_pivotSubsystem.setDefaultCommand(pivotCommand);
+    manualPivotCommand = new ManualPivot(m_pivotSubsystem, () -> getPivotControl());
+    m_pivotSubsystem.setDefaultCommand(manualPivotCommand);
 
     shooterCommand = new ShooterCommand(m_shooterSubsystem, () -> getShooterControl());
     m_shooterSubsystem.setDefaultCommand(shooterCommand);
@@ -154,25 +157,25 @@ public class RobotContainer {
              .onFalse(drivebase.changeDriveMode(DriveMode.VELOCITY_ADV));
 
     // Auto Align Shooter + Rotate to Speaker
-    operator.X.whileTrue(new PivotCommand(m_pivotSubsystem, () -> m_pivotSubsystem.autoAlignShooter()));
+    operator.X.whileTrue(new ToAngle(m_pivotSubsystem, () -> m_pivotSubsystem.getShooterAngleToSpeaker(drivebase.getDistanceToSpeaker())));
     operator.X.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS));
-    operator.X.onTrue(m_pivotSubsystem.setShooterAutonCommand(true))
-              .onFalse(m_pivotSubsystem.setShooterAutonCommand(false));
+    // operator.X.onTrue(m_pivotSubsystem.setShooterAutonCommand(true))
+    //           .onFalse(m_pivotSubsystem.setShooterAutonCommand(false));
 
     // Climb
     operator.RB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> 1.0));
     operator.LB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> -1.0));
 
     // Shoot In Amp 
-    operator.B.onTrue(m_pivotSubsystem.setShooterAutonCommand(true))
-              .onFalse(m_pivotSubsystem.setShooterAutonCommand(false));
+    // operator.B.onTrue(m_pivotSubsystem.setShooterAutonCommand(true))
+    //           .onFalse(m_pivotSubsystem.setShooterAutonCommand(false));
     operator.B.onTrue(m_shooterSubsystem.changeAmpTopMultiplierCommand(Constants.Shooter.shootInAmpMultiplier))
               .onFalse(m_shooterSubsystem.changeAmpTopMultiplierCommand(1.0));
     operator.B.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.GamePieces.Amp.speedToShoot));
-    operator.B.whileTrue(new PivotCommand(m_pivotSubsystem, () -> Constants.GamePieces.Amp.angleToshoot));
+    operator.B.whileTrue(new ToAngle(m_pivotSubsystem, () -> Constants.GamePieces.Amp.angleToshoot));
 
     // Shoot At Subwoofer
-    operator.A.whileTrue(new PivotCommand(m_pivotSubsystem, () -> Constants.GamePieces.Speaker.angle));
+    operator.A.whileTrue(new ToAngle(m_pivotSubsystem, () -> Constants.GamePieces.Speaker.angle));
     operator.A.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS));
 
     // operator.Y.whileTrue(new PivotCommand(m_pivotSubsystem, () -> m_pivotSubsystem.autoAlignShooter()));
@@ -204,18 +207,15 @@ public class RobotContainer {
     if (m_indexSystem.getBeambreak() == true) {
       return leftJoystick;
     }
+    operator.setLeftRumble(0.5);
+    driver.setLeftRumble(0.5);
     return 0.0;
   }
 
   public double getPivotControl() {
-    if (m_pivotSubsystem.getShooterAutonTriggered() == false) {
-      double newRightJoystickValue = DoubleUtils.normalize(-operator.getRightY());
-      newRightJoystickValue = JoystickHelper.SimpleAxialDeadzone(newRightJoystickValue, Controller.Operator.JOYSTICK_DEADBAND);
-      double newShooterDegree = m_pivotSubsystem.currentShooterDegree + newRightJoystickValue;
-      m_pivotSubsystem.currentShooterDegree = DoubleUtils.clamp(newShooterDegree, Constants.Shooter.shooterStartDegree,
-          Constants.Shooter.shooterEndDegree);
-    }
-    return m_pivotSubsystem.currentShooterDegree;
+    double newRightJoystickValue = DoubleUtils.normalize(-operator.getRightY());
+    newRightJoystickValue = JoystickHelper.SimpleAxialDeadzone(newRightJoystickValue, Controller.Operator.JOYSTICK_DEADBAND);
+    return newRightJoystickValue;
   }
 
   public double getShooterControl() {

@@ -4,173 +4,126 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import ca.team4308.absolutelib.math.DoubleUtils;
 import ca.team4308.absolutelib.wrapper.LogSubsystem;
 import ca.team4308.absolutelib.wrapper.LoggedTunableNumber;
-
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.LimelightHelpers;
 
 public class PivotSubsystem extends LogSubsystem {
-    private final TalonFX motor;
-    private final ProfiledPIDController pidController;
-    //public final PIDController pidController;
-    private ArmFeedforward feedforward;
-    private final DutyCycleEncoder revEncoder; 
-    public final DigitalInput limitSwitch1;
-    public final DigitalInput limitSwitch2;
-    
-    public static double encoderDegree;
-    public static double shooterDegree;
-    public static double wantedDegree;
-    public static double motorOutput;
+    private static final LoggedTunableNumber kP = new LoggedTunableNumber("Pivot/PID/kP", Constants.Shooter.PivotPID.kP);
+    private static final LoggedTunableNumber kI = new LoggedTunableNumber("Pivot/PID/kI", Constants.Shooter.PivotPID.kI);
+    private static final LoggedTunableNumber kD = new LoggedTunableNumber("Pivot/PID/kD", Constants.Shooter.PivotPID.kD);
+    private static final LoggedTunableNumber kS = new LoggedTunableNumber("Pivot/FF/kS", Constants.Shooter.PivotFF.kS);
+    private static final LoggedTunableNumber kV = new LoggedTunableNumber("Pivot/FF/kV", Constants.Shooter.PivotFF.kV);
+    private static final LoggedTunableNumber kA = new LoggedTunableNumber("Pivot/FF/kA", Constants.Shooter.PivotFF.kA);
+    private static final LoggedTunableNumber kG = new LoggedTunableNumber("Pivot/FF/kG", Constants.Shooter.PivotFF.kG);
+    private static final LoggedTunableNumber maxVelocity = new LoggedTunableNumber("Pivot/MaxVel", Constants.Shooter.TrapezoidProfile.kMaxVelocity);
+    private static final LoggedTunableNumber maxAcceleration = new LoggedTunableNumber("Pivot/MaxAccel", Constants.Shooter.TrapezoidProfile.kMaxAcceleration);
 
-    public static double offset;
-    public static double x = 0.0;
-    public static boolean shooterAutonTriggered = false;
-    public double currentShooterDegree = Constants.Shooter.shooterStartDegree;
-    private Debouncer debouncer;
+    private final TalonFX motor = new TalonFX(Constants.Mapping.Shooter.motor);
+    private final DutyCycleEncoder encoder = new DutyCycleEncoder(Constants.Mapping.Shooter.encoder);    
+    public final DigitalInput lowerLimitSwitch = new DigitalInput(Constants.Mapping.Shooter.limitSwitch1);
+    public final DigitalInput upperLimitSwitch = new DigitalInput(Constants.Mapping.Shooter.limitSwitch2);
 
-    private static final LoggedTunableNumber kP = 
-        new LoggedTunableNumber("Pivot/Gains/kP", Constants.Shooter.AngleControl.kP);
-    private static final LoggedTunableNumber kI = 
-        new LoggedTunableNumber("Pivot/Gains/kI", Constants.Shooter.AngleControl.kI);
-    private static final LoggedTunableNumber kD = 
-        new LoggedTunableNumber("Pivot/Gains/kD", Constants.Shooter.AngleControl.kD);
-    private static final LoggedTunableNumber kS =
-        new LoggedTunableNumber("Arm/Gains/kS", Constants.Shooter.FeedforwardControl.kS);
-    private static final LoggedTunableNumber kV =
-        new LoggedTunableNumber("Arm/Gains/kV", Constants.Shooter.FeedforwardControl.kV);
-    private static final LoggedTunableNumber kA =
-        new LoggedTunableNumber("Arm/Gains/kA", Constants.Shooter.FeedforwardControl.kA);
-    private static final LoggedTunableNumber kG =
-        new LoggedTunableNumber("Arm/Gains/kG", Constants.Shooter.FeedforwardControl.kG);
-    private static final LoggedTunableNumber maxVelocity =
-        new LoggedTunableNumber("Arm/Velocity", Constants.Shooter.TrapezoidProfile.kMaxVelocity);
-    private static final LoggedTunableNumber maxAcceleration =
-        new LoggedTunableNumber("Arm/Acceleration", Constants.Shooter.TrapezoidProfile.kMaxAcceleration);
+    private final PIDController pidController = new PIDController(kP.get(), kI.get(), kD.get());
+    private ArmFeedforward feedforward = new ArmFeedforward(kS.get(), kG.get(), kV.get(), kA.get());
+    public TrapezoidProfile profiler = new TrapezoidProfile(
+        new TrapezoidProfile.Constraints(maxVelocity.get(), maxAcceleration.get()));
+
+    private double desiredSetpoint = 0;
+    private double desiredVelocity = 0;
 
     public PivotSubsystem() {
-        motor = new TalonFX(Constants.Mapping.Shooter.motor);
-        
-        revEncoder = new DutyCycleEncoder(Constants.Mapping.Shooter.encoder);
-
-        limitSwitch1 = new DigitalInput(Constants.Mapping.Shooter.limitSwitch1);
-        limitSwitch2 = new DigitalInput(Constants.Mapping.Shooter.limitSwitch2);
-
-        debouncer = new Debouncer(0.1, DebounceType.kBoth);
-
         motor.setNeutralMode(NeutralModeValue.Brake);
+        encoder.reset();
+        changeSetpoint(getCurrentPosition());
+    }
 
-        pidController = new ProfiledPIDController(
-                            kP.get(), 
-                            kI.get(), 
-                            kD.get(),
-                            new TrapezoidProfile.Constraints(maxVelocity.get(), 
-                                                             maxAcceleration.get()));
-        feedforward = new ArmFeedforward(kS.get(), kG.get(), kV.get(), kA.get());
+    public boolean lowerLimitSwitchIsTrue() {
+        return !lowerLimitSwitch.get();
+    }
 
-        // pidController = new PIDController(Constants.Shooter.AngleControl.kP, 
-        //                                   Constants.Shooter.AngleControl.kI, 
-        //                                   Constants.Shooter.AngleControl.kD);
+    public boolean upperLimitSwitchIsTrue() {
+        return upperLimitSwitch.get();
+    }
+
+    public double getCurrentPosition() {
+        double shooterDegree = DoubleUtils.mapRangeNew(encoder.getDistance(), 
+                               Constants.Shooter.encoderStartRevolutions, Constants.Shooter.encoderEndRevolutions, 
+                               Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree);
+        return shooterDegree;
+    }
+    
+    // Clamp values so that the desired setpoint doesnt exceed min or max angles
+    public void changeSetpoint(double newSetpoint) {
+        if (lowerLimitSwitchIsTrue() || newSetpoint < Constants.Shooter.shooterStartDegree) {
+            this.desiredSetpoint = Constants.Shooter.shooterStartDegree;
+        } else if (upperLimitSwitchIsTrue() || newSetpoint > Constants.Shooter.shooterEndDegree) {
+            this.desiredSetpoint = Constants.Shooter.shooterEndDegree;
+        } else {
+            this.desiredSetpoint = newSetpoint;
+        }
+    }
+
+    public void changeVelocity(double newVelocity) {
+        this.desiredVelocity = newVelocity;
+    }
+
+    public void changeState(TrapezoidProfile.State state) {
+        changeSetpoint(state.position);
+        changeVelocity(state.velocity);
+    }
+
+    public TrapezoidProfile.State getCurrentState() {
+        return new TrapezoidProfile.State(getCurrentPosition(), this.desiredVelocity);
+    }
+
+    public double getShooterAngleToSpeaker(double distanceToSpeaker) {
+        double offset = 0.0;
+        double speakerOpeningHeight = Constants.GamePieces.Speaker.kSpeakerCenterBlue.getZ() + offset;
+        double shooterAngle = Math.atan(speakerOpeningHeight/distanceToSpeaker)  * (180.0 / 3.14159);
+        return shooterAngle;
+    }
+
+    public double getMotorOutput() {
+        double outputFF = feedforward.calculate(desiredSetpoint, desiredVelocity);
+        double outputPID = pidController.calculate(getCurrentPosition(), desiredSetpoint);
+        return outputFF + outputPID;
     }
 
     public void setMotorOutput(double percent){
         motor.set(percent);
     }
 
-    public double getMotorPosition() {
-        if (!limitSwitch1.get()){
-            revEncoder.reset();
-            offset = Constants.Shooter.encoderStartRevolutions;
-        } else if (limitSwitch2.get()) {
-            revEncoder.reset();
-            offset = Constants.Shooter.encoderEndRevolutions;
-        }
-
-        return revEncoder.getDistance() + offset;
-    }
-
-    public void setMotorPosition(double degree) { 
-        wantedDegree = DoubleUtils.clamp(degree, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree);
-
-        shooterDegree = DoubleUtils.mapRangeNew(getMotorPosition(), Constants.Shooter.encoderStartRevolutions, Constants.Shooter.encoderEndRevolutions, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree);
-        // This code is wrong, needs to be fixed
-        motorOutput = -DoubleUtils.clamp(
-            pidController.calculate(shooterDegree, wantedDegree)
-            + feedforward.calculate(Math.toRadians(pidController.getSetpoint().position), 
-                                    Math.toRadians(pidController.getSetpoint().velocity)) / 12, -1.0, 1.0);
-
-        setMotorOutput(motorOutput);
-    }
-
-    public double alignShooterToSpeaker(double distanceToSpeaker) {
-        double speakerOpeningHeight = Constants.GamePieces.Speaker.kSpeakerCenterBlue.getZ();
-        double shooterAngle = Math.atan(speakerOpeningHeight/distanceToSpeaker)  * (180.0 / 3.14159);
-        return shooterAngle;
-    }
-
-    public Double autoAlignShooter() {
-        double targetOffsetAngle_Vertical = LimelightHelpers.getTY("");
-
-        // how many degrees back is your limelight rotated from perfectly vertical?
-        double limelightMountAngleDegrees = Constants.Limelight.Measurements.limelightMountAngleDegrees; 
-
-        // distance from the center of the Limelight lens to the floor
-        double limelightLensHeightCM = Constants.Limelight.Measurements.limelightLensHeightCM;
-
-        // distance from the target to the floor
-        double goalHeightCM = Constants.GamePieces.Speaker.speakerAprilTagHeightCM + x;
-        double speakerOpeningHeightCM = Constants.GamePieces.Speaker.speakerOpeningHeightCM;
-
-        double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
-        double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
-
-        double limelightDistanceFromShooterCM = Constants.Limelight.Measurements.limelightDistanceFromShooterCM;
-
-        //calculate distance
-        double distanceFromShooterToGoalCM = (goalHeightCM - limelightLensHeightCM) / Math.tan(angleToGoalRadians) + limelightDistanceFromShooterCM;
-
-        double shooterAngle = Math.atan(speakerOpeningHeightCM/distanceFromShooterToGoalCM) * (180.0 / 3.14159);
-
-        return shooterAngle;
-    }
-
-    // Only updates values when the robot is enabled
     public void periodic() {
+        checkTunableValues();
+        motor.setVoltage(getMotorOutput());
+    }
+
+    public void checkTunableValues() {
+        if (!Constants.LoggedDashboard.tuningMode) {
+            return;
+        }
+        // Only update LoggedTunableNumbers when enabled
         if (DriverStation.isEnabled()) {
-            LoggedTunableNumber.ifChanged(
-                hashCode(), () -> pidController.setPID(kP.get(), kI.get(), kD.get()), kP, kI, kD);
-            LoggedTunableNumber.ifChanged(
-                hashCode(), () -> feedforward = new ArmFeedforward(kS.get(), kG.get(), kV.get(), kA.get()),
+            LoggedTunableNumber.ifChanged(hashCode(), 
+            () -> pidController.setPID(kP.get(), kI.get(), kD.get()), kP, kI, kD);
+            LoggedTunableNumber.ifChanged(hashCode(), 
+            () -> feedforward = new ArmFeedforward(kS.get(), kG.get(), kV.get(), kA.get()),
             kS, kG, kV, kA);
         }
     }
-
-    public void changeGoalHeight(Double value) {
-        x = x + value;
-    }
-
-    // public void controlWithController(Double controllerValue) {
-    //     shooterDegree = DoubleUtils.clamp(shooterDegree + controllerValue, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree);
-    //     setMotorPosition(shooterDegree);
-    // }
 
     public void resetSensors() {
         motor.setPosition(0);
@@ -179,27 +132,16 @@ public class PivotSubsystem extends LogSubsystem {
     public void stopControllers(){
         motor.set(0);
     }
-
-    public void setShooterAutonTriggered(boolean value) {
-        shooterAutonTriggered = value;
-    }
-
-    public boolean getShooterAutonTriggered() {
-        return shooterAutonTriggered;
-    }
-
-    public Command setShooterAutonCommand(boolean value) {
-        return this.runOnce(() -> setShooterAutonTriggered(value));
-    }
-
+    
     @Override
     public Sendable log() {
-        SmartDashboard.putBoolean("pivot/lowerLimitSwitch1", !limitSwitch1.get());
-        SmartDashboard.putNumber("pivot/rawEncoderDegree", revEncoder.getDistance());
-        SmartDashboard.putNumber("pivot/updatedEncoderDegree", getMotorPosition());
-        SmartDashboard.putNumber("pivot/shooterDegree", shooterDegree);
-        SmartDashboard.putNumber("pivot/wantedDegree", wantedDegree);
-        SmartDashboard.putNumber("pivot/motorOutput", motorOutput);
+        SmartDashboard.putBoolean("Pivot/Lower Limit Switch", lowerLimitSwitchIsTrue());
+        SmartDashboard.putBoolean("Pivot/Upper Limit Switch", upperLimitSwitchIsTrue());
+        SmartDashboard.putNumber("Pivot/Raw Encoder Value", encoder.getDistance());
+        SmartDashboard.putNumber("Pivot/Current Setpoint", getCurrentPosition());
+        SmartDashboard.putNumber("Pivot/Desired Setpoint", desiredSetpoint);
+        SmartDashboard.putNumber("Pivot/Desired Velocity", desiredVelocity);
+        SmartDashboard.putNumber("Pivot/Motor Output", getMotorOutput());
         return this;
     }
 }

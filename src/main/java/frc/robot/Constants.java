@@ -116,14 +116,14 @@ public final class Constants {
 
   public static class Shooter {
     public static final double shootInAmpMultiplier = 0.5;
-    public static final int shooterStartDegree = 18;
-    public static final int shooterEndDegree = 72;
+    public static final double shooterStartDegree = 18;
+    public static final double shooterEndDegree = 72;
     public static final double encoderStartRevolutions = 0.0;
     public static final double encoderEndRevolutions = -0.69;;
     public static final double shooterMaxVelocity = 7;
     public static final double shooterRPS = 100;
 
-    public static final class AngleControl {
+    public static final class PivotPID {
       public static final double kP = 0.01;
       public static final double kI = 0;
       public static final double kD = 0.0001;
@@ -136,8 +136,7 @@ public final class Constants {
       public static final double kD = 0.01;
     }
 
-    public static final class FeedforwardControl {
-      // Theoratical kS gain using stall torque and moment of inertia, use SysID or manually tune to get the real gain
+    public static final class PivotFF {
       public static final double kS = 1.43;
       // Values from ReCalc
       public static final double kG = 0.43;
@@ -146,9 +145,9 @@ public final class Constants {
     }
 
     public static final class TrapezoidProfile {
-      public static final double kMaxVelocity = 4.45; // in radians / seconds
-      public static final double kMaxAcceleration = 27.11; //in radians / seconds ^ 2
-      // theoretical values using math, needs to be tuned further
+      public static final double kMaxVelocity = 200; // degrees
+      public static final double kMaxAcceleration = 100; //degrees
+      // should be safe enough values? needs to be tuned
     }
   }
 
