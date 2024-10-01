@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
+//import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.Sendable;
@@ -29,7 +29,7 @@ import frc.robot.LimelightHelpers;
 
 public class PivotSubsystem extends LogSubsystem {
     private final TalonFX motor;
-    private final ProfiledPIDController pidController;
+    private final PIDController pidController;
     //public final PIDController pidController;
     private ArmFeedforward feedforward;
     private final DutyCycleEncoder revEncoder; 
@@ -76,14 +76,9 @@ public class PivotSubsystem extends LogSubsystem {
 
         debouncer = new Debouncer(0.1, DebounceType.kBoth);
 
-        motor.setNeutralMode(NeutralModeValue.Brake);
+        motor.setNeutralMode(NeutralModeValue.Coast);
 
-        pidController = new ProfiledPIDController(
-                            kP.get(), 
-                            kI.get(), 
-                            kD.get(),
-                            new TrapezoidProfile.Constraints(maxVelocity.get(), 
-                                                             maxAcceleration.get()));
+        pidController = new PIDController(kP.get(), kI.get(), kD.get());
         feedforward = new ArmFeedforward(kS.get(), kG.get(), kV.get(), kA.get());
 
         // pidController = new PIDController(Constants.Shooter.AngleControl.kP, 
@@ -96,7 +91,7 @@ public class PivotSubsystem extends LogSubsystem {
     }
 
     public double getMotorPosition() {
-        if (!limitSwitch1.get()){
+        if (limitSwitch1.get()){
             revEncoder.reset();
             offset = Constants.Shooter.encoderStartRevolutions;
         } else if (limitSwitch2.get()) {
@@ -112,10 +107,7 @@ public class PivotSubsystem extends LogSubsystem {
 
         shooterDegree = DoubleUtils.mapRangeNew(getMotorPosition(), Constants.Shooter.encoderStartRevolutions, Constants.Shooter.encoderEndRevolutions, Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree);
         // This code is wrong, needs to be fixed
-        motorOutput = -DoubleUtils.clamp(
-            pidController.calculate(shooterDegree, wantedDegree)
-            + feedforward.calculate(Math.toRadians(pidController.getSetpoint().position), 
-                                    Math.toRadians(pidController.getSetpoint().velocity)) / 12, -1.0, 1.0);
+        motorOutput = -DoubleUtils.clamp(pidController.calculate(shooterDegree, wantedDegree), -1.0, 1.0);
 
         setMotorOutput(motorOutput);
     }
@@ -161,6 +153,7 @@ public class PivotSubsystem extends LogSubsystem {
                 hashCode(), () -> feedforward = new ArmFeedforward(kS.get(), kG.get(), kV.get(), kA.get()),
             kS, kG, kV, kA);
         }
+        log();
     }
 
     public void changeGoalHeight(Double value) {
@@ -194,7 +187,8 @@ public class PivotSubsystem extends LogSubsystem {
 
     @Override
     public Sendable log() {
-        SmartDashboard.putBoolean("pivot/lowerLimitSwitch1", !limitSwitch1.get());
+        SmartDashboard.putBoolean("pivot/lowerLimitSwitch1", limitSwitch1.get());
+        SmartDashboard.putBoolean("pivot/upperlimitswitch", limitSwitch2.get());
         SmartDashboard.putNumber("pivot/rawEncoderDegree", revEncoder.getDistance());
         SmartDashboard.putNumber("pivot/updatedEncoderDegree", getMotorPosition());
         SmartDashboard.putNumber("pivot/shooterDegree", shooterDegree);
