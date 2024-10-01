@@ -43,9 +43,11 @@ public class PivotSubsystem extends LogSubsystem {
 
     private double desiredSetpoint = 0;
     private double desiredVelocity = 0;
+    private double offset;
 
     public PivotSubsystem() {
-        motor.setNeutralMode(NeutralModeValue.Brake);
+        motor.setNeutralMode(NeutralModeValue.Coast);
+        motor.setInverted(false);
         encoder.reset();
         changeSetpoint(getCurrentPosition());
     }
@@ -59,17 +61,29 @@ public class PivotSubsystem extends LogSubsystem {
     }
 
     public double getCurrentPosition() {
-        double shooterDegree = DoubleUtils.mapRangeNew(encoder.getDistance(), 
+        if (lowerLimitSwitchIsTrue()) {
+            encoder.reset();
+            offset = Constants.Shooter.encoderStartRevolutions;
+        } else if (upperLimitSwitchIsTrue()) {
+            encoder.reset();
+            offset = Constants.Shooter.encoderEndRevolutions;
+        }
+        double encoderValue = encoder.getDistance() + offset;
+        double shooterDegree = DoubleUtils.mapRangeNew(encoderValue, 
                                Constants.Shooter.encoderStartRevolutions, Constants.Shooter.encoderEndRevolutions, 
                                Constants.Shooter.shooterStartDegree, Constants.Shooter.shooterEndDegree);
         return shooterDegree;
     }
+
+    public double getDesiredSetpoint() {
+        return desiredSetpoint;
+    }
     
     // Clamp values so that the desired setpoint doesnt exceed min or max angles
     public void changeSetpoint(double newSetpoint) {
-        if (lowerLimitSwitchIsTrue() || newSetpoint < Constants.Shooter.shooterStartDegree) {
+        if (newSetpoint < Constants.Shooter.shooterStartDegree) {
             this.desiredSetpoint = Constants.Shooter.shooterStartDegree;
-        } else if (upperLimitSwitchIsTrue() || newSetpoint > Constants.Shooter.shooterEndDegree) {
+        } else if (newSetpoint > Constants.Shooter.shooterEndDegree) {
             this.desiredSetpoint = Constants.Shooter.shooterEndDegree;
         } else {
             this.desiredSetpoint = newSetpoint;
@@ -108,6 +122,8 @@ public class PivotSubsystem extends LogSubsystem {
 
     public void periodic() {
         checkTunableValues();
+        setMotorOutput();
+        log();
     }
 
     public void checkTunableValues() {

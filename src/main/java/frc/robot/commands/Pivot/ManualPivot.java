@@ -25,9 +25,8 @@ public class ManualPivot extends Command {
 
   @Override
   public void execute() {
-    double newShooterSetpoint = m_subsystem.getCurrentPosition() + this.m_angleSupplier.get();
+    double newShooterSetpoint = m_subsystem.getDesiredSetpoint() + this.m_angleSupplier.get();
     m_subsystem.changeSetpoint(newShooterSetpoint);
-    m_subsystem.setMotorOutput();
   }
 
   @Override

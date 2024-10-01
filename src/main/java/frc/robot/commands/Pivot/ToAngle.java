@@ -35,7 +35,6 @@ public class ToAngle extends Command {
     var nextState = m_subsystem.profiler.calculate(m_timer.get(), initialState, 
                     new TrapezoidProfile.State(control.get(), 0));
     m_subsystem.changeState(nextState);
-    m_subsystem.setMotorOutput();
   }
 
   @Override
