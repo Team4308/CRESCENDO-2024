@@ -51,7 +51,7 @@ public class PivotSubsystem extends LogSubsystem {
     }
 
     public boolean lowerLimitSwitchIsTrue() {
-        return !lowerLimitSwitch.get();
+        return lowerLimitSwitch.get();
     }
 
     public boolean upperLimitSwitchIsTrue() {
@@ -102,13 +102,12 @@ public class PivotSubsystem extends LogSubsystem {
         return outputFF + outputPID;
     }
 
-    public void setMotorOutput(double percent){
-        motor.set(percent);
+    public void setMotorOutput(){
+        motor.setVoltage(getMotorOutput());
     }
 
     public void periodic() {
         checkTunableValues();
-        motor.setVoltage(getMotorOutput());
     }
 
     public void checkTunableValues() {
