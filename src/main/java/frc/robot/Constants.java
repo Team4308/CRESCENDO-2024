@@ -124,9 +124,9 @@ public final class Constants {
     public static final double shooterRPS = 100;
 
     public static final class PivotPID {
-      public static final double kP = 0.01;
+      public static final double kP = 0.5;
       public static final double kI = 0;
-      public static final double kD = 0.0001;
+      public static final double kD = 0;
     }
 
     public static final class FlywheelControl {
@@ -137,11 +137,11 @@ public final class Constants {
     }
 
     public static final class PivotFF {
-      public static final double kS = 1.43;
+      public static final double kS = 0.28;
       // Values from ReCalc
-      public static final double kG = 0.43;
-      public static final double kV = 2.25;
-      public static final double kA = 0.01;
+      public static final double kG = 0.14;
+      public static final double kV = 1.82;
+      public static final double kA = 0.00;
     }
 
     public static final class TrapezoidProfile {
