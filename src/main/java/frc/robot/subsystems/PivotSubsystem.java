@@ -47,7 +47,7 @@ public class PivotSubsystem extends LogSubsystem {
 
     public PivotSubsystem() {
         motor.setNeutralMode(NeutralModeValue.Coast);
-        motor.setInverted(false);
+        motor.setInverted(true);
         encoder.reset();
         changeSetpoint(getCurrentPosition());
     }
@@ -111,8 +111,8 @@ public class PivotSubsystem extends LogSubsystem {
     }
 
     public double getMotorOutput() {
-        double outputFF = feedforward.calculate(desiredSetpoint, desiredVelocity);
-        double outputPID = pidController.calculate(getCurrentPosition(), desiredSetpoint);
+        double outputFF = feedforward.calculate(desiredSetpoint * (Math.PI/180), desiredVelocity * (Math.PI/180));
+        double outputPID = pidController.calculate(getCurrentPosition() * (Math.PI/180), desiredSetpoint * (Math.PI/180));
         return outputFF + outputPID;
     }
 

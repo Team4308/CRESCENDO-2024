@@ -205,10 +205,12 @@ public class RobotContainer {
     leftJoystick = JoystickHelper.SimpleAxialDeadzone(leftJoystick, Controller.Operator.JOYSTICK_DEADBAND);
 
     if (m_indexSystem.getBeambreak() == true) {
+      stopRumble();
       return leftJoystick;
+    } else {
+      operator.setLeftRumble(0.5);
+      driver.setLeftRumble(0.5);
     }
-    operator.setLeftRumble(0.5);
-    driver.setLeftRumble(0.5);
     return 0.0;
   }
 
