@@ -124,7 +124,7 @@ public final class Constants {
     public static final double shooterRPS = 100;
 
     public static final class PivotPID {
-      public static final double kP = 28.0;
+      public static final double kP = 21.0;
       public static final double kI = 0;
       public static final double kD = 0;
     }
