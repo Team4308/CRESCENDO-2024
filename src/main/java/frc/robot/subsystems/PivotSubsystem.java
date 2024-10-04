@@ -137,6 +137,8 @@ public class PivotSubsystem extends LogSubsystem {
             LoggedTunableNumber.ifChanged(hashCode(), 
             () -> feedforward = new ArmFeedforward(kS.get(), kG.get(), kV.get(), kA.get()),
             kS, kG, kV, kA);
+            LoggedTunableNumber.ifChanged(hashCode(), () -> profiler = new TrapezoidProfile(
+                new TrapezoidProfile.Constraints(maxVelocity.get(), maxAcceleration.get())), maxVelocity, maxAcceleration);
         }
     }
 

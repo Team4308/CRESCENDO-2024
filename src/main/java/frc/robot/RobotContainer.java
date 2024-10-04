@@ -142,7 +142,7 @@ public class RobotContainer {
               driver.getYButtonPressed(), driver.getAButtonPressed(), 
               driver.getXButtonPressed(), driver.getBButtonPressed());
 
-    drivebase.setDefaultCommand(!RobotBase.isSimulation() ? drivePresetAdvanced : drivePresetAdvanced);
+    drivebase.setDefaultCommand(!RobotBase.isSimulation() ? driveAngularVelocity : drivePresetAdvanced);
   }
 
   private void configureBindings() {
