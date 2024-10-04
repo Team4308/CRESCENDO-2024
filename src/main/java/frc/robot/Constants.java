@@ -121,15 +121,16 @@ public final class Constants {
     public static final double encoderStartRevolutions = 0.0;
     public static final double encoderEndRevolutions = -0.69;;
     public static final double shooterMaxVelocity = 7;
-    public static final double shooterRPS = 10; //100
+    public static final double shooterRPS = 100;
 
     public static final class PivotPID {
-      public static final double kP = 8.0;
+      public static final double kP = 7.0;
       public static final double kI = 0.5;
       public static final double kD = 0.0;
     }
 
     public static final class FlywheelControl {
+
       public static final double kV = 0.12;
       public static final double kP = 0.11;
       public static final double kI = 0.48;
@@ -166,7 +167,7 @@ public final class Constants {
       public static final Pose3d kSpeakerCenterRed = new Pose3d(16.3, 5.549, 2.12, new Rotation3d());
       // Retune for STEMLEY
       public static final double speakerOpeningHeightCM = 205;
-      public static final double angle = 20.0; // 60.0
+      public static final double angle = 60.0;
     }
 
     public static class Amp {
