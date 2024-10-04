@@ -116,7 +116,7 @@ public final class Constants {
 
   public static class Shooter {
     public static final double shootInAmpMultiplier = 0.5;
-    public static final double shooterStartDegree = 18;
+    public static final double shooterStartDegree = 15.7;
     public static final double shooterEndDegree = 72;
     public static final double encoderStartRevolutions = 0.0;
     public static final double encoderEndRevolutions = -0.69;;
@@ -124,9 +124,9 @@ public final class Constants {
     public static final double shooterRPS = 100;
 
     public static final class PivotPID {
-      public static final double kP = 21.0;
+      public static final double kP = 14.0;
       public static final double kI = 0;
-      public static final double kD = 0;
+      public static final double kD = 0.14;
     }
 
     public static final class FlywheelControl {
