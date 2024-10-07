@@ -40,7 +40,6 @@ import swervelib.telemetry.SwerveDriveTelemetry;
 public class Vision {
     public static final AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
     private final double maximumAmbiguity = 0.25;
-    private final PhotonCamera noteCamera;
     
      // Count of times that the odom thinks we're more than 10meters away from the april tag.
     private double longDistangePoseEstimationCount = 0;
@@ -49,13 +48,13 @@ public class Vision {
     public VisionSystemSim visionSim;
 
     enum PoseCameras {
-        LEFT_CAM("Arduckcam OV9281",
+        LEFT_CAM("Arduck OV9281",
                 new Rotation3d(0, Math.toRadians(-28.125), Math.toRadians(150)),
                 new Translation3d(Units.inchesToMeters(-10.507),
                         Units.inchesToMeters(12.344),
                         Units.inchesToMeters(8.453)),
                 VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5, 0.5, 1)),
-        RIGHT_CAM("Argoosecam OV9281",
+        RIGHT_CAM("Argoose OV9281",
                 new Rotation3d(0, Math.toRadians(-28.125), Math.toRadians(210)),
                 new Translation3d(Units.inchesToMeters(-10.507),
                         Units.inchesToMeters(-12.344),
@@ -122,7 +121,6 @@ public class Vision {
     public Vision(Supplier<Pose2d> currentPose, Field2d field) {
         this.currentPose = currentPose;
         this.field2d = field;
-        noteCamera = new PhotonCamera("Ardeercam OV9782");
 
         if (Robot.isSimulation()) {
             visionSim = new VisionSystemSim("Vision");
@@ -235,10 +233,6 @@ public class Vision {
             return pose;
         }
         return Optional.empty();
-    }
-
-    public PhotonPipelineResult getNoteCamLatestResult() {
-        return noteCamera.getLatestResult();
     }
 
     public PhotonPipelineResult getPoseCamLatestResult(PoseCameras camera) {
