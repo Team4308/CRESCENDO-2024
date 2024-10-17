@@ -3,6 +3,7 @@ package frc.robot;
 import java.io.File;
 import java.util.ArrayList;
 
+import com.ctre.phoenix.schedulers.SequentialScheduler;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -17,6 +18,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.Controller;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShooterCommand;
@@ -83,27 +87,7 @@ public class RobotContainer {
     m_indexSystem = new IndexSystem();
     subsystems.add(m_indexSystem);
 
-    NamedCommands.registerCommand("IntakeCommand", new IntakeCommand(m_intakeSubsystem, () -> -1.0));
-    NamedCommands.registerCommand("IndexCommand", new IndexCommand(m_indexSystem, () -> -0.15));
-    NamedCommands.registerCommand("IndexShootCommand", new IndexCommand(m_indexSystem, () -> -1.0));
-    NamedCommands.registerCommand("ShooterCommand",
-        new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS));
-    NamedCommands.registerCommand("ShooterStop", new ShooterCommand(m_shooterSubsystem, () -> 0.0));
-    NamedCommands.registerCommand("ShooterDisruption", new ShooterCommand(m_shooterSubsystem, () -> 25.0));
-    // NamedCommands.registerCommand("SpeakerAlignTrue", Commands.runOnce(() ->
-    // drivebase.alignToSpeaker(true)));
-    // NamedCommands.registerCommand("SpeakerAlignFalse", Commands.runOnce(() ->
-    // drivebase.alignToSpeaker(false)));
-    NamedCommands.registerCommand("ResetGyro", Commands.runOnce(drivebase::zeroGyro));
-    // NamedCommands.registerCommand("AutoAlignShooter",
-    //     new PivotCommand(m_pivotSubsystem, () -> m_pivotSubsystem.autoAlignShooter()));
-    // NamedCommands.registerCommand("BeambreakCommand", new BeambreakCommand(() -> m_indexSystem.getBeambreak()));
-    // NamedCommands.registerCommand("SubwooferAngle",
-    //     new PivotCommand(m_pivotSubsystem, () -> Constants.GamePieces.Speaker.angle));
-    // NamedCommands.registerCommand("SubwooferSideAngle", new PivotCommand(m_pivotSubsystem, () -> 60.0));
-    // NamedCommands.registerCommand("AmpAngle",
-    //     new PivotCommand(m_pivotSubsystem, () -> Constants.GamePieces.Amp.angleToshoot));
-    
+    configureNamedCommands();
     // fix these commands later ***
     
     // Command Instantiations
@@ -157,7 +141,7 @@ public class RobotContainer {
              .onFalse(drivebase.changeDriveMode(DriveMode.VELOCITY_ADV));
 
     // Auto Align Shooter + Rotate to Speaker
-    operator.X.whileTrue(new ToAngle(m_pivotSubsystem, () -> m_pivotSubsystem.getShooterAngleToSpeaker(drivebase.getDistanceToSpeaker())));
+    operator.X.whileTrue(new ToAngle(m_pivotSubsystem, () -> m_pivotSubsystem.getAngleToSpeaker(drivebase.getDistanceToSpeaker())));
     operator.X.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS));
     // operator.X.onTrue(m_pivotSubsystem.setShooterAutonCommand(true))
     //           .onFalse(m_pivotSubsystem.setShooterAutonCommand(false));
@@ -181,6 +165,54 @@ public class RobotContainer {
     // operator.Y.whileTrue(new PivotCommand(m_pivotSubsystem, () -> m_pivotSubsystem.autoAlignShooter()));
     // operator.Y.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> 20.0));
   }
+
+  public void configureNamedCommands() {
+    NamedCommands.registerCommand("ShootSubwoofer", new SequentialCommandGroup(
+      new ParallelCommandGroup(
+        new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS).withTimeout(3.0),
+        new ToAngle(m_pivotSubsystem, () -> Constants.GamePieces.Speaker.angle)
+      ),
+      new IndexCommand(m_indexSystem, () -> -1.0).withTimeout(1.0),
+      new ToAngle(m_pivotSubsystem, () -> Constants.Shooter.shooterStartDegree)
+    ));
+    NamedCommands.registerCommand("ShootSubwooferSide", new SequentialCommandGroup(
+      new ParallelCommandGroup(
+        new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS).withTimeout(3.0),
+        new ToAngle(m_pivotSubsystem, () -> 60.0)
+      ),
+      new IndexCommand(m_indexSystem, () -> -1.0).withTimeout(1.0),
+      new ToAngle(m_pivotSubsystem, () -> Constants.Shooter.shooterStartDegree)
+    ));
+    NamedCommands.registerCommand("ShootNoteFar", new SequentialCommandGroup(
+      // drivebase.changeDriveMode(DriveMode.SPEAKER),
+      // new WaitCommand()
+      // fix drive mode presets before doin this, might have to create seperate command
+      new ParallelCommandGroup(
+        new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS).withTimeout(3.0),
+        new ToAngle(m_pivotSubsystem, () -> m_pivotSubsystem.getAngleToSpeaker(drivebase.getDistanceToSpeaker()))
+      ),
+      new IndexCommand(m_indexSystem, () -> -1.0).withTimeout(1.0),
+      new ToAngle(m_pivotSubsystem, () -> Constants.Shooter.shooterStartDegree)
+    ));
+
+    NamedCommands.registerCommand("IntakeNote", new SequentialCommandGroup(
+      new ParallelDeadlineGroup(
+        new BeambreakCommand(() -> m_indexSystem.getBeambreak()),
+        new IntakeCommand(m_intakeSubsystem, () -> -1.0),
+        new IndexCommand(m_indexSystem, () -> -0.15)
+      )
+    ));
+
+    NamedCommands.registerCommand("IntakeNoteV2", new SequentialCommandGroup(
+      new ParallelCommandGroup(
+        new IntakeCommand(m_intakeSubsystem, () -> -1.0),
+        new IndexCommand(m_indexSystem, () -> -0.15)
+      ).until(() -> m_indexSystem.getBeambreak())
+    ));
+    NamedCommands.registerCommand("ShooterStop", new ShooterCommand(m_shooterSubsystem, () -> 0.0));
+    NamedCommands.registerCommand("ShooterDisruption", new ShooterCommand(m_shooterSubsystem, () -> 25.0));
+    NamedCommands.registerCommand("ResetGyro", Commands.runOnce(drivebase::zeroGyro));
+  } 
 
   public Command getAutonomousCommand() {
     return autonomousChooser.getSelected();

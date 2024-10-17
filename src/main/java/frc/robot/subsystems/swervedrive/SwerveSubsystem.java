@@ -209,17 +209,6 @@ public class SwerveSubsystem extends LogSubsystem {
     return new Rotation2d(relativeTrl.getX(), relativeTrl.getY()).plus(swerveDrive.getOdometryHeading());
   }
 
-  public Rotation2d getNoteYaw(){
-    Rotation2d noteYaw = new Rotation2d(0);
-    if (Robot.isReal()) {
-      PhotonPipelineResult latestResult = vision.getNoteCamLatestResult();
-      if (latestResult.hasTargets() && latestResult.getBestTarget() != null) {
-      noteYaw = new Rotation2d(latestResult.getBestTarget().getYaw());
-      }
-    }
-    return noteYaw.plus(swerveDrive.getOdometryHeading());
-  }
-
   public Command aimAtSpeaker(double tolerance) {
     SwerveController controller = swerveDrive.getSwerveController();
     return run(
@@ -409,8 +398,8 @@ public class SwerveSubsystem extends LogSubsystem {
   // Drive method with heading aligned to a note
   public void alignToNote(DoubleSupplier translationX, DoubleSupplier translationY) {
     SwerveController controller = swerveDrive.getSwerveController();
-    double rotation =  controller.headingCalculate(getHeading().getRadians(), getNoteYaw().getRadians());
-    if (Math.abs(getNoteYaw().minus(getHeading()).getDegrees()) <= 1.0) {
+    double rotation =  controller.headingCalculate(getHeading().getRadians(), getSpeakerYaw().getRadians());
+    if (Math.abs(getSpeakerYaw().minus(getHeading()).getDegrees()) <= 1.0) {
       rotation = 0;
     }
     swerveDrive.drive(SwerveMath.scaleTranslation(new Translation2d(
