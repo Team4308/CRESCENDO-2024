@@ -103,7 +103,7 @@ public class PivotSubsystem extends LogSubsystem {
         return new TrapezoidProfile.State(getCurrentPosition(), this.desiredVelocity);
     }
 
-    public double getShooterAngleToSpeaker(double distanceToSpeaker) {
+    public double getAngleToSpeaker(double distanceToSpeaker) {
         double offset = 0.0;
         double speakerOpeningHeight = Constants.GamePieces.Speaker.kSpeakerCenterBlue.getZ() + offset;
         double shooterAngle = Math.atan(speakerOpeningHeight/distanceToSpeaker)  * (180.0 / 3.14159);

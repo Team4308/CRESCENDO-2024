@@ -60,7 +60,6 @@ public class Vision {
                         Units.inchesToMeters(-12.344),
                         Units.inchesToMeters(8.453)),
                 VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5, 0.5, 1));
-
         
         public final Alert latencyAlert;
         public final PhotonCamera camera;
