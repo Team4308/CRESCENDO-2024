@@ -49,13 +49,13 @@ public class Vision {
     public VisionSystemSim visionSim;
 
     enum PoseCameras {
-        LEFT_CAM("Arduckcam OV9281",
+        LEFT_CAM("Arduck OV9281",
                 new Rotation3d(0, Math.toRadians(-28.125), Math.toRadians(150)),
                 new Translation3d(Units.inchesToMeters(-10.507),
                         Units.inchesToMeters(12.344),
                         Units.inchesToMeters(8.453)),
                 VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5, 0.5, 1)),
-        RIGHT_CAM("Argoosecam OV9281",
+        RIGHT_CAM("Argoose OV9281",
                 new Rotation3d(0, Math.toRadians(-28.125), Math.toRadians(210)),
                 new Translation3d(Units.inchesToMeters(-10.507),
                         Units.inchesToMeters(-12.344),
