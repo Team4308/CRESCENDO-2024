@@ -1,0 +1,93 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7646141006567733,
+      "y": 6.728691171668058
+    },
+    "rotation": 60.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootSubwooferSide"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeNote"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LSubToLNote"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LNote-Align"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootNoteFar"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeNote"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LWallToNote1"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note1ToLWall"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootNoteFar"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LWall-Mobility"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Left",
+  "choreoAuto": false
+}

@@ -1,0 +1,68 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7646141006567733,
+      "y": 6.728691171668058
+    },
+    "rotation": 60.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootSubwooferSide"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeNote"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LSubToLNote"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LNoteToLSub"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootSubwooferSide"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LSubMobility"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Left",
+  "choreoAuto": false
+}

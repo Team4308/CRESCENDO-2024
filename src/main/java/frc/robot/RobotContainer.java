@@ -209,8 +209,13 @@ public class RobotContainer {
         new IndexCommand(m_indexSystem, () -> -0.15)
       ).until(() -> m_indexSystem.getBeambreak())
     ));
+    NamedCommands.registerCommand("DiscardNote", new SequentialCommandGroup(
+      new ParallelCommandGroup(
+        new IndexCommand(m_indexSystem, () -> 1.0).withTimeout(1.0),
+        new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS)
+      ).withTimeout(1.0)
+    ));
     NamedCommands.registerCommand("ShooterStop", new ShooterCommand(m_shooterSubsystem, () -> 0.0));
-    NamedCommands.registerCommand("ShooterDisruption", new ShooterCommand(m_shooterSubsystem, () -> 25.0));
     NamedCommands.registerCommand("ResetGyro", Commands.runOnce(drivebase::zeroGyro));
   } 
 

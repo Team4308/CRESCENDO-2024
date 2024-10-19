@@ -1,0 +1,37 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7646141006567733,
+      "y": 6.728691171668058
+    },
+    "rotation": 60.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LSubToLNote"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LNoteToLSub"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LSubMobility"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
