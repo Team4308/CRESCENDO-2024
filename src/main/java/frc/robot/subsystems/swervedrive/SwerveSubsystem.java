@@ -55,7 +55,7 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 public class SwerveSubsystem extends LogSubsystem {
   private final SwerveDrive swerveDrive;
   private final Pigeon2 gyro = new Pigeon2(Constants.Mapping.Pigeon2.gyro);
-  private final boolean visionDriveTest = true;
+  private final boolean visionDriveTest = false; // Set True for Vision-Correcting Pose Estimation
   
   private Vision vision;
   private double modifier = 1.0;
@@ -421,9 +421,15 @@ public class SwerveSubsystem extends LogSubsystem {
       DoubleSupplier angularRotationX) {
     return run(() -> {
       // Make the robot move
+      double transX = translationX.getAsDouble();
+      double transY = translationY.getAsDouble();
+      if (DriverStation.getAlliance().get() == Alliance.Red ) {
+        transX *= -1.0;
+        transY *= -1.0;
+      }
       swerveDrive.drive(SwerveMath.scaleTranslation(new Translation2d(
-                            translationX.getAsDouble() * swerveDrive.getMaximumVelocity(),
-                            translationY.getAsDouble() * swerveDrive.getMaximumVelocity()), modifier),
+                            transX * swerveDrive.getMaximumVelocity(),
+                            transY * swerveDrive.getMaximumVelocity()), modifier),
                         Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumAngularVelocity()
                          * modifier, true,false);
     });

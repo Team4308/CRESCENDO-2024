@@ -101,7 +101,8 @@ public class RobotContainer {
     m_shooterSubsystem.setDefaultCommand(shooterCommand);
 
     climbCommand = new ClimbCommand(m_climbSubsystem, () -> 0.0);
-    m_climbSubsystem.setDefaultCommand(climbCommand);
+    //m_climbSubsystem.setDefaultCommand(climbCommand);
+    // don't make this a default command to reduce jittering?
 
     indexCommand = new IndexCommand(m_indexSystem, () -> getIndexControl());
     m_indexSystem.setDefaultCommand(indexCommand);
@@ -140,30 +141,29 @@ public class RobotContainer {
     driver.LB.onTrue(drivebase.changeDriveMode(DriveMode.AMP))
              .onFalse(drivebase.changeDriveMode(DriveMode.VELOCITY_ADV));
 
+    driver.Down.onTrue(Commands.runOnce(drivebase::setupPathPlanner));
+    // TESTING ONLY FOR TUNING PATHPLANNER PIDS, DISABLE WHEN COMPETING
+
     // Auto Align Shooter + Rotate to Speaker
-    operator.X.whileTrue(new ToAngle(m_pivotSubsystem, () -> m_pivotSubsystem.getAngleToSpeaker(drivebase.getDistanceToSpeaker())));
+    operator.X.onTrue(new ToAngle(m_pivotSubsystem, () -> m_pivotSubsystem.getAngleToSpeaker(drivebase.getDistanceToSpeaker())))
+    .onFalse(new ToAngle(m_pivotSubsystem, () -> Constants.Shooter.shooterStartDegree));
     operator.X.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS));
-    // operator.X.onTrue(m_pivotSubsystem.setShooterAutonCommand(true))
-    //           .onFalse(m_pivotSubsystem.setShooterAutonCommand(false));
 
     // Climb
     operator.RB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> 1.0));
     operator.LB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> -1.0));
 
     // Shoot In Amp 
-    // operator.B.onTrue(m_pivotSubsystem.setShooterAutonCommand(true))
-    //           .onFalse(m_pivotSubsystem.setShooterAutonCommand(false));
     operator.B.onTrue(m_shooterSubsystem.changeAmpTopMultiplierCommand(Constants.Shooter.shootInAmpMultiplier))
               .onFalse(m_shooterSubsystem.changeAmpTopMultiplierCommand(1.0));
     operator.B.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.GamePieces.Amp.speedToShoot));
-    operator.B.whileTrue(new ToAngle(m_pivotSubsystem, () -> Constants.GamePieces.Amp.angleToshoot));
+    operator.B.onTrue(new ToAngle(m_pivotSubsystem, () -> Constants.GamePieces.Amp.angleToshoot))
+    .onFalse(new ToAngle(m_pivotSubsystem, () -> Constants.Shooter.shooterStartDegree));
 
     // Shoot At Subwoofer
-    operator.A.whileTrue(new ToAngle(m_pivotSubsystem, () -> Constants.GamePieces.Speaker.angle));
+    operator.A.onTrue(new ToAngle(m_pivotSubsystem, () -> Constants.GamePieces.Speaker.angle))
+    .onFalse(new ToAngle(m_pivotSubsystem, () -> Constants.Shooter.shooterStartDegree));
     operator.A.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS));
-
-    // operator.Y.whileTrue(new PivotCommand(m_pivotSubsystem, () -> m_pivotSubsystem.autoAlignShooter()));
-    // operator.Y.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> 20.0));
   }
 
   public void configureNamedCommands() {

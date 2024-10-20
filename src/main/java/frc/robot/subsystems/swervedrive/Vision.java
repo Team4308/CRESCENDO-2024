@@ -158,7 +158,7 @@ public class Vision {
     }
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(PoseCameras camera) {
-        Optional<EstimatedRobotPose> poseEst = filterPose(camera.poseEstimator.update());
+        Optional<EstimatedRobotPose> poseEst = camera.poseEstimator.update();
         // Optional<EstimatedRobotPose> poseEst = camera.poseEstimator.update();
 
         // Uncomment to enable outputting of vision targets in simulation
