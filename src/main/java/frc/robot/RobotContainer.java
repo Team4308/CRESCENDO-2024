@@ -145,25 +145,25 @@ public class RobotContainer {
     // TESTING ONLY FOR TUNING PATHPLANNER PIDS, DISABLE WHEN COMPETING
 
     // Auto Align Shooter + Rotate to Speaker
-    operator.X.onTrue(new ToAngle(m_pivotSubsystem, () -> m_pivotSubsystem.getAngleToSpeaker(drivebase.getDistanceToSpeaker())))
-    .onFalse(new ToAngle(m_pivotSubsystem, () -> Constants.Shooter.shooterStartDegree));
-    operator.X.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS));
+    // operator.X.onTrue(new ToAngle(m_pivotSubsystem, () -> m_pivotSubsystem.getAngleToSpeaker(drivebase.getDistanceToSpeaker())))
+    // .onFalse(new ToAngle(m_pivotSubsystem, () -> Constants.Shooter.shooterStartDegree));
+    // operator.X.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS));
 
     // Climb
     operator.RB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> 1.0));
     operator.LB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> -1.0));
 
     // Shoot In Amp 
-    operator.B.onTrue(m_shooterSubsystem.changeAmpTopMultiplierCommand(Constants.Shooter.shootInAmpMultiplier))
-              .onFalse(m_shooterSubsystem.changeAmpTopMultiplierCommand(1.0));
-    operator.B.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.GamePieces.Amp.speedToShoot));
-    operator.B.onTrue(new ToAngle(m_pivotSubsystem, () -> Constants.GamePieces.Amp.angleToshoot))
-    .onFalse(new ToAngle(m_pivotSubsystem, () -> Constants.Shooter.shooterStartDegree));
+    // operator.B.onTrue(m_shooterSubsystem.changeAmpTopMultiplierCommand(Constants.Shooter.shootInAmpMultiplier))
+    //           .onFalse(m_shooterSubsystem.changeAmpTopMultiplierCommand(1.0));
+    // operator.B.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.GamePieces.Amp.speedToShoot));
+    // operator.B.onTrue(new ToAngle(m_pivotSubsystem, () -> Constants.GamePieces.Amp.angleToshoot))
+    // .onFalse(new ToAngle(m_pivotSubsystem, () -> Constants.Shooter.shooterStartDegree));
 
     // Shoot At Subwoofer
-    operator.A.onTrue(new ToAngle(m_pivotSubsystem, () -> Constants.GamePieces.Speaker.angle))
-    .onFalse(new ToAngle(m_pivotSubsystem, () -> Constants.Shooter.shooterStartDegree));
-    operator.A.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS));
+    // operator.A.onTrue(new ToAngle(m_pivotSubsystem, () -> Constants.GamePieces.Speaker.angle))
+    // .onFalse(new ToAngle(m_pivotSubsystem, () -> Constants.Shooter.shooterStartDegree));
+    // operator.A.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS));
   }
 
   public void configureNamedCommands() {

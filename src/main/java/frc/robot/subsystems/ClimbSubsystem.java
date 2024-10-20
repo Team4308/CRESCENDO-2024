@@ -36,7 +36,7 @@ public class ClimbSubsystem extends LogSubsystem {
         motor1.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 18.0, 20.0, 0.5));
         motor2.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 18.0, 20.0, 0.5));
 
-        motor1.setInverted(false);
+        motor1.setInverted(true);
 
         // Reset
         stopControllers();

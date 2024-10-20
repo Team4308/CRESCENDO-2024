@@ -99,7 +99,7 @@ public class SwerveSubsystem extends LogSubsystem {
     double driveConversionFactor = SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4), 6.75);
 
     // Change Telemetry to reduce Shuffleboard vomit. (Note: Use HIGH for simulations)
-    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
+    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.NONE;
     try {
       swerveDrive = new SwerveParser(directory).createSwerveDrive(Constants.Swerve.MAX_SPEED);
       // Alternative method if you don't want to supply the conversion factor via JSON files.

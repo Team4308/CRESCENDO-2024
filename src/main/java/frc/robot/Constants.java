@@ -140,9 +140,9 @@ public final class Constants {
     public static final class PivotFF {
       public static final double kS = 0.00;
       // Values from ReCalc
-      public static final double kG = 0.258;
-      public static final double kV = 1.4;
-      public static final double kA = 0.00;
+      public static final double kG = 0.00; //0.258
+      public static final double kV = 0.00; //0.14
+      public static final double kA = 0.00; //0.00
     }
 
     public static final class TrapezoidProfile {
