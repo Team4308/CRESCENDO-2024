@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.5398639686168262,
-      "y": 2.1978946180114582
+      "x": 1.4,
+      "y": 5.55
     },
     "rotation": 0
   },
@@ -12,14 +12,14 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "RWallFar-Mobility"
+            "name": "ShootSubwooferFixed"
           }
         }
       ]
     }
   },
-  "folder": "Right",
+  "folder": "Middle",
   "choreoAuto": false
 }

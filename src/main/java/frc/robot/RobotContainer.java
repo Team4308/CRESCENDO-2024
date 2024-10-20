@@ -167,33 +167,38 @@ public class RobotContainer {
   }
 
   public void configureNamedCommands() {
-    NamedCommands.registerCommand("ShootSubwoofer", new SequentialCommandGroup(
-      new ParallelCommandGroup(
-        new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS).withTimeout(3.0),
-        new ToAngle(m_pivotSubsystem, () -> Constants.GamePieces.Speaker.angle)
-      ),
-      new IndexCommand(m_indexSystem, () -> -1.0).withTimeout(1.0),
-      new ToAngle(m_pivotSubsystem, () -> Constants.Shooter.shooterStartDegree)
+    // NamedCommands.registerCommand("ShootSubwoofer", new SequentialCommandGroup(
+    //   new ParallelCommandGroup(
+    //     new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS).withTimeout(3.0),
+    //     new ToAngle(m_pivotSubsystem, () -> Constants.GamePieces.Speaker.angle)
+    //   ),
+    //   new IndexCommand(m_indexSystem, () -> -1.0).withTimeout(1.0),
+    //   new ToAngle(m_pivotSubsystem, () -> Constants.Shooter.shooterStartDegree)
+    // ));
+    NamedCommands.registerCommand("ShootSubwooferFixed", new SequentialCommandGroup(
+      new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS).withTimeout(3.0),
+      new IndexCommand(m_indexSystem, () -> 1.0).withTimeout(1.0)
     ));
-    NamedCommands.registerCommand("ShootSubwooferSide", new SequentialCommandGroup(
-      new ParallelCommandGroup(
-        new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS).withTimeout(3.0),
-        new ToAngle(m_pivotSubsystem, () -> 60.0)
-      ),
-      new IndexCommand(m_indexSystem, () -> -1.0).withTimeout(1.0),
-      new ToAngle(m_pivotSubsystem, () -> Constants.Shooter.shooterStartDegree)
-    ));
-    NamedCommands.registerCommand("ShootNoteFar", new SequentialCommandGroup(
-      // drivebase.changeDriveMode(DriveMode.SPEAKER),
-      // new WaitCommand()
-      // fix drive mode presets before doin this, might have to create seperate command
-      new ParallelCommandGroup(
-        new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS).withTimeout(3.0),
-        new ToAngle(m_pivotSubsystem, () -> m_pivotSubsystem.getAngleToSpeaker(drivebase.getDistanceToSpeaker()))
-      ),
-      new IndexCommand(m_indexSystem, () -> -1.0).withTimeout(1.0),
-      new ToAngle(m_pivotSubsystem, () -> Constants.Shooter.shooterStartDegree)
-    ));
+    // NamedCommands.registerCommand("ShootSubwooferSide", new SequentialCommandGroup(
+    //   new ParallelCommandGroup(
+    //     new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS).withTimeout(3.0),
+    //     new ToAngle(m_pivotSubsystem, () -> 60.0)
+    //   ),
+    //   new IndexCommand(m_indexSystem, () -> -1.0).withTimeout(1.0),
+    //   new ToAngle(m_pivotSubsystem, () -> Constants.Shooter.shooterStartDegree)
+    // ));
+    
+    // NamedCommands.registerCommand("ShootNoteFar", new SequentialCommandGroup(
+    //   // drivebase.changeDriveMode(DriveMode.SPEAKER),
+    //   // new WaitCommand()
+    //   // fix drive mode presets before doin this, might have to create seperate command
+    //   new ParallelCommandGroup(
+    //     new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS).withTimeout(3.0),
+    //     new ToAngle(m_pivotSubsystem, () -> m_pivotSubsystem.getAngleToSpeaker(drivebase.getDistanceToSpeaker()))
+    //   ),
+    //   new IndexCommand(m_indexSystem, () -> -1.0).withTimeout(1.0),
+    //   new ToAngle(m_pivotSubsystem, () -> Constants.Shooter.shooterStartDegree)
+    // ));
 
     NamedCommands.registerCommand("IntakeNote", new SequentialCommandGroup(
       new ParallelDeadlineGroup(

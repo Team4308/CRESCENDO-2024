@@ -14,7 +14,7 @@
         {
           "type": "named",
           "data": {
-            "name": "ShootSubwooferSide"
+            "name": "ShootSubwooferFixed"
           }
         },
         {
@@ -51,7 +51,7 @@
         {
           "type": "named",
           "data": {
-            "name": "ShootSubwooferSide"
+            "name": "ShootSubwooferFixed"
           }
         },
         {

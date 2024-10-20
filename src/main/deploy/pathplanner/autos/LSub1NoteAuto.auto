@@ -14,19 +14,7 @@
         {
           "type": "named",
           "data": {
-            "name": "ShootSubwooferSide"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 8.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "LSubToLNote"
+            "name": "ShootSubwooferFixed"
           }
         }
       ]
