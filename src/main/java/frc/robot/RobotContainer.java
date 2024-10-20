@@ -241,6 +241,10 @@ public class RobotContainer {
     double leftJoystick = DoubleUtils.normalize(-operator.getLeftY());
     leftJoystick = JoystickHelper.SimpleAxialDeadzone(leftJoystick, Controller.Operator.JOYSTICK_DEADBAND);
 
+    if (m_indexSystem.getBeambreak() == true) {
+      return leftJoystick;
+    }
+
     return 0.0;
   }
 
