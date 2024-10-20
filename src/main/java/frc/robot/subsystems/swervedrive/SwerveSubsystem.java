@@ -423,14 +423,16 @@ public class SwerveSubsystem extends LogSubsystem {
       // Make the robot move
       double transX = translationX.getAsDouble();
       double transY = translationY.getAsDouble();
-      if (DriverStation.getAlliance().get() == Alliance.Red ) {
+      double rotationX = angularRotationX.getAsDouble()
+      if (DriverStation.getAlliance().get() == Alliance.Blue ) {
         transX *= -1.0;
         transY *= -1.0;
+        rotationX *= -1.0;
       }
       swerveDrive.drive(SwerveMath.scaleTranslation(new Translation2d(
                             transX * swerveDrive.getMaximumVelocity(),
                             transY * swerveDrive.getMaximumVelocity()), modifier),
-                        Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumAngularVelocity()
+                        Math.pow(rotationX, 3) * swerveDrive.getMaximumAngularVelocity()
                          * modifier, true,false);
     });
   }
