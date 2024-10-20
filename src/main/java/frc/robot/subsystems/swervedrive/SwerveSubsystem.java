@@ -423,7 +423,7 @@ public class SwerveSubsystem extends LogSubsystem {
       // Make the robot move
       double transX = translationX.getAsDouble();
       double transY = translationY.getAsDouble();
-      double rotationX = angularRotationX.getAsDouble()
+      double rotationX = angularRotationX.getAsDouble();
       if (DriverStation.getAlliance().get() == Alliance.Blue ) {
         transX *= -1.0;
         transY *= -1.0;
