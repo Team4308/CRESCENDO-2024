@@ -427,8 +427,8 @@ public class SwerveSubsystem extends LogSubsystem {
       if (DriverStation.getAlliance().get() == Alliance.Blue ) {
         transX *= -1.0;
         transY *= -1.0;
-        rotationX *= -1.0;
       }
+      rotationX *= -1.0;
       swerveDrive.drive(SwerveMath.scaleTranslation(new Translation2d(
                             transX * swerveDrive.getMaximumVelocity(),
                             transY * swerveDrive.getMaximumVelocity()), modifier),

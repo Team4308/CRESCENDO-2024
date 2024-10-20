@@ -131,32 +131,32 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    driver.Up.onTrue(Commands.runOnce(drivebase::zeroGyro));
+    driver.Y.onTrue(Commands.runOnce(drivebase::zeroGyro));
     driver.LeftTrigger.onTrue(drivebase.changeDriveMode(DriveMode.ROBOT_RELATIVE))
                       .onFalse(drivebase.changeDriveMode(DriveMode.VELOCITY_ADV));
 
-    driver.RB.onTrue(drivebase.changeDriveMode(DriveMode.SPEAKER))
-             .onFalse(drivebase.changeDriveMode(DriveMode.VELOCITY_ADV));
+    // driver.RB.onTrue(drivebase.changeDriveMode(DriveMode.SPEAKER))
+    //          .onFalse(drivebase.changeDriveMode(DriveMode.VELOCITY_ADV));
 
-    driver.LB.onTrue(drivebase.changeDriveMode(DriveMode.AMP))
-             .onFalse(drivebase.changeDriveMode(DriveMode.VELOCITY_ADV));
+    // driver.LB.onTrue(drivebase.changeDriveMode(DriveMode.AMP))
+    //          .onFalse(drivebase.changeDriveMode(DriveMode.VELOCITY_ADV));
 
-    driver.Down.onTrue(Commands.runOnce(drivebase::setupPathPlanner));
+    // driver.Down.onTrue(Commands.runOnce(drivebase::setupPathPlanner));
     // TESTING ONLY FOR TUNING PATHPLANNER PIDS, DISABLE WHEN COMPETING
 
     // Auto Align Shooter + Rotate to Speaker
     // operator.X.onTrue(new ToAngle(m_pivotSubsystem, () -> m_pivotSubsystem.getAngleToSpeaker(drivebase.getDistanceToSpeaker())))
     // .onFalse(new ToAngle(m_pivotSubsystem, () -> Constants.Shooter.shooterStartDegree));
-    // operator.X.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS));
+    // operator.X.whileTrue(new Shoote000000000006rCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS));
 
     // Climb
     operator.RB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> 1.0));
     operator.LB.whileTrue(new ClimbCommand(m_climbSubsystem, () -> -1.0));
 
     // Shoot In Amp 
-    // operator.B.onTrue(m_shooterSubsystem.changeAmpTopMultiplierCommand(Constants.Shooter.shootInAmpMultiplier))
-    //           .onFalse(m_shooterSubsystem.changeAmpTopMultiplierCommand(1.0));
-    // operator.B.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.GamePieces.Amp.speedToShoot));
+    operator.B.onTrue(m_shooterSubsystem.changeAmpTopMultiplierCommand(Constants.Shooter.shootInAmpMultiplier))
+              .onFalse(m_shooterSubsystem.changeAmpTopMultiplierCommand(1.0));
+    operator.B.whileTrue(new ShooterCommand(m_shooterSubsystem, () -> Constants.GamePieces.Amp.speedToShoot));
     // operator.B.onTrue(new ToAngle(m_pivotSubsystem, () -> Constants.GamePieces.Amp.angleToshoot))
     // .onFalse(new ToAngle(m_pivotSubsystem, () -> Constants.Shooter.shooterStartDegree));
 
@@ -176,8 +176,8 @@ public class RobotContainer {
     //   new ToAngle(m_pivotSubsystem, () -> Constants.Shooter.shooterStartDegree)
     // ));
     NamedCommands.registerCommand("ShootSubwooferFixed", new SequentialCommandGroup(
-      new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS).withTimeout(3.0),
-      new IndexCommand(m_indexSystem, () -> 1.0).withTimeout(1.0)
+      new ShooterCommand(m_shooterSubsystem, () -> Constants.Shooter.shooterRPS).withTimeout(1.0),
+      new IndexCommand(m_indexSystem, () -> -1.0).withTimeout(1.0)
     ));
     // NamedCommands.registerCommand("ShootSubwooferSide", new SequentialCommandGroup(
     //   new ParallelCommandGroup(

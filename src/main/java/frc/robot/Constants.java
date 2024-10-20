@@ -121,7 +121,7 @@ public final class Constants {
     public static final double encoderStartRevolutions = 0.0;
     public static final double encoderEndRevolutions = -0.69;;
     public static final double shooterMaxVelocity = 7;
-    public static final double shooterRPS = 100;
+    public static final double shooterRPS = 50;
 
     public static final class PivotPID {
       public static final double kP = 7.0;
