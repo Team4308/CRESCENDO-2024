@@ -121,9 +121,6 @@ public class PivotSubsystem extends LogSubsystem {
     }
 
     public void periodic() {
-        checkTunableValues();
-        setMotorOutput();
-        log();
     }
 
     public void checkTunableValues() {
