@@ -72,37 +72,9 @@ public final class Constants {
   }
 
   public static class Mapping {
-    public static class Intake {
-      public static final int intakeMotor = 11;
-      public static final int leftBeamBreak = 5;
-      public static final int rightBeamBreak = 4;
-    }
-
-    public static class Shooter {
-      public static final int motor = 13;
-      public static final int beambreak = 0;
-      public static final int encoder = 1;
-      public static final int limitSwitch1 = 2;
-      public static final int limitSwitch2 = 3;
-    }
-
-    public static class ShooterMotor {
-      public static final int kMotor1 = 14;
-      public static final int kMotor2 = 15;
-    }
-
     public static class Controllers {
       public static final int driver = 0;
       public static final int operator = 1;
-    }
-
-    public static class ClimbMotors {
-      public static final int motor1 = 9;
-      public static final int motor2 = 10;
-    }
-
-    public static class Index {
-      public static final int indexMotor = 12;
     }
 
     public static class Pigeon2 {
@@ -112,52 +84,6 @@ public final class Constants {
 
   public static class Generic {
     public static int timeoutMs = 1000;
-  }
-
-  public static class Shooter {
-    public static final double shootInAmpMultiplier = 0.5;
-    public static final double shooterStartDegree = 15.7;
-    public static final double shooterEndDegree = 72;
-    public static final double encoderStartRevolutions = 0.0;
-    public static final double encoderEndRevolutions = -0.69;;
-    public static final double shooterMaxVelocity = 7;
-    public static final double shooterRPS = 100;
-
-    public static final class PivotPID {
-      public static final double kP = 7.0;
-      public static final double kI = 0.5;
-      public static final double kD = 0.0;
-    }
-
-    public static final class FlywheelControl {
-
-      public static final double kV = 0.12;
-      public static final double kP = 0.11;
-      public static final double kI = 0.48;
-      public static final double kD = 0.01;
-    }
-
-    public static final class PivotFF {
-      public static final double kS = 0.00;
-      // Values from ReCalc
-      public static final double kG = 0.00; //0.258
-      public static final double kV = 0.00; //0.14
-      public static final double kA = 0.00; //0.00
-    }
-
-    public static final class TrapezoidProfile {
-      public static final double kMaxVelocity = 730; // degrees
-      public static final double kMaxAcceleration = 730; //degrees
-      // should be safe enough values? needs to be tuned
-    }
-  }
-
-  public static class Limelight {
-    public static class Measurements {
-      public static final double limelightMountAngleDegrees = 30;
-      public static final double limelightLensHeightCM = 22.5;
-      public static final double limelightDistanceFromShooterCM = 30.5;
-    }
   }
 
   public static class GamePieces {

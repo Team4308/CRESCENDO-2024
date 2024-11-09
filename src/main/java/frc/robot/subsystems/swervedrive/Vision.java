@@ -31,6 +31,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import swervelib.SwerveDrive;
 import swervelib.telemetry.Alert;
@@ -111,7 +112,7 @@ public class Vision {
         public void addCameraToVisionSim(VisionSystemSim systemSim) {
             if (Robot.isSimulation()) {
                 systemSim.addCamera(cameraSim, robotToCamTransform);
-                // cameraSim.enableDrawWireframe(true);
+                //cameraSim.enableDrawWireframe(true);
             }
         }
     
@@ -158,8 +159,8 @@ public class Vision {
     }
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(PoseCameras camera) {
-        Optional<EstimatedRobotPose> poseEst = camera.poseEstimator.update();
-        // Optional<EstimatedRobotPose> poseEst = camera.poseEstimator.update();
+        Optional<EstimatedRobotPose> poseEst = filterPose(camera.poseEstimator.update());
+        //Optional<EstimatedRobotPose> poseEst = camera.poseEstimator.update();
 
         // Uncomment to enable outputting of vision targets in simulation
         poseEst.ifPresent(estimatedRobotPose -> {
@@ -195,7 +196,7 @@ public class Vision {
             estStdDevs = camera.multiTagStdDevs;
         }
         // Increase std devs based on (average) distance
-        if (numTags == 1 && avgDist > 4) {
+        if (numTags == 1 && avgDist > 3) {
             estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
         } else {
             estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
